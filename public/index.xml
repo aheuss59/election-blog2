@@ -6,8 +6,15 @@
     <description>Recent content in Home on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 03 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Testing Blog Upload</title>
+      <link>https://example.org/post/2024/09/03/testing-blog-upload/</link>
+      <pubDate>Tue, 03 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/09/03/testing-blog-upload/</guid>
+      <description>Hello, this is a blog post (hopefully).</description>
+    </item>
     <item>
       <title>Another Note on A blogdown Tutorial</title>
       <link>https://example.org/note/2017/06/14/another-note/</link>
@@ -41,7 +48,7 @@
       <link>https://example.org/post/1/01/01/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://example.org/post/1/01/01/</guid>
-      <description>n—&#xD;title: “2024 Presidential Election Blog”&#xD;author: “Alex Heuss”&#xD;date: 2020-12-01T21:13:14-05:00&#xD;categories: [“R”]&#xD;tags: [“R Markdown”, “plot”, “regression”]&#xD;—&#xA;R Markdown&#xD;This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.&#xA;You can embed an R code chunk like this:&#xA;summary(cars)&#xD;## speed dist ## Min. : 4.0 Min. : 2.</description>
+      <description>n&amp;mdash; title: &amp;ldquo;2024 Presidential Election Blog&amp;rdquo; author: &amp;ldquo;Alex Heuss&amp;rdquo; date: 2020-12-01T21:13:14-05:00 categories: [&amp;ldquo;R&amp;rdquo;] tags: [&amp;ldquo;R Markdown&amp;rdquo;, &amp;ldquo;plot&amp;rdquo;, &amp;ldquo;regression&amp;rdquo;] R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.&#xA;You can embed an R code chunk like this:&#xA;summary(cars)&#xD;## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.</description>
     </item>
     <item>
       <title>About Hugo XMin</title>
