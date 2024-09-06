@@ -9,6 +9,8 @@ tags: [president]
 ```{r, setup, echo = FALSE}
 library(ggplot2)
 library(tidyverse)
+
+#note: code to build site - build_site(build_rmd=TRUE)
 ```
 
 This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections. 
