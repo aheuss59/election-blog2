@@ -1,5 +1,5 @@
 ---
-title: Testing Blog Upload
+title: Election Forecast 1
 author: Alex Heuss
 date: '2024-09-05'
 slug: testing-blog-upload
@@ -13,7 +13,7 @@ library(tidyverse)
 #note: code to build site - build_site(build_rmd=TRUE)
 ```
 
-This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections. 
+This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two presidential elections, 2016 and 2020. 
 
 ```{r, loading data, echo= FALSE, message = FALSE} 
 # The code for this post is heavily based on the code that was introduced in section this week. 
@@ -22,7 +22,7 @@ nat_data <- read_csv("popvote_1948-2020.csv")
 state_data <- read_csv("clean_wide_state_2pv_1948_2020.csv")
 
 ```
-```{r, initial data wrangling}
+```{r, initial data wrangling, echo = FALSE}
 nat_wide <- 
   nat_data |> 
   select(year, party, pv2p) |>
@@ -31,14 +31,19 @@ nat_wide <-
   
 ```
 
-```{r}
-nat_wide |> 
+```{r, echo = FALSE}
+nat_summary <- 
+  nat_wide |> 
+  mutate(winner = ifelse(winner == "democrat", "Democrat", "Republican")) |>
   group_by(winner) |>
   summarize(races_won = n())
+
+nat_summary |>
+  knitr::kable(col.names = c("Party", "Races Won"), caption = "Presidential races won by each party since 1948")
 ```
 One thing I take away from this chart is how little data we actually have to train prediction models on. There have only been 19 presidential elections since 1948.
 
-```{r, bar chart}
+```{r, bar chart, echo= FALSE}
 
 my_theme <- theme_bw() + theme(legend.position = "none")
 

@@ -9,11 +9,11 @@
     <lastBuildDate>Thu, 05 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/categories/election-prediction/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Testing Blog Upload</title>
+      <title>Election Forecast 1</title>
       <link>https://example.org/post/2024/09/05/testing-blog-upload/</link>
       <pubDate>Thu, 05 Sep 2024 00:00:00 +0000</pubDate>
       <guid>https://example.org/post/2024/09/05/testing-blog-upload/</guid>
-      <description>This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections.&#xA;nat_wide &amp;lt;- nat_data |&amp;gt; select(year, party, pv2p) |&amp;gt;&#xD;pivot_wider(names_from = party, values_from = pv2p) |&amp;gt;&#xD;mutate(winner = ifelse(republican &amp;gt; democrat, &amp;quot;republican&amp;quot;, &amp;quot;democrat&amp;quot;))&#xD;nat_wide |&amp;gt; group_by(winner) |&amp;gt;&#xD;summarize(races_won = n())&#xD;## # A tibble: 2 × 2&#xD;## winner races_won&#xD;## &amp;lt;chr&amp;gt; &amp;lt;int&amp;gt;&#xD;## 1 democrat 11&#xD;## 2 republican 8&#xD;One thing I take away from this chart is how little data we actually have to train prediction models on.</description>
+      <description>This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two presidential elections, 2016 and 2020.&#xA;Table: Table 1: Presidential races won by each party since 1948&#xA;Party Races Won Democrat 11 Republican 8 One thing I take away from this chart is how little data we actually have to train prediction models on.</description>
     </item>
   </channel>
 </rss>

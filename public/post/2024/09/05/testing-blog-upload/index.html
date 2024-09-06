@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Testing Blog Upload | A minimal Hugo website</title>
+    <title>Election Forecast 1 | A minimal Hugo website</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/fonts.css" />
     
@@ -28,41 +28,36 @@
     </nav>
 
 <div class="article-meta">
-<h1><span class="title">Testing Blog Upload</span></h1>
+<h1><span class="title">Election Forecast 1</span></h1>
 <h2 class="author">Alex Heuss</h2>
 <h2 class="date">2024/09/05</h2>
 </div>
 
 <main>
-<p>This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections.</p>
-<pre><code class="language-r">nat_wide &lt;- 
-  nat_data |&gt; 
-  select(year, party, pv2p) |&gt;
-  pivot_wider(names_from = party, values_from = pv2p) |&gt;
-  mutate(winner = ifelse(republican &gt; democrat, &quot;republican&quot;, &quot;democrat&quot;))
-</code></pre>
-<pre><code class="language-r">nat_wide |&gt; 
-  group_by(winner) |&gt;
-  summarize(races_won = n())
-</code></pre>
-<pre><code>## # A tibble: 2 × 2
-##   winner     races_won
-##   &lt;chr&gt;          &lt;int&gt;
-## 1 democrat          11
-## 2 republican         8
-</code></pre>
-<p>One thing I take away from this chart is how little data we actually have to train prediction models on. There have only been 19 presidential elections since 1948.</p>
-<pre><code class="language-r">my_theme &lt;- theme_bw() + theme(legend.position = &quot;none&quot;)
-
-options(repr.plot.width=20, repr.plot.height=8)
-
-nat_data |&gt;
-  ggplot(aes(x = year, y = pv2p, color = party)) +
-  geom_line() +
-  scale_color_manual(values = c(&quot;#00AEF3&quot;, &quot;#E81B23&quot;)) + 
-  labs(x = &quot;&quot;, y = &quot;% Two Party Vote Share&quot;, title = &quot;Presidential Two Party Vote Share&quot;) + 
-  my_theme
-</code></pre>
+<p>This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two presidential elections, 2016 and 2020.</p>
+<p>Table: <span id="tab:unnamed-chunk-1"></span>Table 1: Presidential races won by each party since 1948</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Party</th>
+<th style="text-align:right">Races Won</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Democrat</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left">Republican</td>
+<td style="text-align:right">8</td>
+</tr>
+<tr>
+<td style="text-align:left">One thing I take away from this chart is how little data we actually have to train prediction models on. There have only been 19 presidential elections since 1948.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/bar chart-1.png" width="672" />
 
 </main>
