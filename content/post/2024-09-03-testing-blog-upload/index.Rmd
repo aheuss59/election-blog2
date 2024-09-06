@@ -6,14 +6,14 @@ slug: testing-blog-upload
 categories: [election-prediction]
 tags: [president]
 ---
-```{r, setup}
+```{r, setup, echo = FALSE}
 library(ggplot2)
 library(tidyverse)
 ```
 
 This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections. 
 
-```{r, loading data} 
+```{r, loading data, echo= FALSE} 
 # The code for this post is heavily based on the code that was introduced in section this week. 
 
 nat_data <- read_csv("popvote_1948-2020.csv")
@@ -38,7 +38,9 @@ One thing I take away from this chart is how little data we actually have to tra
 
 ```{r, bar chart}
 
-my_theme <- theme_bw()
+my_theme <- theme_bw() + theme(legend.position = "none")
+
+options(repr.plot.width=20, repr.plot.height=8)
 
 nat_data |>
   ggplot(aes(x = year, y = pv2p, color = party)) +

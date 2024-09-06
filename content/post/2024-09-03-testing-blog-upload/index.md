@@ -7,11 +7,6 @@ categories: [election-prediction]
 tags: [president]
 ---
 
-``` r
-library(ggplot2)
-library(tidyverse)
-```
-
 ```
 ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
@@ -27,12 +22,6 @@ library(tidyverse)
 This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections. 
 
 
-``` r
-# The code for this post is heavily based on the code that was introduced in section this week. 
-
-nat_data <- read_csv("popvote_1948-2020.csv")
-```
-
 ```
 ## Rows: 38 Columns: 9
 ## ── Column specification ────────────────────────────────────────────────────────
@@ -43,13 +32,6 @@ nat_data <- read_csv("popvote_1948-2020.csv")
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-``` r
-state_data <- read_csv("clean_wide_state_2pv_1948_2020.csv")
-```
-
-```
 ## Rows: 959 Columns: 14
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: ","
@@ -86,7 +68,9 @@ One thing I take away from this chart is how little data we actually have to tra
 
 
 ``` r
-my_theme <- theme_bw()
+my_theme <- theme_bw() + theme(legend.position = "none")
+
+options(repr.plot.width=20, repr.plot.height=8)
 
 nat_data |>
   ggplot(aes(x = year, y = pv2p, color = party)) +

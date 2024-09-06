@@ -34,9 +34,6 @@
 </div>
 
 <main>
-<pre><code class="language-r">library(ggplot2)
-library(tidyverse)
-</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
 ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
@@ -48,10 +45,6 @@ library(tidyverse)
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
 </code></pre>
 <p>This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections.</p>
-<pre><code class="language-r"># The code for this post is heavily based on the code that was introduced in section this week. 
-
-nat_data &lt;- read_csv(&quot;popvote_1948-2020.csv&quot;)
-</code></pre>
 <pre><code>## Rows: 38 Columns: 9
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -61,10 +54,7 @@ nat_data &lt;- read_csv(&quot;popvote_1948-2020.csv&quot;)
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-</code></pre>
-<pre><code class="language-r">state_data &lt;- read_csv(&quot;clean_wide_state_2pv_1948_2020.csv&quot;)
-</code></pre>
-<pre><code>## Rows: 959 Columns: 14
+## Rows: 959 Columns: 14
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr  (1): state
@@ -90,7 +80,9 @@ nat_data &lt;- read_csv(&quot;popvote_1948-2020.csv&quot;)
 ## 2 republican         8
 </code></pre>
 <p>One thing I take away from this chart is how little data we actually have to train prediction models on. There have only been 19 presidential elections since 1948.</p>
-<pre><code class="language-r">my_theme &lt;- theme_bw()
+<pre><code class="language-r">my_theme &lt;- theme_bw() + theme(legend.position = &quot;none&quot;)
+
+options(repr.plot.width=20, repr.plot.height=8)
 
 nat_data |&gt;
   ggplot(aes(x = year, y = pv2p, color = party)) +
