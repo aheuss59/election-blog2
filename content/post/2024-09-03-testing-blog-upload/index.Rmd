@@ -6,7 +6,7 @@ slug: testing-blog-upload
 categories: [election-prediction]
 tags: [president]
 ---
-```{r, setup, echo = FALSE}
+```{r, setup, echo = FALSE, message = FALSE}
 library(ggplot2)
 library(tidyverse)
 
@@ -15,7 +15,7 @@ library(tidyverse)
 
 This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections. 
 
-```{r, loading data, echo= FALSE} 
+```{r, loading data, echo= FALSE, message = FALSE} 
 # The code for this post is heavily based on the code that was introduced in section this week. 
 
 nat_data <- read_csv("popvote_1948-2020.csv")
