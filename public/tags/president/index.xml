@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Home on A minimal Hugo website</title>
-    <link>https://example.org/</link>
-    <description>Recent content in Home on A minimal Hugo website</description>
+    <title>President on A minimal Hugo website</title>
+    <link>https://example.org/tags/president/</link>
+    <description>Recent content in President on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 05 Sep 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://example.org/tags/president/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Testing Blog Upload</title>
       <link>https://example.org/post/2024/09/05/testing-blog-upload/</link>
       <pubDate>Thu, 05 Sep 2024 00:00:00 +0000</pubDate>
       <guid>https://example.org/post/2024/09/05/testing-blog-upload/</guid>
       <description>library(ggplot2)&#xD;library(tidyverse)&#xD;## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──&#xD;## ✔ dplyr 1.1.4 ✔ readr 2.1.5&#xD;## ✔ forcats 1.0.0 ✔ stringr 1.5.1&#xD;## ✔ lubridate 1.9.3 ✔ tibble 3.2.1&#xD;## ✔ purrr 1.0.2 ✔ tidyr 1.3.1&#xD;## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──&#xD;## ✖ dplyr::filter() masks stats::filter()&#xD;## ✖ dplyr::lag() masks stats::lag()&#xD;## ℹ Use the conflicted package (&amp;lt;http://conflicted.r-lib.org/&amp;gt;) to force all conflicts to become errors&#xD;This is my first blog post, for the week of September 2nd.</description>
-    </item>
-    <item>
-      <title>About Hugo XMin</title>
-      <link>https://example.org/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://example.org/about/</guid>
-      <description>XMin is the first Hugo theme I have designed. The original reason that I wrote it was I needed a minimal example of Hugo themes when I was writing the blogdown book. Basically I wanted a simple theme that supports a navigation menu, a home page, other single pages, lists of pages, blog posts, categories, tags, and RSS. That is all. Nothing fancy. In terms of CSS and JavaScript, I really want to keep them minimal.</description>
     </item>
   </channel>
 </rss>

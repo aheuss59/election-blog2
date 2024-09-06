@@ -6,5 +6,52 @@ slug: testing-blog-upload
 categories: [election-prediction]
 tags: [president]
 ---
+```{r, setup}
+library(ggplot2)
+library(tidyverse)
+```
 
-This will be my first blog post. 
+This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two elections. 
+
+```{r, loading data} 
+# The code for this post is heavily based on the code that was introduced in section this week. 
+
+nat_data <- read_csv("popvote_1948-2020.csv")
+state_data <- read_csv("clean_wide_state_2pv_1948_2020.csv")
+
+```
+```{r, initial data wrangling}
+nat_wide <- 
+  nat_data |> 
+  select(year, party, pv2p) |>
+  pivot_wider(names_from = party, values_from = pv2p) |>
+  mutate(winner = ifelse(republican > democrat, "republican", "democrat"))
+  
+```
+
+```{r}
+nat_wide |> 
+  group_by(winner) |>
+  summarize(races_won = n())
+```
+One thing I take away from this chart is how little data we actually have to train prediction models on. There have only been 19 presidential elections since 1948.
+
+```{r, bar chart}
+
+my_theme <- theme_bw()
+
+nat_data |>
+  ggplot(aes(x = year, y = pv2p, color = party)) +
+  geom_line() +
+  scale_color_manual(values = c("#00AEF3", "#E81B23")) + 
+  labs(x = "", y = "% Two Party Vote Share", title = "Presidential Two Party Vote Share") + 
+  my_theme
+
+```
+
+
+
+
+
+
+
