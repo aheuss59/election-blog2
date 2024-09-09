@@ -34,6 +34,7 @@
 </div>
 
 <main>
+<h2 id="general-exploration">General Exploration</h2>
 <p>This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a model based on the results of the past two presidential elections, 2016 and 2020.</p>
 <p>Table: <span id="tab:unnamed-chunk-1"></span>Table 1: Presidential races won by each party since 1948</p>
 <table>
@@ -52,13 +53,78 @@
 <td style="text-align:left">Republican</td>
 <td style="text-align:right">8</td>
 </tr>
-<tr>
-<td style="text-align:left">One thing I take away from this chart is how little data we actually have to train prediction models on. There have only been 19 presidential elections since 1948.</td>
-<td></td>
-</tr>
 </tbody>
 </table>
+<p>As shown in the table, Democratic presidential candidates have won the popular vote in 11 of the past 19 elections, and Republican candidates 8. Another takeaway from this exploratory table is how little data there actually is to train models on. There have only been 19 presidential elections since 1948, which means that the impacts of outliers in the data may be extra large.</p>
+<p>The graph below maps the two-party vote share for the Democratic and Republic parties since 1948.</p>
 <img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/bar chart-1.png" width="672" />
+<h2 id="2020-state-maps-and-predictions-based-on-them">2020 State Maps and Predictions Based on Them</h2>
+<pre><code class="language-r">states_map &lt;- map_data(&quot;state&quot;)
+state_data &lt;- 
+  state_data |&gt;
+  mutate(region = tolower(state))
+
+pv_map &lt;- 
+  state_data |&gt;
+  filter(year == 2020) |&gt;
+  left_join(states_map, by = &quot;region&quot;)
+
+pv_map |&gt; 
+  ggplot(aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = R_pv2p), color = &quot;white&quot;)+
+  scale_fill_gradient(low = &quot;white&quot;, high = rep_red) +
+  theme_void()
+</code></pre>
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<pre><code class="language-r">pv_map_winner &lt;- 
+  pv_map |&gt;
+  mutate(winner = ifelse(R_pv &gt; D_pv, &quot;republican&quot;, &quot;democrat&quot;))
+
+pv_map_winner |&gt;  
+  ggplot(aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = winner), color = &quot;white&quot;) +
+  scale_fill_manual(values=dem_rep) +
+  theme_void()
+</code></pre>
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+<pre><code class="language-r">pv_map_margin &lt;- 
+  pv_map_winner |&gt;
+  mutate(margin = R_pv2p-D_pv2p)
+
+pv_map_margin |&gt;
+  ggplot(aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = margin), color = &quot;black&quot;) +
+  scale_fill_gradient2(high = rep_red,
+                       mid = &quot;white&quot;,
+                       name = &quot;win margin&quot;,
+                       low = dem_blue,
+                       breaks = c(-50,-25,0,25,50),limits=c(-50,50)) +
+  theme_void()
+</code></pre>
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<pre><code class="language-r">state_2p &lt;- 
+  state_data |&gt; 
+  filter(year == 2020) |&gt;
+  group_by(state) |&gt; 
+  summarise(D_2024_2p = 0.75*D_pv2p + 0.25*D_pv2p_lag1,
+            R_2024_2p = 0.75*R_pv2p + 0.25*R_pv2p_lag1) |&gt;
+  mutate(margin_2024 = R_2024_2p - D_2024_2p,
+         region = tolower(state))
+
+state_2p |&gt;
+  left_join(states_map, by = &quot;region&quot;) |&gt;
+  ggplot(aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = margin_2024), color = &quot;black&quot;) +
+  ggtitle(&quot;2024 Presidential Forecast (Simplified Electoral Cycle Model)&quot;) + 
+  scale_fill_gradient2(high = rep_red, 
+                       mid = &quot;white&quot;,
+                       name = &quot;win margin&quot;,
+                       low = dem_blue, 
+                       breaks = c(-50,-25,0,25,50), 
+                       limits=c(-50,50)) + 
+  theme_void()
+</code></pre>
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
 
 </main>
 
