@@ -8,13 +8,15 @@ tags: [president]
 ---
 
 
-## General Exploration
+## General Exploration and Popular Vote Over Time
 
 This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a simple model based on the results of the past two presidential elections, 2016 and 2020. 
 
 
 
 
+
+In considering the data to begin with, it's interesting, though not particularly informative to take a look at how many elections each party has won in the post-WW2 era. [make a note about why lots of people only look from WW2 on]. 
 
 
 Table: <span id="tab:unnamed-chunk-1"></span>Table 1: Presidential races won by each party since 1948
@@ -24,71 +26,52 @@ Table: <span id="tab:unnamed-chunk-1"></span>Table 1: Presidential races won by 
 |Democrat   |        11|
 |Republican |         8|
 
-As shown in the table, Democratic presidential candidates have won the popular vote in 11 of the past 19 elections, and Republican candidates 8. Another takeaway from this exploratory table is how little data there actually is to train models on. There have only been 19 presidential elections since 1948, which means that the impacts of outliers in the data may be extra large. 
+As shown in the table, Democratic presidential candidates have won the popular vote in 11 of the past 19 elections, and Republican candidates 8. Though not a fifty-fifty split, no one party is winning every election. One takeaway to highlight from this table is that there truly are not many elections we can use to train predictive models. There have only been 19 presidential elections since 1948, which means that the impact of outliers in the data may be extra large. 
 
 The graph below maps the two-party vote share for the Democratic and Republican parties since 1948. 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/bar chart-1.png" width="672" />
 
-Two-party vote share as a statistic measures the percentage of the vote that either party gets among only voters who voted for the Democratic or Republican candidate (and as such does not include third part votes). A key takeaway from this graph is that the difference in vote shares has narrowed since the 1990s; elections have become a lot closer. 
+Two-party vote share as a statistic measures the percentage of the vote that either party gets among only voters who voted for the Democratic or Republican candidate (and as such does not include third party votes). Looking at the graph we see that win margins have decreased over time, marking an increase in election competitiveness since the 1990s. 
+
+## State Maps Over Time
+
+Taking a look at each state over time, there really is a lot of consistency. 
+
+
+```
+## Warning in left_join(filter(state_data, year >= 1984), states_map, by = "region"): Detected an unexpected many-to-many relationship between `x` and `y`.
+## ℹ Row 1 of `x` matches multiple rows in `y`.
+## ℹ Row 1 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   "many-to-many"` to silence this warning.
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/over the years-1.png" width="672" />
+
+The West Coast (OR, WA, CA) is pretty steadily blue, along with the Northeast. Minnesota is pretty much always blue, even back when Reagan was running, which is really interesting to me (as a person from Minnesota). The states down the middle of the country and the south in general are red most or all of the time. States that are typically considered swing show a bit more variation. That being said, even those states usually fall one way. MI, WI, NV and PA almost always go blue, while GA, NC and AZ almost always go red. 
 
 ## 2020 Electoral Maps
 
 
 
+The map below shows the winner of the popular vote for each state in the 2020 election. 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/map of popular vote winner-1.png" width="672" />
+And this one the vote margin in those states. 
 
+<img src="{{< blogdown/postref >}}index_files/figure-html/2020 vote margin-1.png" width="672" />
+As we can see in this map, the winning margin in swing states is very close to zero, and those states have very tight and competitive presidential races. 2020 was a particularly contentious election, with recounts requested in several swing states, several of which also heard cases in court about the election. [with time insert some of the actual counts of ballots that won the election]. 
 
+## A Simple Prediction of 2024
 
-``` r
-pv_map_margin <- 
-  pv_map_winner |>
-  mutate(margin = R_pv2p-D_pv2p)
+<img src="{{< blogdown/postref >}}index_files/figure-html/prediction-1.png" width="672" />
 
-pv_map_margin |>
-  ggplot(aes(long, lat, group = group)) +
-  geom_polygon(aes(fill = margin), color = "gray") +
-  scale_fill_gradient2(high = rep_red,
-                       mid = "white",
-                       name = "Win Margin",
-                       low = dem_blue,
-                       breaks = c(-50,-25,0,25,50),limits=c(-50,50)) +
-  labs(title = "2020 Two-Party Popular Vote Margin by State") +
-  my_map_theme 
-```
+The graph above shows the predicted vote share for each party based on the a simple model: vote share 2024 = 0.75 * vote share 2020 + 0.2 * vote share 2016. 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+The model, which is based only on the 2016 and 2020 elections, predicts that most states will lean slightly more Republican than in 2020. 
 
-``` r
-state_2p <- 
-  state_data |> 
-  filter(year == 2020) |>
-  group_by(state) |> 
-  summarise(D_2024_2p = 0.75*D_pv2p + 0.25*D_pv2p_lag1,
-            R_2024_2p = 0.75*R_pv2p + 0.25*R_pv2p_lag1) |>
-  mutate(margin_2024 = R_2024_2p - D_2024_2p,
-         region = tolower(state))
-
-state_2p |>
-  left_join(states_map, by = "region") |>
-  ggplot(aes(long, lat, group = group)) +
-  geom_polygon(aes(fill = margin_2024), color = "grey") +
-  labs(title = "Simple 2024 Election Forecast") + 
-  scale_fill_gradient2(high = rep_red, 
-                       mid = "white",
-                       name = "Win Margin",
-                       low = dem_blue, 
-                       breaks = c(-50,-25,0,25,50), 
-                       limits=c(-50,50)) + 
-  my_map_theme
-```
-
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
-
-
-
-
+I look forward to making more sophisticated models as the semester continues on, incorporating both a finer-grain analysis and other variables that factor into presidential election outcomes like incumbency, economic conditions, the campaign, and so on. 
 
 
 
