@@ -57,7 +57,7 @@ The graph below maps the two-party vote share for the Democratic and Republican 
 
 my_theme <- 
   theme_bw() + 
-  theme(legend.position = "none", text = element_text(color = "gray40", family = "mono"))
+  theme(legend.position = "none", text = element_text(color = "gray33", family = "mono"))
 
 dem_rep <- c("#00AEF3", "#E81B23")
 dem_blue <- "#00AEF3"
@@ -67,7 +67,7 @@ options(repr.plot.width=20, repr.plot.height=8)
 
 nat_data |>
   ggplot(aes(x = year, y = pv2p, color = party)) +
-  geom_line(size = 0.85) +
+  geom_line(linewidth = 0.85) +
   scale_color_manual(values = dem_rep) + 
   labs(x = "", y = "% Two Party Vote Share", title = "Presidential Two Party Vote Share") + 
   my_theme

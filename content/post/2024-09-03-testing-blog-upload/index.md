@@ -30,15 +30,6 @@ As shown in the table, Democratic presidential candidates have won the popular v
 
 The graph below maps the two-party vote share for the Democratic and Republican parties since 1948. 
 
-
-```
-## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-## ℹ Please use `linewidth` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-## generated.
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/bar chart-1.png" width="672" />
 
 Two-party vote share as a statistic measures the percentage of the vote that either party gets among only voters who voted for the Democratic or Republican candidate (and as such does not include third party votes). Looking at the graph we see that win margins have decreased over time, marking an increase in election competitiveness since the 1990s. 
