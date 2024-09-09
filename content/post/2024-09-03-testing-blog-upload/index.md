@@ -16,7 +16,7 @@ This is my first blog post, for the week of September 2nd. The primary method of
 
 
 
-In considering the data to begin with, it's interesting, though not particularly informative to take a look at how many elections each party has won in the post-WW2 era. [make a note about why lots of people only look from WW2 on]. 
+In considering the data to begin with, it is interesting, though not particularly informative to take a look at how many elections each party has won in elections since the end of WWII. 
 
 
 Table: <span id="tab:unnamed-chunk-1"></span>Table 1: Presidential races won by each party since 1948
@@ -30,22 +30,20 @@ As shown in the table, Democratic presidential candidates have won the popular v
 
 The graph below maps the two-party vote share for the Democratic and Republican parties since 1948. 
 
+
+```
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
 <img src="{{< blogdown/postref >}}index_files/figure-html/bar chart-1.png" width="672" />
 
 Two-party vote share as a statistic measures the percentage of the vote that either party gets among only voters who voted for the Democratic or Republican candidate (and as such does not include third party votes). Looking at the graph we see that win margins have decreased over time, marking an increase in election competitiveness since the 1990s. 
 
-## State Maps Over Time
-
 Taking a look at each state over time, there really is a lot of consistency. 
-
-
-```
-## Warning in left_join(filter(state_data, year >= 1984), states_map, by = "region"): Detected an unexpected many-to-many relationship between `x` and `y`.
-## ℹ Row 1 of `x` matches multiple rows in `y`.
-## ℹ Row 1 of `y` matches multiple rows in `x`.
-## ℹ If a many-to-many relationship is expected, set `relationship =
-##   "many-to-many"` to silence this warning.
-```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/over the years-1.png" width="672" />
 
@@ -61,7 +59,7 @@ The map below shows the winner of the popular vote for each state in the 2020 el
 And this one the vote margin in those states. 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/2020 vote margin-1.png" width="672" />
-As we can see in this map, the winning margin in swing states is very close to zero, and those states have very tight and competitive presidential races. 2020 was a particularly contentious election, with recounts requested in several swing states, several of which also heard cases in court about the election. [with time insert some of the actual counts of ballots that won the election]. 
+As we can see in this map, the winning margin in swing states is very close to zero, and those states have very tight and competitive presidential races. Further, very few states are solid red or blue, which is something that isn't always clear in a simple non-gradient map like the first. 2020 was a particularly contentious election, with recounts requested in several swing states, several of which also heard cases in court about the election
 
 ## A Simple Prediction of 2024
 

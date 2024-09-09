@@ -10,6 +10,7 @@ tags: [president]
 library(ggplot2)
 library(tidyverse)
 library(maps)
+library(extrafont)
 
 #note: code to build site - build_site(build_rmd=TRUE)
 ```
@@ -35,7 +36,7 @@ nat_wide <-
   
 ```
 
-In considering the data to begin with, it's interesting, though not particularly informative to take a look at how many elections each party has won in the post-WW2 era. [make a note about why lots of people only look from WW2 on]. 
+In considering the data to begin with, it is interesting, though not particularly informative to take a look at how many elections each party has won in elections since the end of WWII. 
 
 ```{r, echo = FALSE}
 nat_summary <- 
@@ -54,7 +55,10 @@ The graph below maps the two-party vote share for the Democratic and Republican 
 
 ```{r, bar chart, echo= FALSE}
 
-my_theme <- theme_bw() + theme(legend.position = "none")
+my_theme <- 
+  theme_bw() + 
+  theme(legend.position = "none", text = element_text(color = "gray40", family = "mono"))
+
 dem_rep <- c("#00AEF3", "#E81B23")
 dem_blue <- "#00AEF3"
 rep_red <- "#E81B23"
@@ -63,7 +67,7 @@ options(repr.plot.width=20, repr.plot.height=8)
 
 nat_data |>
   ggplot(aes(x = year, y = pv2p, color = party)) +
-  geom_line() +
+  geom_line(size = 0.85) +
   scale_color_manual(values = dem_rep) + 
   labs(x = "", y = "% Two Party Vote Share", title = "Presidential Two Party Vote Share") + 
   my_theme
@@ -72,18 +76,17 @@ nat_data |>
 
 Two-party vote share as a statistic measures the percentage of the vote that either party gets among only voters who voted for the Democratic or Republican candidate (and as such does not include third party votes). Looking at the graph we see that win margins have decreased over time, marking an increase in election competitiveness since the 1990s. 
 
-## State Maps Over Time
-
 Taking a look at each state over time, there really is a lot of consistency. 
 
-```{r, over the years, echo = FALSE}
+```{r, over the years, echo = FALSE, warning=FALSE}
 states_map <- map_data("state")
 state_data <- 
   state_data |>
   mutate(region = tolower(state))
 
 my_map_theme <- 
-  theme_void()
+  theme_void() +
+  theme(text = element_text(color = "gray40", family = "mono")) 
 
 state_data |>
   filter(year >= 1984) |>
@@ -147,7 +150,7 @@ pv_map_margin |>
   my_map_theme 
 
 ```
-As we can see in this map, the winning margin in swing states is very close to zero, and those states have very tight and competitive presidential races. 2020 was a particularly contentious election, with recounts requested in several swing states, several of which also heard cases in court about the election. [with time insert some of the actual counts of ballots that won the election]. 
+As we can see in this map, the winning margin in swing states is very close to zero, and those states have very tight and competitive presidential races. Further, very few states are solid red or blue, which is something that isn't always clear in a simple non-gradient map like the first. 2020 was a particularly contentious election, with recounts requested in several swing states, several of which also heard cases in court about the election
 
 ## A Simple Prediction of 2024
 
