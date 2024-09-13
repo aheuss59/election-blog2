@@ -12,7 +12,7 @@ library(car)
 library(ggrepel)
 ```
 
-```{r, load and wrangle data, echo=FALSE, message=FALSE}
+```{r, load and wrangle data, echo=FALSE, message=FALSE, warning=FALSE}
 pop_data <- read_csv("popvote_1948-2020.csv")
 fred_data <- read_csv("fred_econ.csv")
 bea_data <- read_csv("bea_econ.csv") |> 
@@ -85,6 +85,7 @@ incumbent_econ_data |>
   scale_color_manual(values = c("darkorange", "darkturquoise"))
 
 ```
+
 We can see that the correlations between Q2 GDP growth and the incumbent party's popular vote share are very different depending on whether or not 2020 is included. Brief analysis about whether either correlation is actually strong. 
 ```{r, echo=FALSE}
 cor(incumbent_econ_data$GDP_growth_quarterly, 

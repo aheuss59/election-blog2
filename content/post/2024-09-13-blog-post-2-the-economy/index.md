@@ -28,6 +28,7 @@ tags: []
 ```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+
 We can see that the correlations between Q2 GDP growth and the incumbent party's popular vote share are very different depending on whether or not 2020 is included. Brief analysis about whether either correlation is actually strong. 
 
 ```
