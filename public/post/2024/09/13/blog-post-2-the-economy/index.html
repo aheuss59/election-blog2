@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog Post 2: The Economy | A minimal Hugo website</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/categories/">Categories</a></li>
+      
+      <li><a href="/tags/">Tags</a></li>
+      
+      <li><a href="/index.xml">Subscribe</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Blog Post 2: The Economy</span></h1>
+<h2 class="author">Alex Heuss</h2>
+<h2 class="date">2024/09/13</h2>
+</div>
+
+<main>
+<h2 id="the-influence-of-the-economy-on-elections">The Influence of the Economy on Elections</h2>
+<p>[Discussion of the predictive power of the fundamentals and the economy - could mention the bread and peace model]. Especially talk about Q2 econ power.</p>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+</code></pre>
+<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+We can see that the correlations between Q2 GDP growth and the incumbent party's popular vote share are very different depending on whether or not 2020 is included. Brief analysis about whether either correlation is actually strong. 
+<pre><code>## [1] 0.4336956
+</code></pre>
+<pre><code>## [1] 0.569918
+</code></pre>
+<p>Let&rsquo;s take a look at the linear regression results:</p>
+<pre><code>## 
+## Call:
+## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data)
+## 
+## Coefficients:
+##          (Intercept)  GDP_growth_quarterly  
+##              51.2580                0.2739
+</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data_no2020)
+## 
+## Coefficients:
+##          (Intercept)  GDP_growth_quarterly  
+##              49.3751                0.7366
+</code></pre>
+<p>We can interpret these results to mean that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.27 percentage points when looking at all data from 1948-2020, or by 0.74 percentage points when 2020 is excluded. In close elections, that approximately 0.5 percentage point difference between the two models can make a big difference.</p>
+<p>All that said, I also want to highlight one stark trend in the data. Let&rsquo;s look at the graph from 1948-2020 again:</p>
+<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+<h2 id="economic-influence-at-the-state-level">Economic Influence at the State Level</h2>
+<pre><code class="language-r"># State-level data wrangling, historical trends, also just 2000s, correlations between available state economic data to consider multi-variable approach
+</code></pre>
+<h2 id="testing-our-models">Testing our Models</h2>
+<pre><code class="language-r">#summary statistics and model checking for both national and state models
+</code></pre>
+
+</main>
+
+  <footer>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/combine/npm/katex/dist/katex.min.js,npm/katex/dist/contrib/auto-render.min.js,npm/@xiee/utils/js/render-katex.js" defer></script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+
+  
+  <hr/>
+  © <a href="https://yihui.org">Yihui Xie</a> 2017 &ndash; 2024 | <a href="https://github.com/yihui">Github</a> | <a href="https://twitter.com/xieyihui">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+

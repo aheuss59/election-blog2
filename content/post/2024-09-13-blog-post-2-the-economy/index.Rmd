@@ -1,0 +1,155 @@
+---
+title: 'Blog Post 2: The Economy'
+author: Alex Heuss
+date: '2024-09-13'
+slug: blog-post-2-the-economy
+categories: []
+tags: []
+---
+```{r, load packages, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(car)
+library(ggrepel)
+```
+
+```{r, load and wrangle data, echo=FALSE, message=FALSE}
+pop_data <- read_csv("popvote_1948-2020.csv")
+fred_data <- read_csv("fred_econ.csv")
+bea_data <- read_csv("bea_econ.csv") |> 
+  rename(year = "Year",
+         quarter = "Quarter", 
+         gdp = "Gross domestic product", 
+         gnp = "Gross national product", 
+         dpi = "Disposable personal income", 
+         consumption = "Personal consumption expenditures", 
+         goods = "Goods", 
+         durables = "Durable goods", 
+         nondurables = "Nondurable goods", 
+         services = "Services", 
+         pop = "Population (midperiod, thousands)")
+
+# Create dataset for incumbent economic conditions and vote share
+incumbent_econ_data <- 
+  pop_data |> 
+  filter(incumbent_party == TRUE) |> 
+  select(year, pv, pv2p, winner) |> 
+  left_join(fred_data |> 
+              filter(quarter == 2)) |> 
+  left_join(bea_data |> 
+              filter(quarter == "Q2") |> select(year, dpi))
+```
+
+## The Influence of the Economy on Elections
+
+[Discussion of the predictive power of the fundamentals and the economy - could mention the bread and peace model]. Especially talk about Q2 econ power.
+
+```{r, echo=FALSE}
+# Linear Regressions for Q2 GDP + Pop Vote, with and without 2020.
+fit2020 <- lm(pv2p ~ GDP_growth_quarterly, 
+               data = incumbent_econ_data)
+
+incumbent_econ_data_no2020 <- 
+  incumbent_econ_data |>
+  filter(year != 2020)
+
+fitno2020 <- 
+  lm(pv2p ~ GDP_growth_quarterly,
+     data = incumbent_econ_data_no2020)
+
+```
+
+```{r, echo=FALSE}
+# Find intercept/slope
+summary2020 <- summary(fit2020)
+summaryno2020 <- summary(fitno2020)
+
+intercept2020 <- summary2020$coefficients[1,1]
+slope2020 <- summary2020$coefficients[2,1]
+interceptno2020 <- summaryno2020$coefficients[1,1]
+slopeno2020 <- summaryno2020$coefficients[2,1]
+```
+
+```{r, echo=FALSE}
+# Data since 1948 with fit lines for with and without 2020 - I'm so proud of this graph
+incumbent_econ_data |> 
+  ggplot(aes(x = GDP_growth_quarterly, y = pv2p, label = year)) +
+  geom_label(size = 2.5) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0.01, lty = 2) +
+  geom_abline(aes(slope = slope2020, intercept = intercept2020, color = "Trendline 1948-2020"), size = 0.75) +
+  geom_abline(aes(slope = slopeno2020, intercept = interceptno2020, color = "Trendline without 2020"), size = 0.75) +
+  labs(x = "Second Quarter GDP Growth (%)", 
+       y = "Incumbent Party's National Popular Vote Share",
+       color = "") + 
+  theme_bw() + 
+  scale_color_manual(values = c("darkorange", "darkturquoise"))
+
+```
+We can see that the correlations between Q2 GDP growth and the incumbent party's popular vote share are very different depending on whether or not 2020 is included. Brief analysis about whether either correlation is actually strong. 
+```{r, echo=FALSE}
+cor(incumbent_econ_data$GDP_growth_quarterly, 
+    incumbent_econ_data$pv2p)
+cor(incumbent_econ_data_no2020$GDP_growth_quarterly, 
+    incumbent_econ_data_no2020$pv2p)
+
+```
+Let's take a look at the linear regression results: 
+```{r, echo=FALSE}
+fit2020
+fitno2020
+```
+We can interpret these results to mean that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.27 percentage points when looking at all data from 1948-2020, or by 0.74 percentage points when 2020 is excluded. In close elections, that approximately 0.5 percentage point difference between the two models can make a big difference. 
+
+All that said, I also want to highlight one stark trend in the data. Let's look at the graph from 1948-2020 again:
+
+```{r, echo=FALSE}
+incumbent_econ_post2000 <- 
+  incumbent_econ_data |>
+  filter(year >= 2000)
+
+fitpost2000 <- lm(pv2p ~ GDP_growth_quarterly, 
+               data = incumbent_econ_post2000)
+
+summarypost2000 <- summary(fitpost2000)
+
+interceptpost <- summarypost2000$coefficients[1,1]
+slopepost <- summarypost2000$coefficients[2,1]
+```
+
+```{r, echo=FALSE}
+incumbent_econ_data |> 
+  mutate(`Pre or Post 2000` = ifelse(year >= 2000, "Post-2000", "Pre-2000")) |>
+  ggplot(aes(x = GDP_growth_quarterly, y = pv2p, color = `Pre or Post 2000`)) +
+  geom_point() +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0.01, lty = 2) +
+  geom_abline(slope = slopepost, intercept = interceptpost, color = "gray") +
+  labs(x = "Second Quarter GDP Growth (%)", 
+       y = "Incumbent Party's National Popular Vote Share") + 
+  theme_bw() +
+  scale_color_manual(values = c("red", "black"))
+
+```
+
+## Economic Influence at the State Level
+
+```{r}
+# State-level data wrangling, historical trends, also just 2000s, correlations between available state economic data to consider multi-variable approach
+
+```
+
+## Testing our Models
+
+```{r}
+#summary statistics and model checking for both national and state models
+
+```
+
+
+
+
+
+
+
+
+
