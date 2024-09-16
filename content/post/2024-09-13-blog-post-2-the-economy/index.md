@@ -27,27 +27,27 @@ We can see that the historic trend lines differ heavily depending on whether 202
 Let's take a look at the linear regression results: 
 
 
-|                     | Coefficient| P-Value|
+|Q2 GDP Model         | Coefficient| P-Value|
 |:--------------------|-----------:|-------:|
 |(Intercept)          |       51.26|    0.00|
 |GDP_growth_quarterly |        0.27|    0.06|
 
 
 
-|                     | Coefficient| P-Value|
-|:--------------------|-----------:|-------:|
-|(Intercept)          |       49.38|    0.00|
-|GDP_growth_quarterly |        0.74|    0.01|
+|Q2 GDP Model, Excluding 2020 | Coefficient| P-Value|
+|:----------------------------|-----------:|-------:|
+|(Intercept)                  |       49.38|    0.00|
+|GDP_growth_quarterly         |        0.74|    0.01|
 
 The adjusted r squared for the models are 0.140 for the model including 2020 and 0.283 for the model excluding 2020. 
 
-Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.06 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28.3% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
+Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.06 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained by Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28.3% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
 
 We can interpret the 2020 exclusion model to show that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.74 percentage points. 
 
 ## The 21st Century
 
-Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically might not necessarily hold the same weight in the 21st century. 
+Though the above prediction model works somewhat well and is rooted heavily in social science research, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically might not necessarily hold the same weight in the 21st century. 
 
 
 
@@ -63,7 +63,7 @@ There are some serious issues with training a model on six (five) data points, i
 
 ## The Choice Not to Add More Predictive Variables
 
-One method we could consider to make improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. I tested several possible predictive economic variables for co-linearity and found that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and Q2 GDP growth and annual GDP. 
+One method we could consider to improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. I tested several possible predictive economic variables for co-linearity and found that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and Q2 GDP growth and annual GDP. 
  
 
 
@@ -74,6 +74,7 @@ Checking the correlations between incumbent vote share and Q2 RDPI, unemployment
 
 One could hypothesize that perhaps local economic factors could influence the incumbent two party vote share within a given state. Here, I explore that idea by using Federal Reserve Economic Data from the St. Louis Federal Reserve Bank on state level unemployment. 
 
+Below are summaries of two models, one using only state unemployment to predict incumbent vote share and the other using both state unemployment and national Q2 GDP growth. 
 
 
 
@@ -81,7 +82,8 @@ One could hypothesize that perhaps local economic factors could influence the in
 
 
 
-|                          | Coefficient| P-Value|
+
+|State Only Model          | Coefficient| P-Value|
 |:-------------------------|-----------:|-------:|
 |(Intercept)               |       48.93|    0.00|
 |avg_unemployment          |        0.21|    0.48|
@@ -138,7 +140,7 @@ One could hypothesize that perhaps local economic factors could influence the in
 
 
 
-|                          | Coefficient| P-Value|
+|State and National Model  | Coefficient| P-Value|
 |:-------------------------|-----------:|-------:|
 |(Intercept)               |       42.91|    0.00|
 |avg_unemployment          |        0.70|    0.02|
@@ -197,14 +199,14 @@ One could hypothesize that perhaps local economic factors could influence the in
 
 Adjusted R-squared values for each model are -0.081 for the state economic factor only model and 0.025 for the state and national economy prediction model.
 
-Considering models that factor in state economic conditions, it's clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.02 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
+Considering models that factor in state economic conditions, it's clear that predictive economic variables still do not fit the data entirely well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share, and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.02 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
 
 All things considered, none of the models examined here have high predictive power. If I had to predict the election based solely on the economic variables examined in this blog post, I would predict the national two-party popular vote based on national Q2 GDP growth. However, as this course goes on and I am given the opportunity to predict the election outcome on more than one predictive factor at once, I would be inclined to use the state-level model predicting on both national Q2 GDP growth and state unemployment. 
 
 ## Predicting 2024
 
 
-Using the model based solely on Q2 GDP growth, I would predict that Kamala Harris will beat Former President Trump in the two party national popular vote 51.58% to 48.42%. 
+Using the model based solely on Q2 GDP growth, I would predict that Kamala Harris will beat Former President Trump in the two-party national popular vote 51.58% to 48.42%. 
 
 Using the incomplete state and national economy model, which I hope to use as a stepping stone towards later, more complex models, the election would be overwhelmingly in Former President Trump's favor. I cannot stress enough that this model does not have anywhere near sufficient predictive power to predict the election without more variables, and is merely an incomplete model that I wanted to map out for later reference as I add more predictive variables later in the class. 
 
