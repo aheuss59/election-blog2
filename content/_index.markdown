@@ -8,10 +8,9 @@ title: Home
 
 ### Alex Heuss, Harvard College
 
-## What's all this about?
+## What is the purpose of this blog?
 
-[insert a brief description of the course and what this page is for]
-[also talk about the election more generally]
+This blog is my ongoing project for GOV 1347: Election Analytics at Harvard College. The purpose of the course is to understand what factors go into predicting election outcomes and to create a well-reasoned model explaining the election. The 2024 election cycle has been full of twists and turns already, including late game dropouts and attempted assassinations. Come back weekly to see how fundamentals, campaign choices and "game-changing" moments contribute to an election prediction model. 
 
 ## Running Blog Posts
 
