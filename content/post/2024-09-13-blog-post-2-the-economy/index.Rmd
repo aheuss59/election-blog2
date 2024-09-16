@@ -11,6 +11,7 @@ library(tidyverse)
 library(car)
 library(ggrepel)
 library(maps)
+library(jtools)
 ```
 
 ```{r, load and wrangle data, echo=FALSE, message=FALSE, warning=FALSE}
@@ -84,7 +85,7 @@ incumbent_econ_data |>
   labs(x = "Q2 GDP Growth (%)", 
        y = "Incumbent Party's National Two-Party Popular Vote Share",
        color = "", 
-       title = "Relationship Between Q2 GDP Growth and Incumbent Two-Party Popular Vote Share") + 
+       title = "Q2 GDP Growth and Incumbent Two-Party Popular Vote Share") + 
   theme_bw() + 
   scale_color_manual(values = c("darkorange", "darkturquoise"))
 
@@ -148,10 +149,12 @@ incumbent_econ_data |>
   scale_color_manual(values = c("darkorange", "darkturquoise"))
 
 ```
+
 If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical model. 
 
-We can look too at the correlations between Q2 GDP growth and incumbent party vote share, as well as the lines of best fit for 21st century elections with and without 2020. 
-```{r}
+We can look too at the lines of best fit for 21st century elections with and without 2020. 
+
+```{r, echo=FALSE}
 fitpost2000
 fitpostno2020
 ```
@@ -163,7 +166,7 @@ There are some serious issues with training a model on six (five) data points, i
 
 One method we could consider to make improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. I tested several possible predictive economic variables for co-linearity and found that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and Q2 GDP growth and annual GDP. 
  
-```{r, correlations between econ vars, echo=FALSE, message=FALSE}
+```{r, correlations between econ vars, echo=FALSE, message=FALSE, results=FALSE}
 # Correlations between economic vars to see which ones are not co-linear if any
 cor(fred_data$GDP_growth_quarterly, 
     fred_data$RDPI_growth_quarterly, use = "complete.obs")
@@ -177,7 +180,7 @@ cor(fred_data$GDP,
     fred_data$GDP_growth_quarterly, use = "complete.obs")
 ```
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, results=FALSE}
 cor(incumbent_econ_data$RDPI_growth_quarterly,
     incumbent_econ_data$pv2p)
 cor(incumbent_econ_data$unemployment,
@@ -191,12 +194,12 @@ Checking the correlations between incumbent vote share and Q2 RDPI, unemployment
 
 One could hypothesize that perhaps local economic factors could influence the incumbent two party vote share within a given state. Here, I explore that idea by using Federal Reserve Economic Data from the St. Louis Federal Reserve Bank on state level unemployment. 
 
-```{r, intitial data loading, echo=FALSE}
+```{r, intitial data loading, echo=FALSE, message=FALSE, warning=FALSE}
 state_data <- read_csv("clean_wide_state_2pv_1948_2020.csv")
 state_econ_data <- read_csv("Historical_State_Unemployment.csv")
 ```
 
-```{r, data wrangling, echo=FALSE}
+```{r, data wrangling, echo=FALSE, message=FALSE}
 clean_state_econ_data <- 
   state_econ_data |>
   mutate(year = format(as.Date(date), "%Y")) |>
@@ -229,7 +232,7 @@ fit_state_no2020 <- lm(incumbent_pv2p ~ avg_unemployment + state, data = merged_
 fit_stateandnat_no2020 <- lm(incumbent_pv2p ~ avg_unemployment + GDP_growth_quarterly + state, data = merged_state_data_no2020)
 ```
 
-```{r, summary statistics for various models}
+```{r, summary statistics for various models, echo=FALSE}
 #summary statistics and model checking for both national and state models
 summary(fit_state_no2020)
 summary(fit_stateandnat_no2020)
@@ -241,7 +244,7 @@ All things considered, none of the models examined here have high predictive pow
 
 ## Predicting 2024
 
-```{r, national vote GDP only, echo=FALSE, message= FALSE}
+```{r, national vote GDP only, echo=FALSE, message= FALSE, results=FALSE}
 GDP_new <- fred_data |> 
   filter(year == 2024 & quarter == 2) |> 
   select(GDP_growth_quarterly)
@@ -306,7 +309,9 @@ ec_state_predictions |>
   knitr::kable(col.names = c("Candidate", "Electoral College Votes"))
 
 ```
+
 Using this model, as it stands now, to predict the election, Trump would completely sweep the election, winning 401 electoral votes to Harris' 137. 
+
 
 ## Conclusion
 

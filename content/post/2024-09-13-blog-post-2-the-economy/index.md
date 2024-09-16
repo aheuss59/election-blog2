@@ -79,13 +79,11 @@ Though the above prediction model works somewhat well, I do want to take a momen
 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+
 If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical model. 
 
-We can look too at the correlations between Q2 GDP growth and incumbent party vote share, as well as the lines of best fit for 21st century elections with and without 2020. 
+We can look too at the lines of best fit for 21st century elections with and without 2020. 
 
-``` r
-fitpost2000
-```
 
 ```
 ## 
@@ -95,10 +93,6 @@ fitpost2000
 ## Coefficients:
 ##          (Intercept)  GDP_growth_quarterly  
 ##             49.90911               0.07468
-```
-
-``` r
-fitpostno2020
 ```
 
 ```
@@ -119,38 +113,8 @@ There are some serious issues with training a model on six (five) data points, i
 One method we could consider to make improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. I tested several possible predictive economic variables for co-linearity and found that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and Q2 GDP growth and annual GDP. 
  
 
-```
-## [1] 0.01976475
-```
-
-```
-## [1] 0.9859192
-```
-
-```
-## [1] -0.001814525
-```
-
-```
-## [1] 0.9455197
-```
-
-```
-## [1] -0.1195312
-```
 
 
-```
-## [1] -0.05507567
-```
-
-```
-## [1] -0.1368118
-```
-
-```
-## [1] -0.2729717
-```
 Checking the correlations between incumbent vote share and Q2 RDPI, unemployment and annual GDP, I found that all correlations are weak and negative. Because of this, I decided to keep my model simple and prioritize not over-fitting by using only Q2 GDP growth. 
 
 ## Economic Influence at the State Level
@@ -158,49 +122,11 @@ Checking the correlations between incumbent vote share and Q2 RDPI, unemployment
 One could hypothesize that perhaps local economic factors could influence the incumbent two party vote share within a given state. Here, I explore that idea by using Federal Reserve Economic Data from the St. Louis Federal Reserve Bank on state level unemployment. 
 
 
-```
-## Rows: 959 Columns: 14
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr  (1): state
-## dbl (13): year, D_pv, R_pv, D_pv2p, R_pv2p, D_pv_lag1, R_pv_lag1, D_pv2p_lag...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 29733 Columns: 3
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr  (1): state
-## dbl  (1): unemployment
-## date (1): date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-
-```
-## `summarise()` has grouped output by 'state'. You can override using the
-## `.groups` argument.
-```
 
 
 
 
-``` r
-#summary statistics and model checking for both national and state models
-summary(fit_state_no2020)
-```
+
 
 ```
 ## 
@@ -272,10 +198,6 @@ summary(fit_state_no2020)
 ##   (4 observations deleted due to missingness)
 ## Multiple R-squared:  0.01852,	Adjusted R-squared:  -0.0806 
 ## F-statistic: 0.1868 on 51 and 505 DF,  p-value: 1
-```
-
-``` r
-summary(fit_stateandnat_no2020)
 ```
 
 ```
@@ -359,10 +281,6 @@ All things considered, none of the models examined here have high predictive pow
 ## Predicting 2024
 
 
-```
-##        1 
-## 51.58486
-```
 Using the model based solely on Q2 GDP growth, I would predict that Kamala Harris will beat Former President Trump in the two party national popular vote 51.58% to 48.42%. 
 
 Using the incomplete state and national economy model, which I hope to use as a stepping stone towards later, more complex models, the election would be overwhelmingly in Former President Trump's favor. I cannot stress enough that this model does not have anywhere near sufficient predictive power to predict the election without more variables, and is merely an incomplete model that I wanted to map out for later reference as I add more predictive variables later in the class. 
@@ -377,7 +295,9 @@ Using the incomplete state and national economy model, which I hope to use as a 
 |:---------|-----------------------:|
 |Harris    |                     137|
 |Trump     |                     401|
+
 Using this model, as it stands now, to predict the election, Trump would completely sweep the election, winning 401 electoral votes to Harris' 137. 
+
 
 ## Conclusion
 
