@@ -40,217 +40,619 @@
 <img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/initial graph with both fit lines-1.png" width="672" />
 <p>We can see that the historic trend lines differ heavily depending on whether 2020 is included or not. When 2020 is included, the slope of the line (and the impact of Q2 GDP growth on the popular vote) is diluted.</p>
 <p>Let&rsquo;s take a look at the linear regression results:</p>
-<pre><code>## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -6.7666 -3.3847 -0.7697  2.9121  8.8809 
-## 
-## Coefficients:
-##                      Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)           51.2580     1.1399  44.968   &lt;2e-16 ***
-## GDP_growth_quarterly   0.2739     0.1380   1.985   0.0636 .  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 4.834 on 17 degrees of freedom
-## Multiple R-squared:  0.1881,	Adjusted R-squared:  0.1403 
-## F-statistic: 3.938 on 1 and 17 DF,  p-value: 0.06358
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">Coefficient</th>
+<th style="text-align:right">P-Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">(Intercept)</td>
+<td style="text-align:right">51.26</td>
+<td style="text-align:right">0.00</td>
+</tr>
+<tr>
+<td style="text-align:left">GDP_growth_quarterly</td>
+<td style="text-align:right">0.27</td>
+<td style="text-align:right">0.06</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">Coefficient</th>
+<th style="text-align:right">P-Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">(Intercept)</td>
+<td style="text-align:right">49.38</td>
+<td style="text-align:right">0.00</td>
+</tr>
+<tr>
+<td style="text-align:left">GDP_growth_quarterly</td>
+<td style="text-align:right">0.74</td>
+<td style="text-align:right">0.01</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-r">summary(fit2020)$adj.r.squared
 </code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data_no2020)
-## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -6.237 -4.160  0.450  1.904  8.728 
-## 
-## Coefficients:
-##                      Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)           49.3751     1.4163  34.862   &lt;2e-16 ***
-## GDP_growth_quarterly   0.7366     0.2655   2.774   0.0135 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 4.463 on 16 degrees of freedom
-## Multiple R-squared:  0.3248,	Adjusted R-squared:  0.2826 
-## F-statistic: 7.697 on 1 and 16 DF,  p-value: 0.01354
+<pre><code>## [1] 0.1403326
 </code></pre>
-<p>Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.05 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020.</p>
+<pre><code class="language-r">summary(fitno2020)$adj.r.squared
+</code></pre>
+<pre><code>## [1] 0.282607
+</code></pre>
+<p>The adjusted r squared for the models are 0.140 for the model including 2020 and 0.283 for the model excluding 2020.</p>
+<p>Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.06 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28.3% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020.</p>
 <p>We can interpret the 2020 exclusion model to show that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.74 percentage points.</p>
-<h2 id="the-relationship-fades-in-the-21st-century">The Relationship Fades in the 21st Century</h2>
-<p>Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically are not the same as the trends in the 21st century.</p>
-<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-1-1.png" width="672" />
-<p>If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical model.</p>
-<p>We can look too at the lines of best fit for 21st century elections with and without 2020.</p>
-<pre><code>## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_post2000)
-## 
-## Coefficients:
-##          (Intercept)  GDP_growth_quarterly  
-##             49.90911               0.07468
-</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_postno2020)
-## 
-## Coefficients:
-##          (Intercept)  GDP_growth_quarterly  
-##             50.28461              -0.03647
-</code></pre>
-<p>Interpreting these results, for the 2000-2020 model we can see a smaller effect size between Q2 GDP growth and incumbent vote share, with a one percentage point increase in Q2 GDP growth corresponding to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.</p>
-<p>There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class.</p>
+<h2 id="the-21st-century">The 21st Century</h2>
+<p>Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically might not necessarily hold the same weight in the 21st century.</p>
+<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<p>If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical models examines above.</p>
+<p>Interpreting these results, for the 2000-2020 model we see that a one percentage point increase in Q2 GDP growth corresponds to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.</p>
+<p>There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention visually to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class.</p>
 <h2 id="the-choice-not-to-add-more-predictive-variables">The Choice Not to Add More Predictive Variables</h2>
 <p>One method we could consider to make improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. I tested several possible predictive economic variables for co-linearity and found that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and Q2 GDP growth and annual GDP.</p>
 <p>Checking the correlations between incumbent vote share and Q2 RDPI, unemployment and annual GDP, I found that all correlations are weak and negative. Because of this, I decided to keep my model simple and prioritize not over-fitting by using only Q2 GDP growth.</p>
 <h2 id="economic-influence-at-the-state-level">Economic Influence at the State Level</h2>
 <p>One could hypothesize that perhaps local economic factors could influence the incumbent two party vote share within a given state. Here, I explore that idea by using Federal Reserve Economic Data from the St. Louis Federal Reserve Bank on state level unemployment.</p>
-<pre><code>## 
-## Call:
-## lm(formula = incumbent_pv2p ~ avg_unemployment + state, data = merged_state_data_no2020)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -49.635  -6.367   0.077   6.850  39.590 
-## 
-## Coefficients:
-##                           Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)               48.92934    3.90251  12.538   &lt;2e-16 ***
-## avg_unemployment           0.20958    0.29972   0.699    0.485    
-## stateAlaska                0.57445    4.66226   0.123    0.902    
-## stateArizona               1.62246    4.66004   0.348    0.728    
-## stateArkansas             -1.31766    4.65987  -0.283    0.777    
-## stateCalifornia            1.09370    4.65625   0.235    0.814    
-## stateColorado              0.46022    4.68306   0.098    0.922    
-## stateConnecticut           2.22271    4.67567   0.475    0.635    
-## stateDelaware              1.86874    4.67835   0.399    0.690    
-## stateDistrict Of Columbia  5.87138    5.28131   1.112    0.267    
-## stateFlorida               1.61508    4.66251   0.346    0.729    
-## stateGeorgia               0.56582    4.66291   0.121    0.903    
-## stateHawaii                2.77025    4.70033   0.589    0.556    
-## stateIdaho                -0.02391    4.66829  -0.005    0.996    
-## stateIllinois              0.63050    4.65549   0.135    0.892    
-## stateIndiana               0.12413    4.66411   0.027    0.979    
-## stateIowa                 -1.00700    4.71383  -0.214    0.831    
-## stateKansas               -0.34841    4.71094  -0.074    0.941    
-## stateKentucky             -0.85657    4.65762  -0.184    0.854    
-## stateLouisiana             0.39096    4.65538   0.084    0.933    
-## stateMaine                 1.75874    4.67095   0.377    0.707    
-## stateMaryland              1.73052    4.68391   0.369    0.712    
-## stateMassachusetts         0.91311    4.67567   0.195    0.845    
-## stateMichigan              0.55718    4.66399   0.119    0.905    
-## stateMinnesota            -0.61894    4.69838  -0.132    0.895    
-## stateMississippi           1.00385    4.65611   0.216    0.829    
-## stateMissouri             -0.97409    4.66761  -0.209    0.835    
-## stateMontana              -1.86430    4.67138  -0.399    0.690    
-## stateNebraska              0.90179    4.77894   0.189    0.850    
-## stateNevada                0.32201    4.65677   0.069    0.945    
-## stateNew Hampshire         2.21532    4.72586   0.469    0.639    
-## stateNew Jersey            2.71400    4.65857   0.583    0.560    
-## stateNew Mexico            0.16725    4.65566   0.036    0.971    
-## stateNew York              1.49005    4.65643   0.320    0.749    
-## stateNorth Carolina        0.59340    4.66896   0.127    0.899    
-## stateNorth Dakota         -1.36005    4.75279  -0.286    0.775    
-## stateOhio                  0.18686    4.65639   0.040    0.968    
-## stateOklahoma              0.04922    4.69814   0.010    0.992    
-## stateOregon               -0.55570    4.65547  -0.119    0.905    
-## statePennsylvania         -0.53099    4.65810  -0.114    0.909    
-## stateRhode Island          1.26457    4.65919   0.271    0.786    
-## stateSouth Carolina        0.68932    4.65917   0.148    0.882    
-## stateSouth Dakota         -1.47174    4.76518  -0.309    0.758    
-## stateTennessee            -0.47570    4.66171  -0.102    0.919    
-## stateTexas                 0.26694    4.66730   0.057    0.954    
-## stateUtah                  1.03541    4.70685   0.220    0.826    
-## stateVermont               2.43096    4.70585   0.517    0.606    
-## stateVirginia              1.91612    4.70850   0.407    0.684    
-## stateWashington            0.32783    4.65571   0.070    0.944    
-## stateWest Virginia        -3.19595    4.66829  -0.685    0.494    
-## stateWisconsin            -0.16797    4.68584  -0.036    0.971    
-## stateWyoming              -0.93921    4.70339  -0.200    0.842    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 10.92 on 505 degrees of freedom
-##   (4 observations deleted due to missingness)
-## Multiple R-squared:  0.01852,	Adjusted R-squared:  -0.0806 
-## F-statistic: 0.1868 on 51 and 505 DF,  p-value: 1
-</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = incumbent_pv2p ~ avg_unemployment + GDP_growth_quarterly + 
-##     state, data = merged_state_data_no2020)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -48.056  -6.027   0.236   6.336  42.376 
-## 
-## Coefficients:
-##                           Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)               42.90733    3.79491  11.307  &lt; 2e-16 ***
-## avg_unemployment           0.69820    0.29223   2.389   0.0172 *  
-## GDP_growth_quarterly       0.82341    0.11058   7.446 4.19e-13 ***
-## stateAlaska                0.16171    4.42992   0.037   0.9709    
-## stateArizona               1.96190    4.42770   0.443   0.6579    
-## stateArkansas             -0.98450    4.42753  -0.222   0.8241    
-## stateCalifornia            0.94711    4.42391   0.214   0.8306    
-## stateColorado              1.28903    4.45073   0.290   0.7722    
-## stateConnecticut           2.93195    4.44333   0.660   0.5096    
-## stateDelaware              2.62352    4.44601   0.590   0.5554    
-## stateDistrict Of Columbia  4.99472    5.01911   0.995   0.3201    
-## stateFlorida               2.03522    4.43017   0.459   0.6461    
-## stateGeorgia               0.99744    4.43057   0.225   0.8220    
-## stateHawaii                3.82746    4.46800   0.857   0.3921    
-## stateIdaho                 0.54171    4.43596   0.122   0.9029    
-## stateIllinois              0.68195    4.42315   0.154   0.8775    
-## stateIndiana               0.58907    4.43177   0.133   0.8943    
-## stateIowa                  0.19938    4.48150   0.044   0.9645    
-## stateKansas                0.82762    4.47861   0.185   0.8535    
-## stateKentucky             -0.62114    4.42528  -0.140   0.8884    
-## stateLouisiana             0.38652    4.42304   0.087   0.9304    
-## stateMaine                 2.37989    4.43861   0.536   0.5921    
-## stateMaryland              2.57191    4.45157   0.578   0.5637    
-## stateMassachusetts         1.62235    4.44333   0.365   0.7152    
-## stateMichigan              0.09557    4.43165   0.022   0.9828    
-## stateMinnesota             0.41495    4.46605   0.093   0.9260    
-## stateMississippi           0.86948    4.42377   0.197   0.8443    
-## stateMissouri             -0.42364    4.43527  -0.096   0.9239    
-## stateMontana              -1.23464    4.43904  -0.278   0.7810    
-## stateNebraska              2.66194    4.54658   0.585   0.5585    
-## stateNevada                0.50709    4.42443   0.115   0.9088    
-## stateNew Hampshire         3.54090    4.49353   0.788   0.4311    
-## stateNew Jersey            2.99496    4.42623   0.677   0.4989    
-## stateNew Mexico            0.25054    4.42332   0.057   0.9549    
-## stateNew York              1.65070    4.42408   0.373   0.7092    
-## stateNorth Carolina        1.17345    4.43662   0.264   0.7915    
-## stateNorth Dakota          0.20059    4.52045   0.044   0.9646    
-## stateOhio                  0.34492    4.42405   0.078   0.9379    
-## stateOklahoma              1.08015    4.46581   0.242   0.8090    
-## stateOregon               -0.60308    4.42313  -0.136   0.8916    
-## statePennsylvania         -0.27187    4.42575  -0.061   0.9510    
-## stateRhode Island          1.57144    4.42685   0.355   0.7228    
-## stateSouth Carolina        0.99545    4.42683   0.225   0.8222    
-## stateSouth Dakota          0.18625    4.53283   0.041   0.9672    
-## stateTennessee            -0.07998    4.42937  -0.018   0.9856    
-## stateTexas                 0.81035    4.43496   0.183   0.8551    
-## stateUtah                  2.16702    4.47452   0.484   0.6284    
-## stateVermont               3.55146    4.47352   0.794   0.4276    
-## stateVirginia              3.06587    4.47617   0.685   0.4937    
-## stateWashington            0.41741    4.42336   0.094   0.9249    
-## stateWest Virginia        -3.76157    4.43596  -0.848   0.3969    
-## stateWisconsin             0.70156    4.45351   0.158   0.8749    
-## stateWyoming               0.15354    4.47106   0.034   0.9726    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 10.37 on 504 degrees of freedom
-##   (4 observations deleted due to missingness)
-## Multiple R-squared:  0.1158,	Adjusted R-squared:  0.02457 
-## F-statistic: 1.269 on 52 and 504 DF,  p-value: 0.1057
-</code></pre>
-<p>Considering models that factor in state economic conditions, it&rsquo;s clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.01 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">Coefficient</th>
+<th style="text-align:right">P-Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">(Intercept)</td>
+<td style="text-align:right">48.93</td>
+<td style="text-align:right">0.00</td>
+</tr>
+<tr>
+<td style="text-align:left">avg_unemployment</td>
+<td style="text-align:right">0.21</td>
+<td style="text-align:right">0.48</td>
+</tr>
+<tr>
+<td style="text-align:left">stateAlaska</td>
+<td style="text-align:right">0.57</td>
+<td style="text-align:right">0.90</td>
+</tr>
+<tr>
+<td style="text-align:left">stateArizona</td>
+<td style="text-align:right">1.62</td>
+<td style="text-align:right">0.73</td>
+</tr>
+<tr>
+<td style="text-align:left">stateArkansas</td>
+<td style="text-align:right">-1.32</td>
+<td style="text-align:right">0.78</td>
+</tr>
+<tr>
+<td style="text-align:left">stateCalifornia</td>
+<td style="text-align:right">1.09</td>
+<td style="text-align:right">0.81</td>
+</tr>
+<tr>
+<td style="text-align:left">stateColorado</td>
+<td style="text-align:right">0.46</td>
+<td style="text-align:right">0.92</td>
+</tr>
+<tr>
+<td style="text-align:left">stateConnecticut</td>
+<td style="text-align:right">2.22</td>
+<td style="text-align:right">0.63</td>
+</tr>
+<tr>
+<td style="text-align:left">stateDelaware</td>
+<td style="text-align:right">1.87</td>
+<td style="text-align:right">0.69</td>
+</tr>
+<tr>
+<td style="text-align:left">stateDistrict Of Columbia</td>
+<td style="text-align:right">5.87</td>
+<td style="text-align:right">0.27</td>
+</tr>
+<tr>
+<td style="text-align:left">stateFlorida</td>
+<td style="text-align:right">1.62</td>
+<td style="text-align:right">0.73</td>
+</tr>
+<tr>
+<td style="text-align:left">stateGeorgia</td>
+<td style="text-align:right">0.57</td>
+<td style="text-align:right">0.90</td>
+</tr>
+<tr>
+<td style="text-align:left">stateHawaii</td>
+<td style="text-align:right">2.77</td>
+<td style="text-align:right">0.56</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIdaho</td>
+<td style="text-align:right">-0.02</td>
+<td style="text-align:right">1.00</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIllinois</td>
+<td style="text-align:right">0.63</td>
+<td style="text-align:right">0.89</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIndiana</td>
+<td style="text-align:right">0.12</td>
+<td style="text-align:right">0.98</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIowa</td>
+<td style="text-align:right">-1.01</td>
+<td style="text-align:right">0.83</td>
+</tr>
+<tr>
+<td style="text-align:left">stateKansas</td>
+<td style="text-align:right">-0.35</td>
+<td style="text-align:right">0.94</td>
+</tr>
+<tr>
+<td style="text-align:left">stateKentucky</td>
+<td style="text-align:right">-0.86</td>
+<td style="text-align:right">0.85</td>
+</tr>
+<tr>
+<td style="text-align:left">stateLouisiana</td>
+<td style="text-align:right">0.39</td>
+<td style="text-align:right">0.93</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMaine</td>
+<td style="text-align:right">1.76</td>
+<td style="text-align:right">0.71</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMaryland</td>
+<td style="text-align:right">1.73</td>
+<td style="text-align:right">0.71</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMassachusetts</td>
+<td style="text-align:right">0.91</td>
+<td style="text-align:right">0.85</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMichigan</td>
+<td style="text-align:right">0.56</td>
+<td style="text-align:right">0.90</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMinnesota</td>
+<td style="text-align:right">-0.62</td>
+<td style="text-align:right">0.90</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMississippi</td>
+<td style="text-align:right">1.00</td>
+<td style="text-align:right">0.83</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMissouri</td>
+<td style="text-align:right">-0.97</td>
+<td style="text-align:right">0.83</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMontana</td>
+<td style="text-align:right">-1.86</td>
+<td style="text-align:right">0.69</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNebraska</td>
+<td style="text-align:right">0.90</td>
+<td style="text-align:right">0.85</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNevada</td>
+<td style="text-align:right">0.32</td>
+<td style="text-align:right">0.94</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew Hampshire</td>
+<td style="text-align:right">2.22</td>
+<td style="text-align:right">0.64</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew Jersey</td>
+<td style="text-align:right">2.71</td>
+<td style="text-align:right">0.56</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew Mexico</td>
+<td style="text-align:right">0.17</td>
+<td style="text-align:right">0.97</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew York</td>
+<td style="text-align:right">1.49</td>
+<td style="text-align:right">0.75</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNorth Carolina</td>
+<td style="text-align:right">0.59</td>
+<td style="text-align:right">0.90</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNorth Dakota</td>
+<td style="text-align:right">-1.36</td>
+<td style="text-align:right">0.77</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOhio</td>
+<td style="text-align:right">0.19</td>
+<td style="text-align:right">0.97</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOklahoma</td>
+<td style="text-align:right">0.05</td>
+<td style="text-align:right">0.99</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOregon</td>
+<td style="text-align:right">-0.56</td>
+<td style="text-align:right">0.91</td>
+</tr>
+<tr>
+<td style="text-align:left">statePennsylvania</td>
+<td style="text-align:right">-0.53</td>
+<td style="text-align:right">0.91</td>
+</tr>
+<tr>
+<td style="text-align:left">stateRhode Island</td>
+<td style="text-align:right">1.26</td>
+<td style="text-align:right">0.79</td>
+</tr>
+<tr>
+<td style="text-align:left">stateSouth Carolina</td>
+<td style="text-align:right">0.69</td>
+<td style="text-align:right">0.88</td>
+</tr>
+<tr>
+<td style="text-align:left">stateSouth Dakota</td>
+<td style="text-align:right">-1.47</td>
+<td style="text-align:right">0.76</td>
+</tr>
+<tr>
+<td style="text-align:left">stateTennessee</td>
+<td style="text-align:right">-0.48</td>
+<td style="text-align:right">0.92</td>
+</tr>
+<tr>
+<td style="text-align:left">stateTexas</td>
+<td style="text-align:right">0.27</td>
+<td style="text-align:right">0.95</td>
+</tr>
+<tr>
+<td style="text-align:left">stateUtah</td>
+<td style="text-align:right">1.04</td>
+<td style="text-align:right">0.83</td>
+</tr>
+<tr>
+<td style="text-align:left">stateVermont</td>
+<td style="text-align:right">2.43</td>
+<td style="text-align:right">0.61</td>
+</tr>
+<tr>
+<td style="text-align:left">stateVirginia</td>
+<td style="text-align:right">1.92</td>
+<td style="text-align:right">0.68</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWashington</td>
+<td style="text-align:right">0.33</td>
+<td style="text-align:right">0.94</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWest Virginia</td>
+<td style="text-align:right">-3.20</td>
+<td style="text-align:right">0.49</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWisconsin</td>
+<td style="text-align:right">-0.17</td>
+<td style="text-align:right">0.97</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWyoming</td>
+<td style="text-align:right">-0.94</td>
+<td style="text-align:right">0.84</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:right">Coefficient</th>
+<th style="text-align:right">P-Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">(Intercept)</td>
+<td style="text-align:right">42.91</td>
+<td style="text-align:right">0.00</td>
+</tr>
+<tr>
+<td style="text-align:left">avg_unemployment</td>
+<td style="text-align:right">0.70</td>
+<td style="text-align:right">0.02</td>
+</tr>
+<tr>
+<td style="text-align:left">GDP_growth_quarterly</td>
+<td style="text-align:right">0.82</td>
+<td style="text-align:right">0.00</td>
+</tr>
+<tr>
+<td style="text-align:left">stateAlaska</td>
+<td style="text-align:right">0.16</td>
+<td style="text-align:right">0.97</td>
+</tr>
+<tr>
+<td style="text-align:left">stateArizona</td>
+<td style="text-align:right">1.96</td>
+<td style="text-align:right">0.66</td>
+</tr>
+<tr>
+<td style="text-align:left">stateArkansas</td>
+<td style="text-align:right">-0.98</td>
+<td style="text-align:right">0.82</td>
+</tr>
+<tr>
+<td style="text-align:left">stateCalifornia</td>
+<td style="text-align:right">0.95</td>
+<td style="text-align:right">0.83</td>
+</tr>
+<tr>
+<td style="text-align:left">stateColorado</td>
+<td style="text-align:right">1.29</td>
+<td style="text-align:right">0.77</td>
+</tr>
+<tr>
+<td style="text-align:left">stateConnecticut</td>
+<td style="text-align:right">2.93</td>
+<td style="text-align:right">0.51</td>
+</tr>
+<tr>
+<td style="text-align:left">stateDelaware</td>
+<td style="text-align:right">2.62</td>
+<td style="text-align:right">0.56</td>
+</tr>
+<tr>
+<td style="text-align:left">stateDistrict Of Columbia</td>
+<td style="text-align:right">4.99</td>
+<td style="text-align:right">0.32</td>
+</tr>
+<tr>
+<td style="text-align:left">stateFlorida</td>
+<td style="text-align:right">2.04</td>
+<td style="text-align:right">0.65</td>
+</tr>
+<tr>
+<td style="text-align:left">stateGeorgia</td>
+<td style="text-align:right">1.00</td>
+<td style="text-align:right">0.82</td>
+</tr>
+<tr>
+<td style="text-align:left">stateHawaii</td>
+<td style="text-align:right">3.83</td>
+<td style="text-align:right">0.39</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIdaho</td>
+<td style="text-align:right">0.54</td>
+<td style="text-align:right">0.90</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIllinois</td>
+<td style="text-align:right">0.68</td>
+<td style="text-align:right">0.88</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIndiana</td>
+<td style="text-align:right">0.59</td>
+<td style="text-align:right">0.89</td>
+</tr>
+<tr>
+<td style="text-align:left">stateIowa</td>
+<td style="text-align:right">0.20</td>
+<td style="text-align:right">0.96</td>
+</tr>
+<tr>
+<td style="text-align:left">stateKansas</td>
+<td style="text-align:right">0.83</td>
+<td style="text-align:right">0.85</td>
+</tr>
+<tr>
+<td style="text-align:left">stateKentucky</td>
+<td style="text-align:right">-0.62</td>
+<td style="text-align:right">0.89</td>
+</tr>
+<tr>
+<td style="text-align:left">stateLouisiana</td>
+<td style="text-align:right">0.39</td>
+<td style="text-align:right">0.93</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMaine</td>
+<td style="text-align:right">2.38</td>
+<td style="text-align:right">0.59</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMaryland</td>
+<td style="text-align:right">2.57</td>
+<td style="text-align:right">0.56</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMassachusetts</td>
+<td style="text-align:right">1.62</td>
+<td style="text-align:right">0.72</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMichigan</td>
+<td style="text-align:right">0.10</td>
+<td style="text-align:right">0.98</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMinnesota</td>
+<td style="text-align:right">0.41</td>
+<td style="text-align:right">0.93</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMississippi</td>
+<td style="text-align:right">0.87</td>
+<td style="text-align:right">0.84</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMissouri</td>
+<td style="text-align:right">-0.42</td>
+<td style="text-align:right">0.92</td>
+</tr>
+<tr>
+<td style="text-align:left">stateMontana</td>
+<td style="text-align:right">-1.23</td>
+<td style="text-align:right">0.78</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNebraska</td>
+<td style="text-align:right">2.66</td>
+<td style="text-align:right">0.56</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNevada</td>
+<td style="text-align:right">0.51</td>
+<td style="text-align:right">0.91</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew Hampshire</td>
+<td style="text-align:right">3.54</td>
+<td style="text-align:right">0.43</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew Jersey</td>
+<td style="text-align:right">2.99</td>
+<td style="text-align:right">0.50</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew Mexico</td>
+<td style="text-align:right">0.25</td>
+<td style="text-align:right">0.95</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNew York</td>
+<td style="text-align:right">1.65</td>
+<td style="text-align:right">0.71</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNorth Carolina</td>
+<td style="text-align:right">1.17</td>
+<td style="text-align:right">0.79</td>
+</tr>
+<tr>
+<td style="text-align:left">stateNorth Dakota</td>
+<td style="text-align:right">0.20</td>
+<td style="text-align:right">0.96</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOhio</td>
+<td style="text-align:right">0.34</td>
+<td style="text-align:right">0.94</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOklahoma</td>
+<td style="text-align:right">1.08</td>
+<td style="text-align:right">0.81</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOregon</td>
+<td style="text-align:right">-0.60</td>
+<td style="text-align:right">0.89</td>
+</tr>
+<tr>
+<td style="text-align:left">statePennsylvania</td>
+<td style="text-align:right">-0.27</td>
+<td style="text-align:right">0.95</td>
+</tr>
+<tr>
+<td style="text-align:left">stateRhode Island</td>
+<td style="text-align:right">1.57</td>
+<td style="text-align:right">0.72</td>
+</tr>
+<tr>
+<td style="text-align:left">stateSouth Carolina</td>
+<td style="text-align:right">1.00</td>
+<td style="text-align:right">0.82</td>
+</tr>
+<tr>
+<td style="text-align:left">stateSouth Dakota</td>
+<td style="text-align:right">0.19</td>
+<td style="text-align:right">0.97</td>
+</tr>
+<tr>
+<td style="text-align:left">stateTennessee</td>
+<td style="text-align:right">-0.08</td>
+<td style="text-align:right">0.99</td>
+</tr>
+<tr>
+<td style="text-align:left">stateTexas</td>
+<td style="text-align:right">0.81</td>
+<td style="text-align:right">0.86</td>
+</tr>
+<tr>
+<td style="text-align:left">stateUtah</td>
+<td style="text-align:right">2.17</td>
+<td style="text-align:right">0.63</td>
+</tr>
+<tr>
+<td style="text-align:left">stateVermont</td>
+<td style="text-align:right">3.55</td>
+<td style="text-align:right">0.43</td>
+</tr>
+<tr>
+<td style="text-align:left">stateVirginia</td>
+<td style="text-align:right">3.07</td>
+<td style="text-align:right">0.49</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWashington</td>
+<td style="text-align:right">0.42</td>
+<td style="text-align:right">0.92</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWest Virginia</td>
+<td style="text-align:right">-3.76</td>
+<td style="text-align:right">0.40</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWisconsin</td>
+<td style="text-align:right">0.70</td>
+<td style="text-align:right">0.87</td>
+</tr>
+<tr>
+<td style="text-align:left">stateWyoming</td>
+<td style="text-align:right">0.15</td>
+<td style="text-align:right">0.97</td>
+</tr>
+</tbody>
+</table>
+<p>Adjusted R-squared values for each model are -0.081 for the state economic factor only model and 0.025 for the state and national economy prediction model.</p>
+<p>Considering models that factor in state economic conditions, it&rsquo;s clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.02 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power.</p>
 <p>All things considered, none of the models examined here have high predictive power. If I had to predict the election based solely on the economic variables examined in this blog post, I would predict the national two-party popular vote based on national Q2 GDP growth. However, as this course goes on and I am given the opportunity to predict the election outcome on more than one predictive factor at once, I would be inclined to use the state-level model predicting on both national Q2 GDP growth and state unemployment.</p>
 <h2 id="predicting-2024">Predicting 2024</h2>
 <p>Using the model based solely on Q2 GDP growth, I would predict that Kamala Harris will beat Former President Trump in the two party national popular vote 51.58% to 48.42%.</p>

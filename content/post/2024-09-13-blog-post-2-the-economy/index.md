@@ -27,86 +27,54 @@ We can see that the historic trend lines differ heavily depending on whether 202
 Let's take a look at the linear regression results: 
 
 
-```
-## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -6.7666 -3.3847 -0.7697  2.9121  8.8809 
-## 
-## Coefficients:
-##                      Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)           51.2580     1.1399  44.968   <2e-16 ***
-## GDP_growth_quarterly   0.2739     0.1380   1.985   0.0636 .  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 4.834 on 17 degrees of freedom
-## Multiple R-squared:  0.1881,	Adjusted R-squared:  0.1403 
-## F-statistic: 3.938 on 1 and 17 DF,  p-value: 0.06358
+|                     | Coefficient| P-Value|
+|:--------------------|-----------:|-------:|
+|(Intercept)          |       51.26|    0.00|
+|GDP_growth_quarterly |        0.27|    0.06|
+
+
+
+|                     | Coefficient| P-Value|
+|:--------------------|-----------:|-------:|
+|(Intercept)          |       49.38|    0.00|
+|GDP_growth_quarterly |        0.74|    0.01|
+
+``` r
+summary(fit2020)$adj.r.squared
 ```
 
 ```
-## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data_no2020)
-## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -6.237 -4.160  0.450  1.904  8.728 
-## 
-## Coefficients:
-##                      Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)           49.3751     1.4163  34.862   <2e-16 ***
-## GDP_growth_quarterly   0.7366     0.2655   2.774   0.0135 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 4.463 on 16 degrees of freedom
-## Multiple R-squared:  0.3248,	Adjusted R-squared:  0.2826 
-## F-statistic: 7.697 on 1 and 16 DF,  p-value: 0.01354
+## [1] 0.1403326
 ```
-Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.05 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
+
+``` r
+summary(fitno2020)$adj.r.squared
+```
+
+```
+## [1] 0.282607
+```
+The adjusted r squared for the models are 0.140 for the model including 2020 and 0.283 for the model excluding 2020. 
+
+Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.06 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28.3% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
 
 We can interpret the 2020 exclusion model to show that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.74 percentage points. 
 
-## The Relationship Fades in the 21st Century
+## The 21st Century
 
-Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically are not the same as the trends in the 21st century. 
-
-
-
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" />
-
-If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical model. 
-
-We can look too at the lines of best fit for 21st century elections with and without 2020. 
+Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically might not necessarily hold the same weight in the 21st century. 
 
 
-```
-## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_post2000)
-## 
-## Coefficients:
-##          (Intercept)  GDP_growth_quarterly  
-##             49.90911               0.07468
-```
 
-```
-## 
-## Call:
-## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_postno2020)
-## 
-## Coefficients:
-##          (Intercept)  GDP_growth_quarterly  
-##             50.28461              -0.03647
-```
-Interpreting these results, for the 2000-2020 model we can see a smaller effect size between Q2 GDP growth and incumbent vote share, with a one percentage point increase in Q2 GDP growth corresponding to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 
-There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class. 
+If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical models examines above. 
+
+
+
+Interpreting these results, for the 2000-2020 model we see that a one percentage point increase in Q2 GDP growth corresponds to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.
+
+There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention visually to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class. 
 
 ## The Choice Not to Add More Predictive Variables
 
@@ -128,153 +96,123 @@ One could hypothesize that perhaps local economic factors could influence the in
 
 
 
-```
-## 
-## Call:
-## lm(formula = incumbent_pv2p ~ avg_unemployment + state, data = merged_state_data_no2020)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -49.635  -6.367   0.077   6.850  39.590 
-## 
-## Coefficients:
-##                           Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)               48.92934    3.90251  12.538   <2e-16 ***
-## avg_unemployment           0.20958    0.29972   0.699    0.485    
-## stateAlaska                0.57445    4.66226   0.123    0.902    
-## stateArizona               1.62246    4.66004   0.348    0.728    
-## stateArkansas             -1.31766    4.65987  -0.283    0.777    
-## stateCalifornia            1.09370    4.65625   0.235    0.814    
-## stateColorado              0.46022    4.68306   0.098    0.922    
-## stateConnecticut           2.22271    4.67567   0.475    0.635    
-## stateDelaware              1.86874    4.67835   0.399    0.690    
-## stateDistrict Of Columbia  5.87138    5.28131   1.112    0.267    
-## stateFlorida               1.61508    4.66251   0.346    0.729    
-## stateGeorgia               0.56582    4.66291   0.121    0.903    
-## stateHawaii                2.77025    4.70033   0.589    0.556    
-## stateIdaho                -0.02391    4.66829  -0.005    0.996    
-## stateIllinois              0.63050    4.65549   0.135    0.892    
-## stateIndiana               0.12413    4.66411   0.027    0.979    
-## stateIowa                 -1.00700    4.71383  -0.214    0.831    
-## stateKansas               -0.34841    4.71094  -0.074    0.941    
-## stateKentucky             -0.85657    4.65762  -0.184    0.854    
-## stateLouisiana             0.39096    4.65538   0.084    0.933    
-## stateMaine                 1.75874    4.67095   0.377    0.707    
-## stateMaryland              1.73052    4.68391   0.369    0.712    
-## stateMassachusetts         0.91311    4.67567   0.195    0.845    
-## stateMichigan              0.55718    4.66399   0.119    0.905    
-## stateMinnesota            -0.61894    4.69838  -0.132    0.895    
-## stateMississippi           1.00385    4.65611   0.216    0.829    
-## stateMissouri             -0.97409    4.66761  -0.209    0.835    
-## stateMontana              -1.86430    4.67138  -0.399    0.690    
-## stateNebraska              0.90179    4.77894   0.189    0.850    
-## stateNevada                0.32201    4.65677   0.069    0.945    
-## stateNew Hampshire         2.21532    4.72586   0.469    0.639    
-## stateNew Jersey            2.71400    4.65857   0.583    0.560    
-## stateNew Mexico            0.16725    4.65566   0.036    0.971    
-## stateNew York              1.49005    4.65643   0.320    0.749    
-## stateNorth Carolina        0.59340    4.66896   0.127    0.899    
-## stateNorth Dakota         -1.36005    4.75279  -0.286    0.775    
-## stateOhio                  0.18686    4.65639   0.040    0.968    
-## stateOklahoma              0.04922    4.69814   0.010    0.992    
-## stateOregon               -0.55570    4.65547  -0.119    0.905    
-## statePennsylvania         -0.53099    4.65810  -0.114    0.909    
-## stateRhode Island          1.26457    4.65919   0.271    0.786    
-## stateSouth Carolina        0.68932    4.65917   0.148    0.882    
-## stateSouth Dakota         -1.47174    4.76518  -0.309    0.758    
-## stateTennessee            -0.47570    4.66171  -0.102    0.919    
-## stateTexas                 0.26694    4.66730   0.057    0.954    
-## stateUtah                  1.03541    4.70685   0.220    0.826    
-## stateVermont               2.43096    4.70585   0.517    0.606    
-## stateVirginia              1.91612    4.70850   0.407    0.684    
-## stateWashington            0.32783    4.65571   0.070    0.944    
-## stateWest Virginia        -3.19595    4.66829  -0.685    0.494    
-## stateWisconsin            -0.16797    4.68584  -0.036    0.971    
-## stateWyoming              -0.93921    4.70339  -0.200    0.842    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 10.92 on 505 degrees of freedom
-##   (4 observations deleted due to missingness)
-## Multiple R-squared:  0.01852,	Adjusted R-squared:  -0.0806 
-## F-statistic: 0.1868 on 51 and 505 DF,  p-value: 1
-```
+|                          | Coefficient| P-Value|
+|:-------------------------|-----------:|-------:|
+|(Intercept)               |       48.93|    0.00|
+|avg_unemployment          |        0.21|    0.48|
+|stateAlaska               |        0.57|    0.90|
+|stateArizona              |        1.62|    0.73|
+|stateArkansas             |       -1.32|    0.78|
+|stateCalifornia           |        1.09|    0.81|
+|stateColorado             |        0.46|    0.92|
+|stateConnecticut          |        2.22|    0.63|
+|stateDelaware             |        1.87|    0.69|
+|stateDistrict Of Columbia |        5.87|    0.27|
+|stateFlorida              |        1.62|    0.73|
+|stateGeorgia              |        0.57|    0.90|
+|stateHawaii               |        2.77|    0.56|
+|stateIdaho                |       -0.02|    1.00|
+|stateIllinois             |        0.63|    0.89|
+|stateIndiana              |        0.12|    0.98|
+|stateIowa                 |       -1.01|    0.83|
+|stateKansas               |       -0.35|    0.94|
+|stateKentucky             |       -0.86|    0.85|
+|stateLouisiana            |        0.39|    0.93|
+|stateMaine                |        1.76|    0.71|
+|stateMaryland             |        1.73|    0.71|
+|stateMassachusetts        |        0.91|    0.85|
+|stateMichigan             |        0.56|    0.90|
+|stateMinnesota            |       -0.62|    0.90|
+|stateMississippi          |        1.00|    0.83|
+|stateMissouri             |       -0.97|    0.83|
+|stateMontana              |       -1.86|    0.69|
+|stateNebraska             |        0.90|    0.85|
+|stateNevada               |        0.32|    0.94|
+|stateNew Hampshire        |        2.22|    0.64|
+|stateNew Jersey           |        2.71|    0.56|
+|stateNew Mexico           |        0.17|    0.97|
+|stateNew York             |        1.49|    0.75|
+|stateNorth Carolina       |        0.59|    0.90|
+|stateNorth Dakota         |       -1.36|    0.77|
+|stateOhio                 |        0.19|    0.97|
+|stateOklahoma             |        0.05|    0.99|
+|stateOregon               |       -0.56|    0.91|
+|statePennsylvania         |       -0.53|    0.91|
+|stateRhode Island         |        1.26|    0.79|
+|stateSouth Carolina       |        0.69|    0.88|
+|stateSouth Dakota         |       -1.47|    0.76|
+|stateTennessee            |       -0.48|    0.92|
+|stateTexas                |        0.27|    0.95|
+|stateUtah                 |        1.04|    0.83|
+|stateVermont              |        2.43|    0.61|
+|stateVirginia             |        1.92|    0.68|
+|stateWashington           |        0.33|    0.94|
+|stateWest Virginia        |       -3.20|    0.49|
+|stateWisconsin            |       -0.17|    0.97|
+|stateWyoming              |       -0.94|    0.84|
 
-```
-## 
-## Call:
-## lm(formula = incumbent_pv2p ~ avg_unemployment + GDP_growth_quarterly + 
-##     state, data = merged_state_data_no2020)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -48.056  -6.027   0.236   6.336  42.376 
-## 
-## Coefficients:
-##                           Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)               42.90733    3.79491  11.307  < 2e-16 ***
-## avg_unemployment           0.69820    0.29223   2.389   0.0172 *  
-## GDP_growth_quarterly       0.82341    0.11058   7.446 4.19e-13 ***
-## stateAlaska                0.16171    4.42992   0.037   0.9709    
-## stateArizona               1.96190    4.42770   0.443   0.6579    
-## stateArkansas             -0.98450    4.42753  -0.222   0.8241    
-## stateCalifornia            0.94711    4.42391   0.214   0.8306    
-## stateColorado              1.28903    4.45073   0.290   0.7722    
-## stateConnecticut           2.93195    4.44333   0.660   0.5096    
-## stateDelaware              2.62352    4.44601   0.590   0.5554    
-## stateDistrict Of Columbia  4.99472    5.01911   0.995   0.3201    
-## stateFlorida               2.03522    4.43017   0.459   0.6461    
-## stateGeorgia               0.99744    4.43057   0.225   0.8220    
-## stateHawaii                3.82746    4.46800   0.857   0.3921    
-## stateIdaho                 0.54171    4.43596   0.122   0.9029    
-## stateIllinois              0.68195    4.42315   0.154   0.8775    
-## stateIndiana               0.58907    4.43177   0.133   0.8943    
-## stateIowa                  0.19938    4.48150   0.044   0.9645    
-## stateKansas                0.82762    4.47861   0.185   0.8535    
-## stateKentucky             -0.62114    4.42528  -0.140   0.8884    
-## stateLouisiana             0.38652    4.42304   0.087   0.9304    
-## stateMaine                 2.37989    4.43861   0.536   0.5921    
-## stateMaryland              2.57191    4.45157   0.578   0.5637    
-## stateMassachusetts         1.62235    4.44333   0.365   0.7152    
-## stateMichigan              0.09557    4.43165   0.022   0.9828    
-## stateMinnesota             0.41495    4.46605   0.093   0.9260    
-## stateMississippi           0.86948    4.42377   0.197   0.8443    
-## stateMissouri             -0.42364    4.43527  -0.096   0.9239    
-## stateMontana              -1.23464    4.43904  -0.278   0.7810    
-## stateNebraska              2.66194    4.54658   0.585   0.5585    
-## stateNevada                0.50709    4.42443   0.115   0.9088    
-## stateNew Hampshire         3.54090    4.49353   0.788   0.4311    
-## stateNew Jersey            2.99496    4.42623   0.677   0.4989    
-## stateNew Mexico            0.25054    4.42332   0.057   0.9549    
-## stateNew York              1.65070    4.42408   0.373   0.7092    
-## stateNorth Carolina        1.17345    4.43662   0.264   0.7915    
-## stateNorth Dakota          0.20059    4.52045   0.044   0.9646    
-## stateOhio                  0.34492    4.42405   0.078   0.9379    
-## stateOklahoma              1.08015    4.46581   0.242   0.8090    
-## stateOregon               -0.60308    4.42313  -0.136   0.8916    
-## statePennsylvania         -0.27187    4.42575  -0.061   0.9510    
-## stateRhode Island          1.57144    4.42685   0.355   0.7228    
-## stateSouth Carolina        0.99545    4.42683   0.225   0.8222    
-## stateSouth Dakota          0.18625    4.53283   0.041   0.9672    
-## stateTennessee            -0.07998    4.42937  -0.018   0.9856    
-## stateTexas                 0.81035    4.43496   0.183   0.8551    
-## stateUtah                  2.16702    4.47452   0.484   0.6284    
-## stateVermont               3.55146    4.47352   0.794   0.4276    
-## stateVirginia              3.06587    4.47617   0.685   0.4937    
-## stateWashington            0.41741    4.42336   0.094   0.9249    
-## stateWest Virginia        -3.76157    4.43596  -0.848   0.3969    
-## stateWisconsin             0.70156    4.45351   0.158   0.8749    
-## stateWyoming               0.15354    4.47106   0.034   0.9726    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 10.37 on 504 degrees of freedom
-##   (4 observations deleted due to missingness)
-## Multiple R-squared:  0.1158,	Adjusted R-squared:  0.02457 
-## F-statistic: 1.269 on 52 and 504 DF,  p-value: 0.1057
-```
 
-Considering models that factor in state economic conditions, it's clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.01 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
+
+|                          | Coefficient| P-Value|
+|:-------------------------|-----------:|-------:|
+|(Intercept)               |       42.91|    0.00|
+|avg_unemployment          |        0.70|    0.02|
+|GDP_growth_quarterly      |        0.82|    0.00|
+|stateAlaska               |        0.16|    0.97|
+|stateArizona              |        1.96|    0.66|
+|stateArkansas             |       -0.98|    0.82|
+|stateCalifornia           |        0.95|    0.83|
+|stateColorado             |        1.29|    0.77|
+|stateConnecticut          |        2.93|    0.51|
+|stateDelaware             |        2.62|    0.56|
+|stateDistrict Of Columbia |        4.99|    0.32|
+|stateFlorida              |        2.04|    0.65|
+|stateGeorgia              |        1.00|    0.82|
+|stateHawaii               |        3.83|    0.39|
+|stateIdaho                |        0.54|    0.90|
+|stateIllinois             |        0.68|    0.88|
+|stateIndiana              |        0.59|    0.89|
+|stateIowa                 |        0.20|    0.96|
+|stateKansas               |        0.83|    0.85|
+|stateKentucky             |       -0.62|    0.89|
+|stateLouisiana            |        0.39|    0.93|
+|stateMaine                |        2.38|    0.59|
+|stateMaryland             |        2.57|    0.56|
+|stateMassachusetts        |        1.62|    0.72|
+|stateMichigan             |        0.10|    0.98|
+|stateMinnesota            |        0.41|    0.93|
+|stateMississippi          |        0.87|    0.84|
+|stateMissouri             |       -0.42|    0.92|
+|stateMontana              |       -1.23|    0.78|
+|stateNebraska             |        2.66|    0.56|
+|stateNevada               |        0.51|    0.91|
+|stateNew Hampshire        |        3.54|    0.43|
+|stateNew Jersey           |        2.99|    0.50|
+|stateNew Mexico           |        0.25|    0.95|
+|stateNew York             |        1.65|    0.71|
+|stateNorth Carolina       |        1.17|    0.79|
+|stateNorth Dakota         |        0.20|    0.96|
+|stateOhio                 |        0.34|    0.94|
+|stateOklahoma             |        1.08|    0.81|
+|stateOregon               |       -0.60|    0.89|
+|statePennsylvania         |       -0.27|    0.95|
+|stateRhode Island         |        1.57|    0.72|
+|stateSouth Carolina       |        1.00|    0.82|
+|stateSouth Dakota         |        0.19|    0.97|
+|stateTennessee            |       -0.08|    0.99|
+|stateTexas                |        0.81|    0.86|
+|stateUtah                 |        2.17|    0.63|
+|stateVermont              |        3.55|    0.43|
+|stateVirginia             |        3.07|    0.49|
+|stateWashington           |        0.42|    0.92|
+|stateWest Virginia        |       -3.76|    0.40|
+|stateWisconsin            |        0.70|    0.87|
+|stateWyoming              |        0.15|    0.97|
+
+
+Adjusted R-squared values for each model are -0.081 for the state economic factor only model and 0.025 for the state and national economy prediction model.
+
+Considering models that factor in state economic conditions, it's clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.02 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
 
 All things considered, none of the models examined here have high predictive power. If I had to predict the election based solely on the economic variables examined in this blog post, I would predict the national two-party popular vote based on national Q2 GDP growth. However, as this course goes on and I am given the opportunity to predict the election outcome on more than one predictive factor at once, I would be inclined to use the state-level model predicting on both national Q2 GDP growth and state unemployment. 
 

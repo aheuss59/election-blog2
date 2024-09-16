@@ -96,16 +96,28 @@ We can see that the historic trend lines differ heavily depending on whether 202
 Let's take a look at the linear regression results: 
 
 ```{r, print regressions, echo=FALSE}
-summary2020
-summaryno2020
+fit2020 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>  
+  knitr::kable(digits = 2, col.names = c("", "Coefficient", "P-Value"))
+fitno2020 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>  
+  knitr::kable(digits = 2, col.names = c("", "Coefficient", "P-Value"))
 ```
-Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.05 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
+```{r}
+summary(fit2020)$adj.r.squared
+summary(fitno2020)$adj.r.squared
+```
+The adjusted r squared for the models are 0.140 for the model including 2020 and 0.283 for the model excluding 2020. 
+
+Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.06 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28.3% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
 
 We can interpret the 2020 exclusion model to show that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.74 percentage points. 
 
-## The Relationship Fades in the 21st Century
+## The 21st Century
 
-Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically are not the same as the trends in the 21st century. 
+Though the above prediction model works somewhat well, I do want to take a moment to highlight a trend I saw while visually examining the economic correlations in class. The trends we see historically might not necessarily hold the same weight in the 21st century. 
 
 ```{r, fits for post-2000, echo=FALSE}
 incumbent_econ_post2000 <- 
@@ -138,8 +150,8 @@ incumbent_econ_data |>
   geom_point(aes(shape = `Election Pre or Post 2000`), size = 3) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0.01, lty = 2) +
-  geom_abline(aes(slope = slopepost, intercept = interceptpost, color = "Trendline Post-2000"), linewidth = 0.75) +
-  geom_abline(aes(slope = slopepostno2020, intercept = interceptpostno2020, color = "Trendline Post-2000, without 2020"), linewidth = 0.75) +
+  geom_abline(aes(slope = slopepost, intercept = interceptpost, color = "Trendline Post-2000; Slope: 0.07"), linewidth = 0.75) +
+  geom_abline(aes(slope = slopepostno2020, intercept = interceptpostno2020, color = "Trendline Post-2000, no 2020; Slope: -0.04"), linewidth = 0.75) +
   labs(x = "Second Quarter GDP Growth (%)", 
        y = "Incumbent Party's National Popular Vote Share",
        color = "Trendlines",
@@ -150,17 +162,22 @@ incumbent_econ_data |>
 
 ```
 
-If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical model. 
+If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical models examines above. 
 
-We can look too at the lines of best fit for 21st century elections with and without 2020. 
-
-```{r, echo=FALSE}
-fitpost2000
-fitpostno2020
+```{r, echo=FALSE, results=FALSE}
+fitpost2000 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>  
+  knitr::kable(digits = 2, col.names = c("", "Coefficient", "P-Value"))
+fitpostno2020 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>  
+  knitr::kable(digits = 2, col.names = c("", "Coefficient", "P-Value"))
 ```
-Interpreting these results, for the 2000-2020 model we can see a smaller effect size between Q2 GDP growth and incumbent vote share, with a one percentage point increase in Q2 GDP growth corresponding to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.
 
-There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class. 
+Interpreting these results, for the 2000-2020 model we see that a one percentage point increase in Q2 GDP growth corresponds to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.
+
+There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention visually to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class. 
 
 ## The Choice Not to Add More Predictive Variables
 
@@ -234,11 +251,23 @@ fit_stateandnat_no2020 <- lm(incumbent_pv2p ~ avg_unemployment + GDP_growth_quar
 
 ```{r, summary statistics for various models, echo=FALSE}
 #summary statistics and model checking for both national and state models
-summary(fit_state_no2020)
-summary(fit_stateandnat_no2020)
+fit_state_no2020 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>  
+  knitr::kable(digits = 2, col.names = c("", "Coefficient", "P-Value"))
+fit_stateandnat_no2020 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>  
+  knitr::kable(digits = 2, col.names = c("", "Coefficient", "P-Value"))
 ```
 
-Considering models that factor in state economic conditions, it's clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.01 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
+```{r, grab adj r squared, echo=FALSE, results=FALSE}
+summary(fit_state_no2020)$adj.r.squared
+summary(fit_stateandnat_no2020)$adj.r.squared
+```
+Adjusted R-squared values for each model are -0.081 for the state economic factor only model and 0.025 for the state and national economy prediction model.
+
+Considering models that factor in state economic conditions, it's clear that predictive economic variables still do not fit the data very well. A model based solely on state unemployment data, controlling for state, finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.02 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
 
 All things considered, none of the models examined here have high predictive power. If I had to predict the election based solely on the economic variables examined in this blog post, I would predict the national two-party popular vote based on national Q2 GDP growth. However, as this course goes on and I am given the opportunity to predict the election outcome on more than one predictive factor at once, I would be inclined to use the state-level model predicting on both national Q2 GDP growth and state unemployment. 
 
