@@ -1,7 +1,7 @@
 ---
 title: 'Blog Post 2: The Economy'
 author: Alex Heuss
-date: '2024-09-13'
+date: '2024-09-16'
 slug: blog-post-2-the-economy
 categories: []
 tags: []
@@ -20,7 +20,7 @@ The economy has long been thought a fundamental predictor of election outcomes. 
 
 The graph below maps the historical relationship between Q2 GDP growth and national incumbent two-party vote share. The graph includes two historic trend lines, one from 1948-2020 and one excluding 2020. 2020 was an incredibly unique election, taking place during the COVID-19 pandemic, which resulted in very unique economic conditions. It is a visible outlier in the data. 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/initial graph with both fit lines-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/initial graph with both fit lines-1.png" width="864" />
 
 We can see that the historic trend lines differ heavily depending on whether 2020 is included or not. When 2020 is included, the slope of the line (and the impact of Q2 GDP growth on the popular vote) is diluted. 
 
@@ -39,21 +39,6 @@ Let's take a look at the linear regression results:
 |(Intercept)          |       49.38|    0.00|
 |GDP_growth_quarterly |        0.74|    0.01|
 
-``` r
-summary(fit2020)$adj.r.squared
-```
-
-```
-## [1] 0.1403326
-```
-
-``` r
-summary(fitno2020)$adj.r.squared
-```
-
-```
-## [1] 0.282607
-```
 The adjusted r squared for the models are 0.140 for the model including 2020 and 0.283 for the model excluding 2020. 
 
 Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.06 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28.3% of the variance. Based on these results, I choose to explore the rest of my models excluding the year 2020. 
@@ -66,7 +51,7 @@ Though the above prediction model works somewhat well, I do want to take a momen
 
 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="864" />
 
 If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is inconclusive. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than the broader historical models examines above. 
 
@@ -226,7 +211,8 @@ Using the incomplete state and national economy model, which I hope to use as a 
 
 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/make vote margin map-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/make vote margin map-1.png" width="864" />
+
 
 
 |Candidate | Electoral College Votes|
