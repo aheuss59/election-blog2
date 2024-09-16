@@ -36,13 +36,7 @@
 <main>
 <h2 id="the-influence-of-the-economy-on-elections">The Influence of the Economy on Elections</h2>
 <p>[Discussion of the predictive power of the fundamentals and the economy - could mention the bread and peace model]. Especially talk about Q2 econ power.</p>
-<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-## ℹ Please use `linewidth` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-## generated.
-</code></pre>
-<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/initial graph with both fit lines-1.png" width="672" />
 <p>We can see that the correlations between Q2 GDP growth and the incumbent party&rsquo;s popular vote share are very different depending on whether or not 2020 is included. Brief analysis about whether either correlation is actually strong.</p>
 <pre><code>## [1] 0.4336956
 </code></pre>
@@ -67,13 +61,347 @@
 </code></pre>
 <p>We can interpret these results to mean that for each percentage change in Q2 GDP growth, the popular vote for the incumbent party would grow by 0.27 percentage points when looking at all data from 1948-2020, or by 0.74 percentage points when 2020 is excluded. In close elections, that approximately 0.5 percentage point difference between the two models can make a big difference.</p>
 <p>All that said, I also want to highlight one stark trend in the data. Let&rsquo;s look at the graph from 1948-2020 again:</p>
-<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is less obvious and certainly less strong. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than when all years since 1948 are considered. 
+<p>We can look too at the correlations between Q2 GDP growth and incumbent party vote share, as well as the lines of best fit for 21st century elections with and without 2020.</p>
+<pre><code class="language-r">cor(incumbent_econ_post2000$GDP_growth_quarterly, 
+    incumbent_econ_post2000$pv2p)
+</code></pre>
+<pre><code>## [1] 0.4259475
+</code></pre>
+<pre><code class="language-r">cor(incumbent_econ_postno2020$GDP_growth_quarterly, 
+    incumbent_econ_postno2020$pv2p)
+</code></pre>
+<pre><code>## [1] -0.03977396
+</code></pre>
+<pre><code class="language-r">fitpost2000
+</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_post2000)
+## 
+## Coefficients:
+##          (Intercept)  GDP_growth_quarterly  
+##             49.90911               0.07468
+</code></pre>
+<pre><code class="language-r">fitpostno2020
+</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_postno2020)
+## 
+## Coefficients:
+##          (Intercept)  GDP_growth_quarterly  
+##             50.28461              -0.03647
+</code></pre>
+<p>Interpreting these results, for the 2000-2020 model we can see a moderate positive correlation between Q2 GDP growth and incumbent vote share, but with a smaller effect size, with a one percentage point increase in Q2 GDP growth corresponding to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, the correlation is actually weakly negative, and based on the model a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.</p>
+<p>There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class.</p>
+<p>One method we could consider to make improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. Correlations tested are 1) Q2 GDP Growth and Q2 RDPI Growth, 2) Annual GDP and RDPI, 3) GDP and Unemployment, 4) GDP and closing stock prices, and 5) Annual GDP and Q2 GDP growth, in that order.</p>
+<pre><code class="language-r"># Correlations between economic vars to see which ones are not co-linear if any
+cor(fred_data$GDP_growth_quarterly, 
+    fred_data$RDPI_growth_quarterly, use = &quot;complete.obs&quot;)
+</code></pre>
+<pre><code>## [1] 0.01976475
+</code></pre>
+<pre><code class="language-r">cor(fred_data$GDP,
+    fred_data$RDPI, use = &quot;complete.obs&quot;)
+</code></pre>
+<pre><code>## [1] 0.9859192
+</code></pre>
+<pre><code class="language-r">cor(fred_data$GDP, 
+    fred_data$unemployment, use = &quot;complete.obs&quot;)
+</code></pre>
+<pre><code>## [1] -0.001814525
+</code></pre>
+<pre><code class="language-r">cor(fred_data$GDP, 
+    fred_data$sp500_adj_close, use = &quot;complete.obs&quot;)
+</code></pre>
+<pre><code>## [1] 0.9455197
+</code></pre>
+<pre><code class="language-r">cor(fred_data$GDP, 
+    fred_data$GDP_growth_quarterly, use = &quot;complete.obs&quot;)
+</code></pre>
+<pre><code>## [1] -0.1195312
+</code></pre>
+<p>The tests above indicate that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded from the multi-variable model. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and GDP growth Q2 and annual GDP.</p>
+<p>Checking the correlations between incumbent vote share and Q2 RDPI, unemployment and annual GDP, we get the following:</p>
+<pre><code class="language-r">cor(incumbent_econ_data$RDPI_growth_quarterly,
+    incumbent_econ_data$pv2p)
+</code></pre>
+<pre><code>## [1] -0.05507567
+</code></pre>
+<pre><code class="language-r">cor(incumbent_econ_data$unemployment,
+    incumbent_econ_data$pv2p)
+</code></pre>
+<pre><code>## [1] -0.1368118
+</code></pre>
+<pre><code class="language-r">cor(incumbent_econ_data$GDP,
+    incumbent_econ_data$pv2p)
+</code></pre>
+<pre><code>## [1] -0.2729717
+</code></pre>
+<p>All correlations are weak and negative. Because of this, I plan to keep my model simple and prioritize not over-fitting by using only Q2 GDP growth.</p>
+<pre><code class="language-r">summary2020
+</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.7666 -3.3847 -0.7697  2.9121  8.8809 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           51.2580     1.1399  44.968   &lt;2e-16 ***
+## GDP_growth_quarterly   0.2739     0.1380   1.985   0.0636 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.834 on 17 degrees of freedom
+## Multiple R-squared:  0.1881,	Adjusted R-squared:  0.1403 
+## F-statistic: 3.938 on 1 and 17 DF,  p-value: 0.06358
+</code></pre>
+<pre><code class="language-r">summaryno2020
+</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pv2p ~ GDP_growth_quarterly, data = incumbent_econ_data_no2020)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -6.237 -4.160  0.450  1.904  8.728 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           49.3751     1.4163  34.862   &lt;2e-16 ***
+## GDP_growth_quarterly   0.7366     0.2655   2.774   0.0135 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.463 on 16 degrees of freedom
+## Multiple R-squared:  0.3248,	Adjusted R-squared:  0.2826 
+## F-statistic: 7.697 on 1 and 16 DF,  p-value: 0.01354
+</code></pre>
+<p>Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.05 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28% of the variance.</p>
 <h2 id="economic-influence-at-the-state-level">Economic Influence at the State Level</h2>
-<pre><code class="language-r"># State-level data wrangling, historical trends, also just 2000s, correlations between available state economic data to consider multi-variable approach
+<pre><code>## Rows: 959 Columns: 14
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (1): state
+## dbl (13): year, D_pv, R_pv, D_pv2p, R_pv2p, D_pv_lag1, R_pv_lag1, D_pv2p_lag...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 </code></pre>
-<h2 id="testing-our-models">Testing our Models</h2>
+<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
+## e.g.:
+##   dat &lt;- vroom(...)
+##   problems(dat)
+</code></pre>
+<pre><code>## Rows: 29733 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (1): state
+## dbl  (1): unemployment
+## date (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+</code></pre>
+<pre><code>## `summarise()` has grouped output by 'state'. You can override using the
+## `.groups` argument.
+</code></pre>
+<p>Owing to the findings above that the inclusion of 2020 lessens both statistical significance and predictive power, it will be excluded from further models based on state-level economic data.</p>
+<pre><code class="language-r">fit_state_no2020 &lt;- lm(incumbent_pv2p ~ avg_unemployment + state, data = merged_state_data_no2020)
+fit_stateandnat_no2020 &lt;- lm(incumbent_pv2p ~ avg_unemployment + GDP_growth_quarterly + state, data = merged_state_data_no2020)
+</code></pre>
 <pre><code class="language-r">#summary statistics and model checking for both national and state models
+summary(fit_state_no2020)
 </code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incumbent_pv2p ~ avg_unemployment + state, data = merged_state_data_no2020)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -49.635  -6.367   0.077   6.850  39.590 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)               48.92934    3.90251  12.538   &lt;2e-16 ***
+## avg_unemployment           0.20958    0.29972   0.699    0.485    
+## stateAlaska                0.57445    4.66226   0.123    0.902    
+## stateArizona               1.62246    4.66004   0.348    0.728    
+## stateArkansas             -1.31766    4.65987  -0.283    0.777    
+## stateCalifornia            1.09370    4.65625   0.235    0.814    
+## stateColorado              0.46022    4.68306   0.098    0.922    
+## stateConnecticut           2.22271    4.67567   0.475    0.635    
+## stateDelaware              1.86874    4.67835   0.399    0.690    
+## stateDistrict Of Columbia  5.87138    5.28131   1.112    0.267    
+## stateFlorida               1.61508    4.66251   0.346    0.729    
+## stateGeorgia               0.56582    4.66291   0.121    0.903    
+## stateHawaii                2.77025    4.70033   0.589    0.556    
+## stateIdaho                -0.02391    4.66829  -0.005    0.996    
+## stateIllinois              0.63050    4.65549   0.135    0.892    
+## stateIndiana               0.12413    4.66411   0.027    0.979    
+## stateIowa                 -1.00700    4.71383  -0.214    0.831    
+## stateKansas               -0.34841    4.71094  -0.074    0.941    
+## stateKentucky             -0.85657    4.65762  -0.184    0.854    
+## stateLouisiana             0.39096    4.65538   0.084    0.933    
+## stateMaine                 1.75874    4.67095   0.377    0.707    
+## stateMaryland              1.73052    4.68391   0.369    0.712    
+## stateMassachusetts         0.91311    4.67567   0.195    0.845    
+## stateMichigan              0.55718    4.66399   0.119    0.905    
+## stateMinnesota            -0.61894    4.69838  -0.132    0.895    
+## stateMississippi           1.00385    4.65611   0.216    0.829    
+## stateMissouri             -0.97409    4.66761  -0.209    0.835    
+## stateMontana              -1.86430    4.67138  -0.399    0.690    
+## stateNebraska              0.90179    4.77894   0.189    0.850    
+## stateNevada                0.32201    4.65677   0.069    0.945    
+## stateNew Hampshire         2.21532    4.72586   0.469    0.639    
+## stateNew Jersey            2.71400    4.65857   0.583    0.560    
+## stateNew Mexico            0.16725    4.65566   0.036    0.971    
+## stateNew York              1.49005    4.65643   0.320    0.749    
+## stateNorth Carolina        0.59340    4.66896   0.127    0.899    
+## stateNorth Dakota         -1.36005    4.75279  -0.286    0.775    
+## stateOhio                  0.18686    4.65639   0.040    0.968    
+## stateOklahoma              0.04922    4.69814   0.010    0.992    
+## stateOregon               -0.55570    4.65547  -0.119    0.905    
+## statePennsylvania         -0.53099    4.65810  -0.114    0.909    
+## stateRhode Island          1.26457    4.65919   0.271    0.786    
+## stateSouth Carolina        0.68932    4.65917   0.148    0.882    
+## stateSouth Dakota         -1.47174    4.76518  -0.309    0.758    
+## stateTennessee            -0.47570    4.66171  -0.102    0.919    
+## stateTexas                 0.26694    4.66730   0.057    0.954    
+## stateUtah                  1.03541    4.70685   0.220    0.826    
+## stateVermont               2.43096    4.70585   0.517    0.606    
+## stateVirginia              1.91612    4.70850   0.407    0.684    
+## stateWashington            0.32783    4.65571   0.070    0.944    
+## stateWest Virginia        -3.19595    4.66829  -0.685    0.494    
+## stateWisconsin            -0.16797    4.68584  -0.036    0.971    
+## stateWyoming              -0.93921    4.70339  -0.200    0.842    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 10.92 on 505 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared:  0.01852,	Adjusted R-squared:  -0.0806 
+## F-statistic: 0.1868 on 51 and 505 DF,  p-value: 1
+</code></pre>
+<pre><code class="language-r">summary(fit_stateandnat_no2020)
+</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incumbent_pv2p ~ avg_unemployment + GDP_growth_quarterly + 
+##     state, data = merged_state_data_no2020)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.056  -6.027   0.236   6.336  42.376 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)               42.90733    3.79491  11.307  &lt; 2e-16 ***
+## avg_unemployment           0.69820    0.29223   2.389   0.0172 *  
+## GDP_growth_quarterly       0.82341    0.11058   7.446 4.19e-13 ***
+## stateAlaska                0.16171    4.42992   0.037   0.9709    
+## stateArizona               1.96190    4.42770   0.443   0.6579    
+## stateArkansas             -0.98450    4.42753  -0.222   0.8241    
+## stateCalifornia            0.94711    4.42391   0.214   0.8306    
+## stateColorado              1.28903    4.45073   0.290   0.7722    
+## stateConnecticut           2.93195    4.44333   0.660   0.5096    
+## stateDelaware              2.62352    4.44601   0.590   0.5554    
+## stateDistrict Of Columbia  4.99472    5.01911   0.995   0.3201    
+## stateFlorida               2.03522    4.43017   0.459   0.6461    
+## stateGeorgia               0.99744    4.43057   0.225   0.8220    
+## stateHawaii                3.82746    4.46800   0.857   0.3921    
+## stateIdaho                 0.54171    4.43596   0.122   0.9029    
+## stateIllinois              0.68195    4.42315   0.154   0.8775    
+## stateIndiana               0.58907    4.43177   0.133   0.8943    
+## stateIowa                  0.19938    4.48150   0.044   0.9645    
+## stateKansas                0.82762    4.47861   0.185   0.8535    
+## stateKentucky             -0.62114    4.42528  -0.140   0.8884    
+## stateLouisiana             0.38652    4.42304   0.087   0.9304    
+## stateMaine                 2.37989    4.43861   0.536   0.5921    
+## stateMaryland              2.57191    4.45157   0.578   0.5637    
+## stateMassachusetts         1.62235    4.44333   0.365   0.7152    
+## stateMichigan              0.09557    4.43165   0.022   0.9828    
+## stateMinnesota             0.41495    4.46605   0.093   0.9260    
+## stateMississippi           0.86948    4.42377   0.197   0.8443    
+## stateMissouri             -0.42364    4.43527  -0.096   0.9239    
+## stateMontana              -1.23464    4.43904  -0.278   0.7810    
+## stateNebraska              2.66194    4.54658   0.585   0.5585    
+## stateNevada                0.50709    4.42443   0.115   0.9088    
+## stateNew Hampshire         3.54090    4.49353   0.788   0.4311    
+## stateNew Jersey            2.99496    4.42623   0.677   0.4989    
+## stateNew Mexico            0.25054    4.42332   0.057   0.9549    
+## stateNew York              1.65070    4.42408   0.373   0.7092    
+## stateNorth Carolina        1.17345    4.43662   0.264   0.7915    
+## stateNorth Dakota          0.20059    4.52045   0.044   0.9646    
+## stateOhio                  0.34492    4.42405   0.078   0.9379    
+## stateOklahoma              1.08015    4.46581   0.242   0.8090    
+## stateOregon               -0.60308    4.42313  -0.136   0.8916    
+## statePennsylvania         -0.27187    4.42575  -0.061   0.9510    
+## stateRhode Island          1.57144    4.42685   0.355   0.7228    
+## stateSouth Carolina        0.99545    4.42683   0.225   0.8222    
+## stateSouth Dakota          0.18625    4.53283   0.041   0.9672    
+## stateTennessee            -0.07998    4.42937  -0.018   0.9856    
+## stateTexas                 0.81035    4.43496   0.183   0.8551    
+## stateUtah                  2.16702    4.47452   0.484   0.6284    
+## stateVermont               3.55146    4.47352   0.794   0.4276    
+## stateVirginia              3.06587    4.47617   0.685   0.4937    
+## stateWashington            0.41741    4.42336   0.094   0.9249    
+## stateWest Virginia        -3.76157    4.43596  -0.848   0.3969    
+## stateWisconsin             0.70156    4.45351   0.158   0.8749    
+## stateWyoming               0.15354    4.47106   0.034   0.9726    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 10.37 on 504 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared:  0.1158,	Adjusted R-squared:  0.02457 
+## F-statistic: 1.269 on 52 and 504 DF,  p-value: 0.1057
+</code></pre>
+<p>Considering models that factor in state economic conditions, it&rsquo;s clear that our predictive variables still do not fit the data very well. A model based solely on state unemployment data and controlling for state finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.01 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power.</p>
+<p>All things considered, none of the models examined here have high predictive power. If I had to predict the election based solely on the economic variables examined in this blog post, I would predict on national Q2 GDP growth. However, as this course goes on and I am given the opportunity to predict the election outcome on more than one factor at once, I would be inclined to use the model predicting on both national Q2 GDP growth and state unemployment.</p>
+<h2 id="predicting-2024">Predicting 2024</h2>
+<pre><code>##        1 
+## 51.58486
+</code></pre>
+<p>Using the model based solely on Q2 GDP growth, I would predict that Kamala Harris will beat Former President Trump in the two party national popular vote 51.58% to 48.42%.</p>
+<p>Using the incomplete state and national economy model, which I hope to use as a stepping stone towards later, more complex models, the election would be overwhelmingly in Former President Trump&rsquo;s favor. I cannot stress enough that this model does not have anywhere near sufficient predictive power to predict the election without more variables, and is merely an incomplete model that I wanted to map out for later reference as I add more predictive variables later in the class.</p>
+<img src="https://example.org/post/2024/09/13/blog-post-2-the-economy/index_files/figure-html/make vote margin map-1.png" width="672" />
+<pre><code class="language-r">ec_state_predictions &lt;- state_predictions_ec |&gt;
+  mutate(candidate = ifelse(inc_pop_vote &gt; 50, &quot;Harris&quot;, &quot;Trump&quot;)) |&gt;
+  group_by(candidate) |&gt;
+  summarize(ec_votes = sum(electors))
+
+ec_state_predictions |&gt;
+  knitr::kable(col.names = c(&quot;Candidate&quot;, &quot;Electoral College Votes&quot;))
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Candidate</th>
+<th style="text-align:right">Electoral College Votes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Harris</td>
+<td style="text-align:right">137</td>
+</tr>
+<tr>
+<td style="text-align:left">Trump</td>
+<td style="text-align:right">401</td>
+</tr>
+<tr>
+<td style="text-align:left">Using this model, as it stands now, to predict the election, Trump would completely sweep the election, winning 401 electoral votes to Harris&rsquo; 137.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 </main>
 

@@ -10,6 +10,7 @@ tags: []
 library(tidyverse)
 library(car)
 library(ggrepel)
+library(maps)
 ```
 
 ```{r, load and wrangle data, echo=FALSE, message=FALSE, warning=FALSE}
@@ -43,7 +44,7 @@ incumbent_econ_data <-
 
 [Discussion of the predictive power of the fundamentals and the economy - could mention the bread and peace model]. Especially talk about Q2 econ power.
 
-```{r, echo=FALSE}
+```{r, initial linear regressions, echo=FALSE}
 # Linear Regressions for Q2 GDP + Pop Vote, with and without 2020.
 fit2020 <- lm(pv2p ~ GDP_growth_quarterly, 
                data = incumbent_econ_data)
@@ -58,7 +59,7 @@ fitno2020 <-
 
 ```
 
-```{r, echo=FALSE}
+```{r, getting intercepts and slopes, echo=FALSE}
 # Find intercept/slope
 summary2020 <- summary(fit2020)
 summaryno2020 <- summary(fitno2020)
@@ -69,15 +70,15 @@ interceptno2020 <- summaryno2020$coefficients[1,1]
 slopeno2020 <- summaryno2020$coefficients[2,1]
 ```
 
-```{r, echo=FALSE}
+```{r, initial graph with both fit lines, echo=FALSE}
 # Data since 1948 with fit lines for with and without 2020 - I'm so proud of this graph
 incumbent_econ_data |> 
   ggplot(aes(x = GDP_growth_quarterly, y = pv2p, label = year)) +
   geom_label(size = 2.5) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0.01, lty = 2) +
-  geom_abline(aes(slope = slope2020, intercept = intercept2020, color = "Trendline 1948-2020"), size = 0.75) +
-  geom_abline(aes(slope = slopeno2020, intercept = interceptno2020, color = "Trendline without 2020"), size = 0.75) +
+  geom_abline(aes(slope = slope2020, intercept = intercept2020, color = "Trendline 1948-2020"), linewidth = 0.75) +
+  geom_abline(aes(slope = slopeno2020, intercept = interceptno2020, color = "Trendline without 2020"), linewidth = 0.75) +
   labs(x = "Second Quarter GDP Growth (%)", 
        y = "Incumbent Party's National Popular Vote Share",
        color = "") + 
@@ -87,15 +88,16 @@ incumbent_econ_data |>
 ```
 
 We can see that the correlations between Q2 GDP growth and the incumbent party's popular vote share are very different depending on whether or not 2020 is included. Brief analysis about whether either correlation is actually strong. 
-```{r, echo=FALSE}
+```{r, correlations, echo=FALSE}
 cor(incumbent_econ_data$GDP_growth_quarterly, 
     incumbent_econ_data$pv2p)
 cor(incumbent_econ_data_no2020$GDP_growth_quarterly, 
     incumbent_econ_data_no2020$pv2p)
 
 ```
+
 Let's take a look at the linear regression results: 
-```{r, echo=FALSE}
+```{r, print regressions, echo=FALSE}
 fit2020
 fitno2020
 ```
@@ -103,54 +105,218 @@ We can interpret these results to mean that for each percentage change in Q2 GDP
 
 All that said, I also want to highlight one stark trend in the data. Let's look at the graph from 1948-2020 again:
 
-```{r, echo=FALSE}
+```{r, fits for post-2000, echo=FALSE}
 incumbent_econ_post2000 <- 
   incumbent_econ_data |>
   filter(year >= 2000)
 
+incumbent_econ_postno2020 <- 
+  incumbent_econ_data |>
+  filter(year >= 2000 & year != 2020)
+
 fitpost2000 <- lm(pv2p ~ GDP_growth_quarterly, 
                data = incumbent_econ_post2000)
+fitpostno2020 <- lm(pv2p ~ GDP_growth_quarterly, 
+               data = incumbent_econ_postno2020)
 
 summarypost2000 <- summary(fitpost2000)
+summarypostno2020 <- summary(fitpostno2020)
 
 interceptpost <- summarypost2000$coefficients[1,1]
 slopepost <- summarypost2000$coefficients[2,1]
+
+interceptpostno2020 <- summarypostno2020$coefficients[1,1]
+slopepostno2020 <- summarypostno2020$coefficients[2,1]
 ```
 
 ```{r, echo=FALSE}
 incumbent_econ_data |> 
-  mutate(`Pre or Post 2000` = ifelse(year >= 2000, "Post-2000", "Pre-2000")) |>
-  ggplot(aes(x = GDP_growth_quarterly, y = pv2p, color = `Pre or Post 2000`)) +
-  geom_point() +
+  mutate(`Election Pre or Post 2000` = ifelse(year >= 2000, "Post-2000", "Pre-2000")) |>
+  ggplot(aes(x = GDP_growth_quarterly, y = pv2p)) +
+  geom_point(aes(shape = `Election Pre or Post 2000`), size = 3) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0.01, lty = 2) +
-  geom_abline(slope = slopepost, intercept = interceptpost, color = "gray") +
+  geom_abline(aes(slope = slopepost, intercept = interceptpost, color = "Trendline Post-2000"), linewidth = 0.75) +
+  geom_abline(aes(slope = slopepostno2020, intercept = interceptpostno2020, color = "Trendline Post-2000, without 2020"), linewidth = 0.75) +
   labs(x = "Second Quarter GDP Growth (%)", 
-       y = "Incumbent Party's National Popular Vote Share") + 
+       y = "Incumbent Party's National Popular Vote Share",
+       color = "Trendlines",
+       title = "Relationship Between GDP and Incumbent Vote Share Post-2000") + 
   theme_bw() +
-  scale_color_manual(values = c("red", "black"))
+  scale_shape_manual(values = c(19, 1)) +
+  scale_color_manual(values = c("darkorange", "darkturquoise"))
 
 ```
+If we look at only elections that have occurred in the 21st century, the relationship between GDP growth and incumbent vote share is less obvious and certainly less strong. The two lines of fit represent only elections post-2000, one with and one without the previously identified outlier of 2020. With or without 2020, a one percentage point change in GDP growth results in much smaller impacts on incumbent vote share than when all years since 1948 are considered. 
+
+We can look too at the correlations between Q2 GDP growth and incumbent party vote share, as well as the lines of best fit for 21st century elections with and without 2020. 
+```{r}
+cor(incumbent_econ_post2000$GDP_growth_quarterly, 
+    incumbent_econ_post2000$pv2p)
+
+cor(incumbent_econ_postno2020$GDP_growth_quarterly, 
+    incumbent_econ_postno2020$pv2p)
+
+fitpost2000
+fitpostno2020
+```
+Interpreting these results, for the 2000-2020 model we can see a moderate positive correlation between Q2 GDP growth and incumbent vote share, but with a smaller effect size, with a one percentage point increase in Q2 GDP growth corresponding to a 0.07 percentage point increase in incumbent vote share. In the model excluding 2020, the correlation is actually weakly negative, and based on the model a one percentage point increase in Q2 GDP growth actually would result in a 0.04 percentage point decrease in incumbent vote share.
+
+There are some serious issues with training a model on six (five) data points, including model over-fitting, but I did want to draw attention to this trend in the data. I hypothesize that, as partisanship has become an exceedingly salient pillar of American society, the average voter may be voting along party lines more than in their own economic self-interest. I look forward to exploring that hypothesis further as I progress through this class. 
+
+One method we could consider to make improve our economic model of vote share is to add more economic predictive variables to get a better picture of the economy. However, if different economic variables are highly correlated with one another, we may run into issues of co-linearity which interferes with model performance. Correlations tested are 1) Q2 GDP Growth and Q2 RDPI Growth, 2) Annual GDP and RDPI, 3) GDP and Unemployment, 4) GDP and closing stock prices, and 5) Annual GDP and Q2 GDP growth, in that order.
+ 
+```{r}
+# Correlations between economic vars to see which ones are not co-linear if any
+cor(fred_data$GDP_growth_quarterly, 
+    fred_data$RDPI_growth_quarterly, use = "complete.obs")
+cor(fred_data$GDP,
+    fred_data$RDPI, use = "complete.obs")
+cor(fred_data$GDP, 
+    fred_data$unemployment, use = "complete.obs")
+cor(fred_data$GDP, 
+    fred_data$sp500_adj_close, use = "complete.obs")
+cor(fred_data$GDP, 
+    fred_data$GDP_growth_quarterly, use = "complete.obs")
+```
+The tests above indicate that annual GDP is strongly correlated with RDPI and adjusted closing stock prices, so those measures will be excluded from the multi-variable model. On the other hand, Q2 GDP growth and Q2 RDPI growth are very uncorrelated, as are annual GDP and unemployment and GDP growth Q2 and annual GDP. 
+
+Checking the correlations between incumbent vote share and Q2 RDPI, unemployment and annual GDP, we get the following: 
+```{r}
+cor(incumbent_econ_data$RDPI_growth_quarterly,
+    incumbent_econ_data$pv2p)
+cor(incumbent_econ_data$unemployment,
+    incumbent_econ_data$pv2p)
+cor(incumbent_econ_data$GDP,
+    incumbent_econ_data$pv2p)
+```
+All correlations are weak and negative. Because of this, I plan to keep my model simple and prioritize not over-fitting by using only Q2 GDP growth. 
+
+```{r}
+summary2020
+summaryno2020
+```
+
+Comparing the two models using only Q2 GDP growth, the model including 2020 finds a relationship between Q2 GDP growth and incumbent two party vote share with 0.05 significance level (p-value) and an adjusted R squared value of 0.14, meaning that 14% of the variance can be explained Q2 GDP growth. Excluding 2020, the coefficient can be found significant at the 0.01 p-value and the model explains 28% of the variance.
 
 ## Economic Influence at the State Level
 
-```{r}
-# State-level data wrangling, historical trends, also just 2000s, correlations between available state economic data to consider multi-variable approach
+```{r, intitial data loading, echo=FALSE}
+state_data <- read_csv("clean_wide_state_2pv_1948_2020.csv")
+state_econ_data <- read_csv("Historical_State_Unemployment.csv")
+```
+
+```{r, data wrangling, echo=FALSE}
+clean_state_econ_data <- 
+  state_econ_data |>
+  mutate(year = format(as.Date(date), "%Y")) |>
+  mutate(year = as.double(year)) |>
+  group_by(state, year) |>
+  summarize(avg_unemployment = mean(unemployment))
+
+merged_state_data <- 
+  state_data |>
+  filter(year >= 1976) |>
+  left_join(clean_state_econ_data, by = c("state", "year")) |>
+  mutate(incumbent_party = ifelse(year %in% c(1976, 1984, 1988, 1992, 2004, 2008, 2020), "republican", "democrat"),
+         incumbent_pv2p = ifelse(incumbent_party == "republican", R_pv2p, D_pv2p)) |>
+  select(year, state, incumbent_party, avg_unemployment, incumbent_pv2p)
+
+merged_state_data <- 
+  incumbent_econ_data |>
+  filter(year >= 1976) |>
+  select(year, GDP, GDP_growth_quarterly, unemployment) |>
+  left_join(merged_state_data, by = "year")
+
+merged_state_data_no2020 <- 
+  merged_state_data |>
+  filter(year != 2020)
 
 ```
 
-## Testing our Models
+Owing to the findings above that the inclusion of 2020 lessens both statistical significance and predictive power, it will be excluded from further models based on state-level economic data. 
 
 ```{r}
+fit_state_no2020 <- lm(incumbent_pv2p ~ avg_unemployment + state, data = merged_state_data_no2020)
+fit_stateandnat_no2020 <- lm(incumbent_pv2p ~ avg_unemployment + GDP_growth_quarterly + state, data = merged_state_data_no2020)
+```
+
+
+```{r, summary statistics for various models, }
 #summary statistics and model checking for both national and state models
+summary(fit_state_no2020)
+summary(fit_stateandnat_no2020)
+```
+Considering models that factor in state economic conditions, it's clear that our predictive variables still do not fit the data very well. A model based solely on state unemployment data and controlling for state finds no statistically significant relationship between state level unemployment and incumbent party vote share and actually has a negative adjusted R squared. On the other hand, a model that factors in both state level unemployment and national Q2 GDP growth, controlling for state, finds a statistically significant relationship between incumbent vote share and state unemployment (0.01 p-value) and Q2 GDP growth (approximately 0 p-value). That being said, the adjusted R squared value shows that these variables only account for about 2.5% of the variance in incumbent vote share and has low predictive power. 
+
+All things considered, none of the models examined here have high predictive power. If I had to predict the election based solely on the economic variables examined in this blog post, I would predict on national Q2 GDP growth. However, as this course goes on and I am given the opportunity to predict the election outcome on more than one factor at once, I would be inclined to use the model predicting on both national Q2 GDP growth and state unemployment. 
+
+## Predicting 2024
+
+```{r, national vote GDP only, echo=FALSE}
+GDP_new <- fred_data |> 
+  filter(year == 2024 & quarter == 2) |> 
+  select(GDP_growth_quarterly)
+
+predict(fitno2020, GDP_new)
+
+```
+Using the model based solely on Q2 GDP growth, I would predict that Kamala Harris will beat Former President Trump in the two party national popular vote 51.58% to 48.42%. 
+
+Using the incomplete state and national economy model, which I hope to use as a stepping stone towards later, more complex models, the election would be overwhelmingly in Former President Trump's favor. I cannot stress enough that this model does not have anywhere near sufficient predictive power to predict the election without more variables, and is merely an incomplete model that I wanted to map out for later reference as I add more predictive variables later in the class. 
+
+```{r, more data loading and wrangling, echo=FALSE, message=FALSE}
+state_2024 <- 
+  clean_state_econ_data |>
+  filter(year== 2024) |>
+  select(state, avg_unemployment) |>
+  mutate(GDP_growth_quarterly = 3)
+
+state_predictions <- predict(fit_stateandnat_no2020, state_2024)
+
+state_predictions_table <- data.frame(state = unique(clean_state_econ_data$state),
+                                      inc_pop_vote = state_predictions)
+
+ec <- read_csv("corrected_ec_1948_2024.csv") |>
+  filter(year == 2024) |>
+  select(state, electors)
+
+state_predictions_ec <- 
+  state_predictions_table |>
+  left_join(ec, by = "state")
 
 ```
 
 
+```{r, make vote margin map, echo=FALSE}
+states_map <- map_data("state")
 
+state_predictions_ec |>
+  mutate(region = tolower(state),
+         not_inc_pop_vote = 100 - inc_pop_vote,
+         margin = inc_pop_vote - not_inc_pop_vote) |>
+  left_join(states_map, by = "region") |> 
+  ggplot(aes(long, lat, group = group)) +
+    geom_polygon(aes(fill = margin), color = "black") +
+    ggtitle("2024 State Presidential Forecast: National Q2 GDP Growth and State Unemployment") + 
+    scale_fill_gradient2(high = "#00AEF3", 
+                         mid = "white",
+                         name = "Win Margin",
+                         low = "#E81B23", 
+                         breaks = c(-22,-11,0,11,22), 
+                         limits=c(-22,22)) + 
+  theme_void()
+  
+```
+```{r}
+ec_state_predictions <- state_predictions_ec |>
+  mutate(candidate = ifelse(inc_pop_vote > 50, "Harris", "Trump")) |>
+  group_by(candidate) |>
+  summarize(ec_votes = sum(electors))
 
+ec_state_predictions |>
+  knitr::kable(col.names = c("Candidate", "Electoral College Votes"))
 
-
-
-
+```
+Using this model, as it stands now, to predict the election, Trump would completely sweep the election, winning 401 electoral votes to Harris' 137. 
 
