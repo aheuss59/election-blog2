@@ -1,5 +1,5 @@
 ---
-title: 'Blog Post 3: Polling'
+title: 'Blog 3: Polling'
 author: Alex Heuss
 date: '2024-09-23'
 slug: blog-3-polling
