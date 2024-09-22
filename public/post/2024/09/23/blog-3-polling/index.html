@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog 3: Polling | A minimal Hugo website</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/categories/">Categories</a></li>
+      
+      <li><a href="/tags/">Tags</a></li>
+      
+      <li><a href="/index.xml">Subscribe</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Blog 3: Polling</span></h1>
+<h2 class="author">Alex Heuss</h2>
+<h2 class="date">2024/09/23</h2>
+</div>
+
+<main>
+<h2 id="historic-accuracy-of-polls">Historic Accuracy of Polls</h2>
+<p>Poll averages seem like an intuitive way to predict elections - intuitively, if I walk around and ask everyone who they are going to vote for, I should get a pretty good idea of how many people are voting for each candidate. However, historically, polls become more accurate as the election approaches, often converging near the correct value within a week or so of the election. Several theories attempt to explain this, including the &ldquo;enlightened blah blah&rdquo; theory expressed by so and so in their book <em>book</em>.</p>
+<p>[insert a graph of this if possible (picturing a scatterplot with weeks_left on the bottom and difference between poll and actual on the y)]</p>
+<pre><code>## `geom_smooth()` using formula = 'y ~ x'
+</code></pre>
+<img src="/post/2024/09/23/blog-3-polling/index_files/figure-html/graph last poll preds and the actual result-1.png" width="672" />
+<h2 id="visualize-2024-polls">Visualize 2024 Polls</h2>
+<img src="/post/2024/09/23/blog-3-polling/index_files/figure-html/2024 nat polls graph-1.png" width="672" />
+## State Level
+<pre><code class="language-{r.">clean_state_polls &lt;- 
+  state_av_poll_data |&gt;
+  mutate(party = ifelse(party == &quot;DEM&quot;, &quot;democrat&quot;, &quot;republican&quot;),
+         dem_support = ifelse(party == &quot;democrat&quot;, poll_support, 0),
+         rep_support = ifelse(party == &quot;republican&quot;, poll_support, 0)) |&gt;
+  select(-party, -candidate, -days_left, -poll_support) |&gt;
+  group_by(year, weeks_left, state, poll_date) |&gt;
+  summarize(dem_support = sum(dem_support),
+            rep_support = sum(rep_support))
+
+merged_state_data &lt;- 
+  state_pop_data |&gt;
+  filter(year &gt;= 1972) |&gt;
+  left_join(clean_state_polls, by = c(&quot;state&quot;, &quot;year&quot;)) |&gt;
+  select(year, state, D_pv, R_pv, D_pv2p, R_pv2p, weeks_left, poll_date, dem_support, rep_support) |&gt;
+  left_join(ec, by = c(&quot;state&quot;, &quot;year&quot;))
+
+average_state_data &lt;- 
+  merged_state_data |&gt;
+  group_by(year, state) |&gt;
+  summarize(av_d_pv = mean(D_pv),
+            av_r_pv = mean(R_pv),
+            av_d_2pv = mean(D_pv2p),
+            av_r_2pv = mean(R_pv2p),
+            av_d_poll = mean(dem_support, na.rm = TRUE),
+            av_r_poll = mean(rep_support, na.rm = TRUE))
+  
+weekly_state_data &lt;- 
+  merged_state_data |&gt;
+  group_by(year, state, weeks_left) |&gt;
+  summarize(av_d_pv = mean(D_pv),
+            av_r_pv = mean(R_pv),
+            av_d_2pv = mean(D_pv2p),
+            av_r_2pv = mean(R_pv2p),
+            av_d_poll = mean(dem_support, na.rm = TRUE),
+            av_r_poll = mean(rep_support, na.rm = TRUE))
+
+</code></pre>
+
+</main>
+
+  <footer>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/combine/npm/katex/dist/katex.min.js,npm/katex/dist/contrib/auto-render.min.js,npm/@xiee/utils/js/render-katex.js" defer></script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+
+  
+  <hr/>
+  © <a href="https://yihui.org">Yihui Xie</a> 2017 &ndash; 2024 | <a href="https://github.com/yihui">Github</a> | <a href="https://twitter.com/xieyihui">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+
