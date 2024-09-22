@@ -2,38 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on A minimal Hugo website</title>
-    <link>http://localhost:4321/post/</link>
+    <link>https://example.org/post/</link>
     <description>Recent content in Posts on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 23 Sep 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:4321/post/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Blog 3: Polling</title>
-      <link>http://localhost:4321/post/2024/09/23/blog-3-polling/</link>
-      <pubDate>Mon, 23 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/23/blog-3-polling/</guid>
-      <description>Historic Accuracy of Polls Poll averages seem like an intuitive way to predict elections - intuitively, if I walk around and ask everyone who they are going to vote for, I should get a pretty good idea of how many people are voting for each candidate. However, historically, polls become more accurate as the election approaches, often converging near the correct value within a week or so of the election. Several theories attempt to explain this, including the &amp;ldquo;enlightened blah blah&amp;rdquo; theory expressed by so and so in their book book.</description>
-    </item>
-    <item>
-      <title>Blog Post 3: Polling</title>
-      <link>http://localhost:4321/post/2024/09/23/blog-post-3-polling/</link>
-      <pubDate>Mon, 23 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/23/blog-post-3-polling/</guid>
-      <description>Historic Accuracy of Polls Poll averages seem like an intuitive way to predict elections - intuitively, if I walk around and ask everyone who they are going to vote for, I should get a pretty good idea of how many people are voting for each candidate. However, historically, polls become more accurate as the election approaches, often converging near the correct value within a week or so of the election. Several theories attempt to explain this, including the &amp;ldquo;enlightened blah blah&amp;rdquo; theory expressed by so and so in their book book.</description>
-    </item>
+    <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://example.org/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Blog Post 2: The Economy</title>
-      <link>http://localhost:4321/post/2024/09/16/blog-post-2-the-economy/</link>
+      <link>https://example.org/post/2024/09/16/blog-post-2-the-economy/</link>
       <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/16/blog-post-2-the-economy/</guid>
+      <guid>https://example.org/post/2024/09/16/blog-post-2-the-economy/</guid>
       <description>The Influence of the Economy on Elections The economy has long been thought a fundamental predictor of election outcomes. The basic premise is: when the economy is doing well, incumbent vote share is higher and vice-versa. In the book Democracy for Realists, Larry Bartels and Christopher Achen describe this theory at length and the predictive power of economic conditions in the months leading up the election. My second blog post explores the predictive power of economic conditions on incumbent party vote share, especially quarter 2 (Q2) GDP growth.</description>
     </item>
     <item>
       <title>Election Forecast 1</title>
-      <link>http://localhost:4321/post/2024/09/05/testing-blog-upload/</link>
+      <link>https://example.org/post/2024/09/05/testing-blog-upload/</link>
       <pubDate>Thu, 05 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/05/testing-blog-upload/</guid>
+      <guid>https://example.org/post/2024/09/05/testing-blog-upload/</guid>
       <description>General Exploration and Popular Vote Over Time This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a simple model based on the results of the past two presidential elections, 2016 and 2020.&#xA;In considering the data to begin with, it is interesting, though not particularly informative to take a look at how many elections each party has won in elections since the end of WWII.</description>
     </item>
   </channel>
