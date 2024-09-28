@@ -1,0 +1,119 @@
+---
+title: 'Blog Post 4: Incumbency and Expert Opinions'
+author: Alex Heuss
+date: '2024-09-30'
+slug: blog-post-4-incumbency-and-expert-opinions
+categories: []
+tags: []
+---
+```{r, load in packages, echo=FALSE, message=FALSE}
+library(car)
+library(caret)
+library(CVXR)
+library(glmnet)
+library(kableExtra)
+library(maps)
+library(RColorBrewer)
+library(sf)
+library(tidyverse)
+library(viridis)
+library(kableExtra)
+```
+
+This week, we discussed incumbency, federal spending and expert opinions as they relate to election forecasting.
+
+## How does incumbency influence presidential races?
+
+The question of how incumbency will play into the 2024 election is a complicated one. Historically, the advantage or disadvantage of running as a presidential candidate for the incumbent party, but not the incumbent president has been rather unclear. To narrow in on Harris' situation a little further, the graph below shows the elections where a member of the incumbent administration has run for president, but not the incumbent themselves. 
+
+```{r, load in the nat pop vote data, fig.width = 11, fig.height = 5, echo=FALSE, message=FALSE} 
+# Some sort of graph visualizing incumbency, especially as it relates to Harris and Trump
+nat_pop_vote <- read_csv("data/popvote_1948-2020.csv") 
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE} 
+prev_admin_years <- 
+  nat_pop_vote |>
+  mutate(prev_admin_not_prez = ifelse(prev_admin == TRUE & incumbent == FALSE, TRUE, FALSE)) |>
+  group_by(year) |>
+  summarize(sum_admin = sum(prev_admin_not_prez)) |>
+  filter(sum_admin >= 1) |>
+  select(year)
+
+nat_pop_vote |>
+  filter(year %in% prev_admin_years$year & year != 2024) |>
+  mutate(`In Previous Administration` = ifelse(prev_admin == TRUE, "In Prior Administration", "Not in Prior Administration"),
+         Outcome = ifelse(winner == TRUE, "Won", "Lost")) |>
+  ggplot(aes(x = year, y = pv, color = `In Previous Administration`, shape = Outcome, group = year)) +
+  geom_point(size = 3) +
+  geom_line() +
+  labs(x = "", y = "Popular Vote", title = "Popular Vote in Elections Where a Member of the Incumbent Administration Ran") +
+  scale_color_manual(values = c("darkorange", "darkgray")) +
+  scale_shape_manual(values = c(20, 19)) +
+  theme_bw()
+  
+```
+
+We can see in the graph that since 1948, this has only happened 6 times. In 4/5, the candidate from the incumbent administration has lost the electoral college. Interestingly, 3/5 have won the popular vote. Additionally, elections involving candidates from incumbent administrations have often been very close. 
+
+Kamala Harris' case is a little different than the standard one. She is runnning as a member of the incumbent administration (the VP), but in the wake of a one-term incumbent president stepping down. 6 other US Presidents have made the decision to [not run](https://www.britannica.com/story/have-any-us-presidents-decided-not-to-run-for-a-second-term) for a second term: Lyndon B. Johnson, James K. Polk, James Buchanan, Rutherford B. Hayes, Calvin Coolidge, Harry S. Truman and Theodore Roosevelt (although he later changed his mind and ran in the following election). 4 of those presidents' parties lost re-election (Polk, Buchanon, Truman and LBJ), while 3 won (Hayes, Roosevelt and Coolidge). There is no clear advantage or disadvantage in this alone. The most recent example of this situation was in 1968, when Huberty Humphrey (the incumbent VP) lost to Richard Nixon following LBJ's stepping down. 
+
+Similarly, it is uncommon for a former president to lose re-election and actually be a viable candidate in the next election. Only six others [tried](https://www.pewresearch.org/short-reads/2022/11/16/few-former-presidents-have-run-for-their-old-jobs-or-anything-else-after-leaving-office/) and only one, Grover Cleveland succeeded. Ulysses S. Grant and Herbert Hoover were both unsuccessful in gaining their party's nomination and Martin Van Buren, Millard Fillmore, and Theodore Roosevelt ran unsuccessfully as third party candidates. It is unclear whether there is any sort of advantage or disadvantage in the case of Trump because, usually, the candidate's party alone presents enough of a barrier to a former president seeking non-consecutive terms. That being said, the one time a former president did secure their party's official nomination, they won the election. 
+
+Given all of this, I don't really believe that either candidate will have much of an incumbency advantage. I would anticipate that Trump gains no advantage or disadvantage based on his prior term as president. Similarly, the jury is still out on whether Harris' role as VP in the Biden administration will help or hurt her. In this election, I think both partisan identification and administration favorability would be more predictive than incumbency. 
+
+## What is the value of expert opinions in election forecasts?
+
+In class this week, we also briefly discussed the value of expert opinions and their accuracy in predicting elections. Based on our discussions, I don't anticipate using expert opinions very much in my own forecast, primarily because they do not include an estimate of popular vote. While expert opinions are typically accurate, they are too wishy-washy for my personal taste (yes, that is the technical term). Most expert opinions, operate on a scale of sorts that in essence is of the style solid Democrat, lean Democrat, toss-up, lean Republican or strong Republican. These categories are, in my opinion, much too broad to be helpful as I attempt to predict state-level popular vote share. However, we did discuss that expert opinions may be valuable in helping to decide which states to build more complicated models for. 
+
+The following map shows an average of expert ratings for 2024 thus far: 
+
+```{r, create a map of averaged competitiveness on the five point scale, echo=FALSE, message=FALSE}
+# Could consider collecting expert data yourself from 2020 - can use sabato only if you want
+# Visualize 2020 effectiveness
+```
+
+Based on that map, it would follow that I should spend the most time on predictions for [insert states here].
+
+## Incorporating 2024 Expert Opinions and Incumbency into my Predictions 
+
+In past weeks, I have done some state-level modeling, but this week I really want to take the time to work more comprehensively on my state-level predictions. So far, we have discussed past voting patterns, the economy, weekly polling averages, federal spending, incumbency, and expert ratings as possible predictive variables to include in forecasting models. 
+
+```{r, load in the data and cleaning and merging}
+# Attend office hours next week to see if there's a reasonable way to loop through every state to create an individual model -- could try some experimental code in this week's too if you have time.
+
+state_pop_vote <- 
+  read_csv("data/clean_wide_state_2pv_1948_2020.csv")
+
+state_polls_wider <- 
+  read_csv("data/polls/state_polls_1968-2024.csv") |>
+  filter(weeks_left <= 30) |>
+  group_by(year, state, weeks_left, party) |>
+  summarize(poll_support = mean(poll_support)) |>
+  pivot_wider(names_from = weeks_left, values_from = poll_support)
+
+colnames(state_polls_wider)[4:34] <- paste0("poll_weeks_left_", 0:30)
+
+# At need to merge polls with pop vote
+
+```
+
+```{r}
+
+# Attempt Ensembling
+
+
+# Add incumbency to it?? do you want to add expert opinions??
+
+
+# Create a state-level map based on predictions
+```
+
+
+
+
+
+
+
+
+

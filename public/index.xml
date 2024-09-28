@@ -9,13 +9,6 @@
     <lastBuildDate>Mon, 23 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Blog 3: Polling</title>
-      <link>https://example.org/post/2024/09/23/blog-3-polling/</link>
-      <pubDate>Mon, 23 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>https://example.org/post/2024/09/23/blog-3-polling/</guid>
-      <description>Historic Accuracy of Polls Poll averages seem like an intuitive way to predict elections - intuitively, if I walk around and ask everyone who they are going to vote for, I should get a pretty good idea of how many people are voting for each candidate. However, historically, polls become more accurate as the election approaches, often converging near the correct value within a week or so of the election. Several theories attempt to explain this, including the &amp;ldquo;enlightened blah blah&amp;rdquo; theory expressed by so and so in their book book.</description>
-    </item>
-    <item>
       <title>Blog Post 3: Polling</title>
       <link>https://example.org/post/2024/09/23/blog-post-3-polling/</link>
       <pubDate>Mon, 23 Sep 2024 00:00:00 +0000</pubDate>
