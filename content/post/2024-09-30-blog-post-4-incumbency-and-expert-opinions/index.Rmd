@@ -82,7 +82,7 @@ In past weeks, I have done some state-level modeling, but this week I really wan
 
 In my model, I'm not going to incorporate expert opinions, but I will try to factor in incumbency, just to give it a try. 
 
-```{r, load in the data and cleaning and merging}
+```{r, load in the data and cleaning and merging, echo=FALSE, message=FALSE}
 # Attend office hours next week to see if there's a reasonable way to loop through every state to create an individual model -- could try some experimental code in this week's too if you have time.
 
 # Load in EC
@@ -166,26 +166,25 @@ state_combo_data <- state_combo_data |>
   mutate(party = ifelse(party == "DEM", "democrat", "republican")) |>
   left_join(nat_pop_vote |> select(year, party, candidate, incumbent, incumbent_party, prev_admin), by = c("year", "party")) 
 
-# do you want do the fed grants even though you really don't want to lol
-
-```
-
-
-
-
-```{r}
-# Alex's Intuition Model - 
-
 state_combo_no2024 <- 
   state_combo_data |>
   filter(year != 2024)
 
+```
+
+```{r, intuition based model, echo=FALSE, message=FALSE, eval=FALSE}
+# Alex's Intuition Model - 
+
 alex_intuition <- lm(pv ~ pv_lag1 + pv_lag2 + poll_weeks_left_0 + q2_gdp + incumbent + incumbent_party + avg_state_unemployment + state, state_combo_no2024)
+
+alex_test <- 
+  state_combo_data |>
+  filter(year == 2024, party == "democrat")
 
 summary(alex_intuition)
 ```
 
-```{r}
+```{r, imputing missing values, echo=FALSE, message=FALSE}
 # Try MICE 
 
 mice_impute <- mice(state_combo_no2024, m=5, method="pmm")
@@ -215,11 +214,9 @@ imputed_test <-
   left_join(region_avs_2024, by = c("region")) |>
   mutate(across(where(is.numeric), ~ ifelse(is.na(.), get(paste0(cur_column(), "_av")), .)))
 
-# 4-52
 ```
 
-
-```{r}
+```{r, making regression model, echo=FALSE, message=FALSE, warning=FALSE}
 # Seperate into training and test
 x.train <- complete_mice_no2024 |>
   filter(party == "democrat") |>
@@ -230,25 +227,18 @@ mice_impute_no2024_dems <-
   complete_mice_no2024 |>
   filter(party == "democrat")
 
-y.train <- mice_impute_no2024_dems$pv
+y.train <- mice_impute_no2024_dems$two_party_vote_share
 
-# Make Ridge, Lasso and Elastic Net
-ridge_model <- glmnet(x = x.train, y = y.train, alpha = 0)
+# Make Lasso
 lasso_model <- glmnet(x = x.train, y = y.train, alpha = 1)
-elastic_model <- glmnet(x = x.train, y = y.train, alpha = 0.5)
 
 # Find Lambda
-cv_ridge <- cv.glmnet(x = x.train, y = y.train, alpha = 0)
+set.seed(02138)
 cv_lasso <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
-cv_elastic <- cv.glmnet(x = x.train, y = y.train, alpha = 0.5)
 
-lambda_ridge <- cv_ridge$lambda.min
 lambda_lasso <- cv_lasso$lambda.min
-lambda_elastic <- cv_elastic$lambda.min
 
-mse_ridge <- mean((predict(ridge_model, s = lambda_ridge, newx = x.train) - y.train)^2)
 mse_lasso <- mean((predict(lasso_model, s = lambda_lasso, newx = x.train) - y.train)^2)
-mse_elastic <- mean((predict(elastic_model, s = lambda_elastic, newx = x.train) - y.train)^2)
 
 # Predict Based on Lasso
 x.test <- imputed_test |>
@@ -258,12 +248,33 @@ x.test <- imputed_test |>
 
 (lasso_pred <- predict(lasso_model, s = lambda_lasso, newx = x.test))
 
-# Create a state-level map based on predictions
 ```
-```{r}
+
+In my model, I took a shot at imputations for missing values and, as can be seen in the map below, I likely made some poor decisions. Namely, for missing state polling values in the year 2024, I imputed the average polling score for that week in the state's region (Northeast, Midwest, South, and West). There is definitely more variety to a state's polling averages than just what is common in their region. Geographical regions alone were definitely not a sound imputation technique. In the future, I hope to be able to perform something similar, but maybe by blocking states together based on voting history, as opposed to geographic proximity. 
+
+```{r, echo=FALSE, message=FALSE}
 ec_nodc <- 
   ec |>
   filter(year == 2024 & stateab != "DC")
+
+lasso_state_preds <- cbind(lasso_pred, ec_nodc)
+
+lasso_pred_map <- lasso_state_preds |>
+  mutate(region = tolower(state),
+         rep = 100 - s1,
+         margin = s1 - rep) |>
+  left_join(map_data("state"), by = "region")
+
+lasso_pred_map |>
+  ggplot(aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = margin), color = "gray") +
+  scale_fill_gradient2(high = "#00AEF3",
+                       mid = "white",
+                       name = "Win Margin",
+                       low = "#E81B23",
+                       breaks = c(-50,-25,0,25,50),limits=c(-50,50)) +
+  theme_void() + 
+  labs(x = "", y = "", title = "Democrat Win Margin in 2024 Based on a State-Level Lasso Model")
 
 ```
 
