@@ -28,15 +28,15 @@ Given all of this, I don't really believe that either candidate will have much o
 
 ## What is the value of expert opinions in election forecasts?
 
-In class this week, we also briefly discussed the value of expert opinions and their accuracy in predicting elections. Based on our discussions, I don't anticipate using expert opinions very much in my own forecast, primarily because they do not include an estimate of popular vote. While expert opinions are typically accurate, they are too wishy-washy for my personal taste (yes, that is the technical term). Most expert opinions, operate on a scale of sorts that in essence is of the style solid Democrat, lean Democrat, toss-up, lean Republican or strong Republican. These categories are, in my opinion, much too broad to be helpful as I attempt to predict state-level popular vote share. However, we did discuss that expert opinions may be valuable in helping to decide which states to build more complicated models for. 
+In class this week, we also briefly discussed the value of expert opinions and their accuracy in predicting elections. Based on our discussions, I don't anticipate using expert opinions very much in my own forecast, primarily because they do not include an estimate of popular vote. While expert opinions are typically accurate, they are too wishy-washy for my personal taste (yes, that is the technical term). Most expert opinions, operate on a scale of sorts that, in essence, is of the style solid Democrat, lean Democrat, toss-up, lean Republican or strong Republican. These categories are, in my opinion, much too broad to be helpful as I attempt to predict state-level popular vote share. However, we did discuss that expert opinions may be valuable in helping to decide which states to build more complicated models for. 
 
-The following map shows an average of expert ratings for 2024 thus far: 
+The map below shows Sabato's Crystal Ball ratings for the 2024 election cycle. 
 
+<img src="{{< blogdown/postref >}}index_files/figure-html/create competition map-1.png" width="672" />
 
+Based on that map, it would follow that I should spend the most time on predictions for Nevada, Arizona, Wisconsin, Michigan, Pennsylvania, Georgia and North Carolina.
 
-Based on that map, it would follow that I should spend the most time on predictions for [insert states here].
-
-## Incorporating 2024 Expert Opinions and Incumbency into my Predictions 
+## Incorporating Incumbency into my Predictions 
 
 In past weeks, I have done some state-level modeling, but this week I really want to take the time to work more comprehensively on my state-level predictions. So far, we have discussed past voting patterns, the economy, weekly polling averages, federal spending, incumbency, and expert ratings as possible predictive variables to include in forecasting models. 
 
@@ -57,10 +57,10 @@ In my model, I'm not going to incorporate expert opinions, but I will try to fac
 ## 
 ##  iter imp variable
 ##   1   1  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21*  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
-##   1   2  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21*  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
-##   1   3  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20  poll_weeks_left_21  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
+##   1   2  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21*  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
+##   1   3  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
 ##   1   4  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21*  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
-##   1   5  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
+##   1   5  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20*  poll_weeks_left_21*  poll_weeks_left_22*  poll_weeks_left_23*  poll_weeks_left_24*  poll_weeks_left_25*  poll_weeks_left_26*  poll_weeks_left_27*  poll_weeks_left_28*  poll_weeks_left_29*  poll_weeks_left_30*  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
 ##   2   1  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20  poll_weeks_left_21  poll_weeks_left_22  poll_weeks_left_23  poll_weeks_left_24  poll_weeks_left_25  poll_weeks_left_26  poll_weeks_left_27  poll_weeks_left_28  poll_weeks_left_29  poll_weeks_left_30  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
 ##   2   2  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20  poll_weeks_left_21  poll_weeks_left_22  poll_weeks_left_23  poll_weeks_left_24  poll_weeks_left_25  poll_weeks_left_26  poll_weeks_left_27  poll_weeks_left_28  poll_weeks_left_29  poll_weeks_left_30  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
 ##   2   3  poll_weeks_left_1  poll_weeks_left_2  poll_weeks_left_3  poll_weeks_left_4  poll_weeks_left_5  poll_weeks_left_6  poll_weeks_left_7  poll_weeks_left_8  poll_weeks_left_9  poll_weeks_left_10  poll_weeks_left_11  poll_weeks_left_12  poll_weeks_left_13  poll_weeks_left_14  poll_weeks_left_15  poll_weeks_left_16  poll_weeks_left_17  poll_weeks_left_18  poll_weeks_left_19  poll_weeks_left_20  poll_weeks_left_21  poll_weeks_left_22  poll_weeks_left_23  poll_weeks_left_24  poll_weeks_left_25  poll_weeks_left_26  poll_weeks_left_27  poll_weeks_left_28  poll_weeks_left_29  poll_weeks_left_30  pv  two_party_vote_share  pv_lag1  pv_lag2  two_party_lag1  two_party_lag2  avg_state_unemployment
@@ -84,7 +84,7 @@ In my model, I'm not going to incorporate expert opinions, but I will try to fac
 ```
 
 ```
-## Warning: Number of logged events: 979
+## Warning: Number of logged events: 982
 ```
 
 ```
@@ -103,61 +103,8 @@ In my model, I'm not going to incorporate expert opinions, but I will try to fac
 ```
 
 
-```
-##             s1
-##  [1,] 54.22644
-##  [2,] 58.06758
-##  [3,] 59.88113
-##  [4,] 53.29359
-##  [5,] 83.19077
-##  [6,] 64.23696
-##  [7,] 65.15550
-##  [8,] 65.49650
-##  [9,] 59.63305
-## [10,] 61.67520
-## [11,] 68.17131
-## [12,] 53.15172
-## [13,] 64.67791
-## [14,] 56.37092
-## [15,] 58.20438
-## [16,] 56.73672
-## [17,] 54.07557
-## [18,] 55.86345
-## [19,] 61.80430
-## [20,] 68.80147
-## [21,] 68.14579
-## [22,] 61.25555
-## [23,] 63.63441
-## [24,] 56.44319
-## [25,] 56.59660
-## [26,] 56.88310
-## [27,] 55.52649
-## [28,] 62.54096
-## [29,] 63.87904
-## [30,] 64.10425
-## [31,] 63.84917
-## [32,] 66.96763
-## [33,] 60.82926
-## [34,] 51.76517
-## [35,] 52.11842
-## [36,] 52.11345
-## [37,] 64.95087
-## [38,] 60.49852
-## [39,] 65.28104
-## [40,] 57.69631
-## [41,] 53.67712
-## [42,] 54.68842
-## [43,] 58.78626
-## [44,] 55.59886
-## [45,] 68.41521
-## [46,] 65.37937
-## [47,] 65.69137
-## [48,] 50.81583
-## [49,] 60.88042
-## [50,] 49.76052
-```
 
-In my model, I took a shot at imputations for missing values and, as can be seen in the map below, I likely made some poor decisions. Namely, for missing state polling values in the year 2024, I imputed the average polling score for that week in the state's region (Northeast, Midwest, South, and West). There is definitely more variety to a state's polling averages than just what is common in their region. Geographical regions alone were definitely not a sound imputation technique. In the future, I hope to be able to perform something similar, but maybe by blocking states together based on voting history, as opposed to geographic proximity. 
+In my model, I took a shot at imputations for missing values and, as can be seen in the map below, I likely made some poor decisions. Namely, for missing state polling values in the year 2024, I imputed the average polling score for that week in the state's geographical region (Northeast, Midwest, South, and West). There is definitely more variety to a state's polling averages than just what is common in their region. Geographical regions alone were not a sound imputation technique, and I think it skewed my model in the direction of Kamala Harris. We can see that my model predicts some states that are typically solid red as approximately toss-ups in 2024. In the future, I hope to be able to perform something similar, but maybe by blocking states together based on voting history, as opposed to geographic proximity. Alternatively, I could weight recent voting patterns heavier in my model. 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 
