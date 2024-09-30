@@ -106,7 +106,7 @@ In past weeks, I have done some state-level modeling, but this week I really wan
 
 In my model, I'm not going to incorporate expert opinions, but I will try to factor in incumbency, just to give it a try. 
 
-```{r, load in the data and cleaning and merging, echo=FALSE, message=FALSE}
+```{r, load in the data and cleaning and merging, echo=FALSE, message=FALSE, warning=FALSE}
 # Attend office hours next week to see if there's a reasonable way to loop through every state to create an individual model -- could try some experimental code in this week's too if you have time.
 
 # Load and clean initial pop vote data
@@ -204,7 +204,7 @@ alex_test <-
 summary(alex_intuition)
 ```
 
-```{r, imputing missing values, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, imputing missing values, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 # Try MICE 
 
 mice_impute <- mice(state_combo_no2024, m=5, method="pmm")
