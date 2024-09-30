@@ -204,7 +204,7 @@ alex_test <-
 summary(alex_intuition)
 ```
 
-```{r, imputing missing values, echo=FALSE, message=FALSE}
+```{r, imputing missing values, echo=FALSE, message=FALSE, warning=FALSE}
 # Try MICE 
 
 mice_impute <- mice(state_combo_no2024, m=5, method="pmm")
@@ -250,14 +250,12 @@ mice_impute_no2024_dems <-
 y.train <- mice_impute_no2024_dems$two_party_vote_share
 
 # Make Lasso
+set.seed(02138)
 lasso_model <- glmnet(x = x.train, y = y.train, alpha = 1)
 
 # Find Lambda
-set.seed(02138)
 cv_lasso <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
-
 lambda_lasso <- cv_lasso$lambda.min
-
 mse_lasso <- mean((predict(lasso_model, s = lambda_lasso, newx = x.train) - y.train)^2)
 
 # Predict Based on Lasso
