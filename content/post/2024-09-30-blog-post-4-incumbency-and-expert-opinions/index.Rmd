@@ -18,6 +18,7 @@ library(sf)
 library(tidyverse)
 library(viridis)
 library(kableExtra)
+library(mice)
 ```
 
 This week, we discussed incumbency, federal spending and expert opinions as they relate to election forecasting.
@@ -56,7 +57,7 @@ nat_pop_vote |>
 
 We can see in the graph that since 1948, this has only happened 6 times. In 4/5, the candidate from the incumbent administration has lost the electoral college. Interestingly, 3/5 have won the popular vote. Additionally, elections involving candidates from incumbent administrations have often been very close. 
 
-Kamala Harris' case is a little different than the standard one. She is runnning as a member of the incumbent administration (the VP), but in the wake of a one-term incumbent president stepping down. 6 other US Presidents have made the decision to [not run](https://www.britannica.com/story/have-any-us-presidents-decided-not-to-run-for-a-second-term) for a second term: Lyndon B. Johnson, James K. Polk, James Buchanan, Rutherford B. Hayes, Calvin Coolidge, Harry S. Truman and Theodore Roosevelt (although he later changed his mind and ran in the following election). 4 of those presidents' parties lost re-election (Polk, Buchanon, Truman and LBJ), while 3 won (Hayes, Roosevelt and Coolidge). There is no clear advantage or disadvantage in this alone. The most recent example of this situation was in 1968, when Huberty Humphrey (the incumbent VP) lost to Richard Nixon following LBJ's stepping down. 
+Kamala Harris' case is a little different than the standard one. She is runnning as a member of the incumbent administration (the VP), but in the wake of a one-term incumbent president stepping down. 6 other US Presidents have made the decision to [not run](https://www.britannica.com/story/have-any-us-presidents-decided-not-to-run-for-a-second-term) for a second term: Lyndon B. Johnson, James K. Polk, James Buchanan, Rutherford B. Hayes, Calvin Coolidge, Harry S. Truman and Theodore Roosevelt (although he later changed his mind and ran in the following election). 4 of those presidents' parties lost re-election (Polk, Buchanan, Truman and LBJ), while 3 won (Hayes, Roosevelt and Coolidge). There is no clear advantage or disadvantage in this alone. The most recent example of this situation was in 1968, when Hubert Humphrey (the incumbent VP) lost to Richard Nixon following LBJ's stepping down. 
 
 Similarly, it is uncommon for a former president to lose re-election and actually be a viable candidate in the next election. Only six others [tried](https://www.pewresearch.org/short-reads/2022/11/16/few-former-presidents-have-run-for-their-old-jobs-or-anything-else-after-leaving-office/) and only one, Grover Cleveland succeeded. Ulysses S. Grant and Herbert Hoover were both unsuccessful in gaining their party's nomination and Martin Van Buren, Millard Fillmore, and Theodore Roosevelt ran unsuccessfully as third party candidates. It is unclear whether there is any sort of advantage or disadvantage in the case of Trump because, usually, the candidate's party alone presents enough of a barrier to a former president seeking non-consecutive terms. That being said, the one time a former president did secure their party's official nomination, they won the election. 
 
@@ -79,12 +80,33 @@ Based on that map, it would follow that I should spend the most time on predicti
 
 In past weeks, I have done some state-level modeling, but this week I really want to take the time to work more comprehensively on my state-level predictions. So far, we have discussed past voting patterns, the economy, weekly polling averages, federal spending, incumbency, and expert ratings as possible predictive variables to include in forecasting models. 
 
+In my model, I'm not going to incorporate expert opinions, but I will try to factor in incumbency, just to give it a try. 
+
 ```{r, load in the data and cleaning and merging}
 # Attend office hours next week to see if there's a reasonable way to loop through every state to create an individual model -- could try some experimental code in this week's too if you have time.
 
-state_pop_vote <- 
-  read_csv("data/clean_wide_state_2pv_1948_2020.csv")
+# Load in EC
+ec <- 
+  read_csv("data/corrected_ec_1948_2024.csv")
 
+# Load and clean initial pop vote data
+state_pop_vote <- 
+  read_csv("data/state_2pv_1948_2020.csv") |>
+  select(year, state, party, vote_share, two_party_vote_share) |>
+  rename(pv = vote_share) |>
+  mutate(party = ifelse(party == "Democrat", "DEM", "REP"))
+
+nat_polls <- 
+  read_csv("data/polls/national_polls_1968-2024.csv") |>
+  select(year, weeks_left, party, poll_support) |>
+  filter(weeks_left <= 30) |>
+  group_by(year, weeks_left, party) |>
+  summarize(nat_poll_av = mean(poll_support)) |>
+  pivot_wider(names_from = weeks_left, values_from = nat_poll_av)
+
+colnames(nat_polls)[3:33] <- paste0("nat_weeks_left_", 0:30)
+
+# Load and clean poll data
 state_polls_wider <- 
   read_csv("data/polls/state_polls_1968-2024.csv") |>
   filter(weeks_left <= 30) |>
@@ -94,21 +116,156 @@ state_polls_wider <-
 
 colnames(state_polls_wider)[4:34] <- paste0("poll_weeks_left_", 0:30)
 
-# At need to merge polls with pop vote
+# Combine Poll and Pop Data
+state_combo_data <- state_polls_wider |>
+  left_join(state_pop_vote, by = c("year", "state", "party")) 
 
+state_combo_data <- state_combo_data |> 
+  arrange(state, party, year) |>
+  group_by(state, party) |>
+  mutate(pv_lag1 = lag(pv, 1),
+         pv_lag2 = lag(pv, 2),
+         two_party_lag1 = lag(two_party_vote_share, 1),
+         two_party_lag2 = lag(two_party_vote_share, 2))
+
+# Load, clean and combine econ data
+nat_econ_data <- 
+  read_csv("data/fred_econ.csv") 
+
+ann_nat_econ <- 
+  nat_econ_data |>
+  filter(year >= 1948) |>
+  group_by(year) |>
+  select(-quarter) |>
+  summarize(ann_gdp = mean(GDP, na.rm=TRUE),,
+            ann_rdpi = mean(RDPI, na.rm=TRUE),,
+            ann_nat_unemployment = mean(unemployment, na.rm=TRUE),
+            ann_stock_close = mean(sp500_adj_close, na.rm=TRUE))
+q2_econ <- 
+  nat_econ_data |>
+  filter(quarter == 2) |>
+  mutate(q2_gdp = GDP_growth_quarterly, 
+         q2_rdpi = RDPI_growth_quarterly) |>
+  select(year, q2_gdp, q2_rdpi)
+
+state_econ_data <- 
+  read_csv("data/Historical_State_Unemployment.csv") |>
+  mutate(year = format(as.Date(date), "%Y")) |>
+  mutate(year = as.double(year)) |>
+  group_by(state, year) |>
+  summarize(avg_state_unemployment = mean(unemployment))
+
+state_combo_data <- 
+  state_combo_data |>
+  left_join(ann_nat_econ, by = "year") |>
+  left_join(q2_econ, by = "year") |>
+  left_join(state_econ_data, by = c("state", "year"))
+
+# Merge with incumbency info
+state_combo_data <- state_combo_data |>
+  mutate(party = ifelse(party == "DEM", "democrat", "republican")) |>
+  left_join(nat_pop_vote |> select(year, party, candidate, incumbent, incumbent_party, prev_admin), by = c("year", "party")) 
+
+# do you want do the fed grants even though you really don't want to lol
+
+```
+
+
+
+
+```{r}
+# Alex's Intuition Model - 
+
+state_combo_no2024 <- 
+  state_combo_data |>
+  filter(year != 2024)
+
+alex_intuition <- lm(pv ~ pv_lag1 + pv_lag2 + poll_weeks_left_0 + q2_gdp + incumbent + incumbent_party + avg_state_unemployment + state, state_combo_no2024)
+
+summary(alex_intuition)
 ```
 
 ```{r}
+# Try MICE 
 
-# Attempt Ensembling
+mice_impute <- mice(state_combo_no2024, m=5, method="pmm")
+complete_mice_no2024 <- complete(mice_impute)
+
+region_data <- 
+  state_combo_data |>
+  filter(year == 2024) |>
+  select(-poll_weeks_left_0, -poll_weeks_left_1, -poll_weeks_left_2, -poll_weeks_left_3, 
+         -poll_weeks_left_4, -poll_weeks_left_5, -poll_weeks_left_6) |>
+  mutate(region = case_when(state %in% c("Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont", "New Jersey", "New York", "Pennsylvania") ~ "Northeast",
+                            state %in% c("Indiana", "Illinois", "Michigan", "Ohio", "Wisconsin", "Iowa", "Nebraska", "Kansas",	"North Dakota", "Minnesota", "South Dakota", "Missouri") ~ "Midwest",
+                            state %in% c("Delaware", "Florida", "Georgia", "Maryland", "North Carolina", "South Carolina", "Virginia", "West Virginia", "Alabama", "Kentucky", "Mississippi", "Tennessee", "Arkansas", "Louisiana", "Oklahoma", "Texas") ~ "South",
+                            state %in% c("Arizona", "Colorado", "Idaho", "New Mexico", "Montana", "Utah", "Nevada", "Wyoming", "Alaska", "California", "Hawaii", "Oregon", "Washington") ~ "West"))
+
+region_avs_2024 <- 
+  region_data |>
+  select(-pv, -two_party_vote_share) |>
+  group_by(region) |>
+  summarize(across(where(is.numeric), mean, na.rm=TRUE))
+colnames(region_avs_2024)[3:26] <- paste0("poll_weeks_left_", 7:30, "_av")
+  
+imputed_test <- 
+  region_data |>
+  select(-pv, -two_party_vote_share) |>
+  filter(party == "democrat") |>
+  left_join(region_avs_2024, by = c("region")) |>
+  mutate(across(where(is.numeric), ~ ifelse(is.na(.), get(paste0(cur_column(), "_av")), .)))
+
+# 4-52
+```
 
 
-# Add incumbency to it?? do you want to add expert opinions??
+```{r}
+# Seperate into training and test
+x.train <- complete_mice_no2024 |>
+  filter(party == "democrat") |>
+  select(state, all_of(paste0("poll_weeks_left_", 7:30)), pv_lag1, pv_lag2, 41:47, incumbent, incumbent_party, prev_admin) |>
+  as.matrix()
 
+mice_impute_no2024_dems <- 
+  complete_mice_no2024 |>
+  filter(party == "democrat")
+
+y.train <- mice_impute_no2024_dems$pv
+
+# Make Ridge, Lasso and Elastic Net
+ridge_model <- glmnet(x = x.train, y = y.train, alpha = 0)
+lasso_model <- glmnet(x = x.train, y = y.train, alpha = 1)
+elastic_model <- glmnet(x = x.train, y = y.train, alpha = 0.5)
+
+# Find Lambda
+cv_ridge <- cv.glmnet(x = x.train, y = y.train, alpha = 0)
+cv_lasso <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
+cv_elastic <- cv.glmnet(x = x.train, y = y.train, alpha = 0.5)
+
+lambda_ridge <- cv_ridge$lambda.min
+lambda_lasso <- cv_lasso$lambda.min
+lambda_elastic <- cv_elastic$lambda.min
+
+mse_ridge <- mean((predict(ridge_model, s = lambda_ridge, newx = x.train) - y.train)^2)
+mse_lasso <- mean((predict(lasso_model, s = lambda_lasso, newx = x.train) - y.train)^2)
+mse_elastic <- mean((predict(elastic_model, s = lambda_elastic, newx = x.train) - y.train)^2)
+
+# Predict Based on Lasso
+x.test <- imputed_test |>
+  ungroup() |>
+  select(state, all_of(paste0("poll_weeks_left_", 7:30)), pv_lag1.x, pv_lag2.x, 32:38, incumbent, incumbent_party, prev_admin) |>
+  as.matrix()
+
+(lasso_pred <- predict(lasso_model, s = lambda_lasso, newx = x.test))
 
 # Create a state-level map based on predictions
 ```
+```{r}
+ec_nodc <- 
+  ec |>
+  filter(year == 2024 & stateab != "DC")
 
+```
 
 
 
