@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog Post 5: Demographics and Party Identification | A minimal Hugo website</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/categories/">Categories</a></li>
+      
+      <li><a href="/tags/">Tags</a></li>
+      
+      <li><a href="/index.xml">Subscribe</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Blog Post 5: Demographics and Party Identification</span></h1>
+<h2 class="author">Alex Heuss</h2>
+<h2 class="date">2024/10/03</h2>
+</div>
+
+<main>
+<h2 id="discussion-of-the-predicitive-power-of-demographics-and-party-id">Discussion of the Predicitive Power of Demographics and Party ID</h2>
+<p>In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, la la la la la, provided some empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%</p>
+<h2 id="thinking-about-party-id">Thinking About Party ID</h2>
+<p>Historical data on state-level partisan identification is not readily available. National-level party identification data can be compiled through Pew Research Center data (1939-2014). [find through 2024].</p>
+<p>State-level data however is not as easily obtained</p>
+<pre><code class="language-r"># Ask about different methods of estimating Party-ID for each state
+# we can use the voter files for 2024
+# you can try to look for a historical data set for party
+# to weight party ID you can train a model only on party ID and then use ensembling
+# super learning would helo make weights that empirically are better worse
+</code></pre>
+<h2 id="building-a-state-level-model-and-explaining-decisions-and-assumptions">Building a State-Level Model and Explaining Decisions and Assumptions</h2>
+<pre><code class="language-r"># Ask about a proper format
+</code></pre>
+<pre><code class="language-r"># Ask about value imputation and what assumptions follow when we impute values
+# state's historical deviation from national popular vote or from total outcome
+# could create a separate model for states without polling
+</code></pre>
+<pre><code class="language-r"># Does it make sense to actually run each state's regression model separately or does that reduce the statistical power of results too much? 
+# When I use random forest, does that actually make a model that I could then hypothetically use to bootstrap a bunch of election simulations
+# A lot of my theory revolves around weighting partisan ID really high, how exactly can I incorporate that into the model?
+# Is there anyway to make it so that when it predicts Dems and Reps it won't be more than 100 or should I re-weight based on percentage (ex. Harris at 52 and Trump at 50, then Harris % of pop vote is 52/102)
+
+# People usually do simulationd for values of the polls
+# the bootstrap in gov51 is different than what we do here
+</code></pre>
+
+</main>
+
+  <footer>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/combine/npm/katex/dist/katex.min.js,npm/katex/dist/contrib/auto-render.min.js,npm/@xiee/utils/js/render-katex.js" defer></script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+
+  
+  <hr/>
+  © <a href="https://yihui.org">Yihui Xie</a> 2017 &ndash; 2024 | <a href="https://github.com/yihui">Github</a> | <a href="https://twitter.com/xieyihui">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+
