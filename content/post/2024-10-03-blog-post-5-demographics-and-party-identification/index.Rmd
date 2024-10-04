@@ -8,7 +8,7 @@ tags: []
 ---
 
 ```{r, load packages}
-
+library(tidyverse)
 ```
 
 ## Discussion of the Predicitive Power of Demographics and Party ID
@@ -21,6 +21,40 @@ Historical data on state-level partisan identification is not readily available.
 
 State-level data however is not as easily obtained
 
+```{r, echo=FALSE, message=FALSE}
+nat_pop <- read_csv("data/popvote_1948_2020.csv")
+nat_party <- read_csv("data/national_party_id.csv") |>
+  mutate(swing1 = percent - year_prior,
+         swing1_2p = two_party_percent - year_prior_2p) |>
+  arrange(year) |>
+  group_by(party) |>
+  mutate(prior_election = lag(percent, 1),
+         prior_election_2p = lag(two_party_percent, 1),
+         swing4 = percent - prior_election, 
+         swing4_2p = two_party_percent - prior_election_2p)
+nat_data <- 
+  nat_pop |>
+  left_join(nat_party, by = c("year", "party"))
+         
+```
+
+```{r, echo=FALSE, message=FALSE}
+nat_data |>
+  mutate(Party = ifelse(party == "democrat", "Democrat", "Republican")) |>
+  ggplot(aes(x = swing1, y = pv, color = Party)) +
+  geom_point(color = "darkgray") + 
+  geom_smooth(method = "lm", se=FALSE) + 
+  scale_color_manual(values = c("#00AEF3", "#E81B23")) + 
+  facet_wrap(~ Party) + 
+  labs(x = "Change in Party ID Between the Year Prior to the Election and Election Year",
+       y = "Popular Vote Share (%)",
+       title = "Party ID Shifts and Presidential Popular Vote Share") + 
+  theme_bw() + 
+  theme(legend.position = "none")
+
+```
+
+
 ```{r}
 # Ask about different methods of estimating Party-ID for each state
 # we can use the voter files for 2024
@@ -28,7 +62,6 @@ State-level data however is not as easily obtained
 # to weight party ID you can train a model only on party ID and then use ensembling
 # super learning would helo make weights that empirically are better worse
 ```
-
 
 ## Building a State-Level Model and Explaining Decisions and Assumptions
 

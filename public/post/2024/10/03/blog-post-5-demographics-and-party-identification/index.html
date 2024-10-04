@@ -34,11 +34,31 @@
 </div>
 
 <main>
+<pre><code class="language-r">library(tidyverse)
+</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+</code></pre>
 <h2 id="discussion-of-the-predicitive-power-of-demographics-and-party-id">Discussion of the Predicitive Power of Demographics and Party ID</h2>
 <p>In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, la la la la la, provided some empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%</p>
 <h2 id="thinking-about-party-id">Thinking About Party ID</h2>
 <p>Historical data on state-level partisan identification is not readily available. National-level party identification data can be compiled through Pew Research Center data (1939-2014). [find through 2024].</p>
 <p>State-level data however is not as easily obtained</p>
+<pre><code>## Warning: Removed 2 rows containing non-finite outside the scale range
+## (`stat_smooth()`).
+</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values or values outside the scale range
+## (`geom_point()`).
+</code></pre>
+<img src="https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 <pre><code class="language-r"># Ask about different methods of estimating Party-ID for each state
 # we can use the voter files for 2024
 # you can try to look for a historical data set for party

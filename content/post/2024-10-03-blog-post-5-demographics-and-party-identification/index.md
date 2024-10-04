@@ -8,6 +8,22 @@ tags: []
 ---
 
 
+``` r
+library(tidyverse)
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```
 
 ## Discussion of the Predicitive Power of Demographics and Party ID
 
@@ -20,6 +36,22 @@ Historical data on state-level partisan identification is not readily available.
 State-level data however is not as easily obtained
 
 
+
+
+```
+## Warning: Removed 2 rows containing non-finite outside the scale range
+## (`stat_smooth()`).
+```
+
+```
+## Warning: Removed 2 rows containing missing values or values outside the scale range
+## (`geom_point()`).
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+
+
+
 ``` r
 # Ask about different methods of estimating Party-ID for each state
 # we can use the voter files for 2024
@@ -27,7 +59,6 @@ State-level data however is not as easily obtained
 # to weight party ID you can train a model only on party ID and then use ensembling
 # super learning would helo make weights that empirically are better worse
 ```
-
 
 ## Building a State-Level Model and Explaining Decisions and Assumptions
 

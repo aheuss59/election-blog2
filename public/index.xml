@@ -13,7 +13,7 @@
       <link>https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/</link>
       <pubDate>Thu, 03 Oct 2024 00:00:00 +0000</pubDate>
       <guid>https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/</guid>
-      <description>Discussion of the Predicitive Power of Demographics and Party ID In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, la la la la la, provided some empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%&#xA;Thinking About Party ID Historical data on state-level partisan identification is not readily available. National-level party identification data can be compiled through Pew Research Center data (1939-2014).</description>
+      <description>library(tidyverse)&#xD;## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──&#xD;## ✔ dplyr 1.1.4 ✔ readr 2.1.5&#xD;## ✔ forcats 1.0.0 ✔ stringr 1.5.1&#xD;## ✔ ggplot2 3.5.1 ✔ tibble 3.2.1&#xD;## ✔ lubridate 1.9.3 ✔ tidyr 1.3.1&#xD;## ✔ purrr 1.0.2 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──&#xD;## ✖ dplyr::filter() masks stats::filter()&#xD;## ✖ dplyr::lag() masks stats::lag()&#xD;## ℹ Use the conflicted package (&amp;lt;http://conflicted.r-lib.org/&amp;gt;) to force all conflicts to become errors&#xD;Discussion of the Predicitive Power of Demographics and Party ID In class this week, we discussed the power of demographic variables in predicting election outcomes.</description>
     </item>
     <item>
       <title>Blog Post 4: Incumbency and Expert Opinions</title>
