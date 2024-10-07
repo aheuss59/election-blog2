@@ -35,8 +35,8 @@
 
 <main>
 <h2 id="discussion-of-the-predicitive-power-of-demographics-and-party-id">Discussion of the Predicitive Power of Demographics and Party ID</h2>
-<p>In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, la la la la la, provided some empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%.</p>
-<h2 id="considering-party-id">Considering Party ID</h2>
+<p>In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, Kim &amp; Zilinsky&rsquo;s &ldquo;Division does not imply predictability: Demographics
+continue to reveal little about voting and partisanship&rdquo;, provided empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%. They also found though that party is more predictive, especially when combined with demographics. This motivates my own theory of the importance of partisan identification.</p>
 <p>My theory around election prediction involves a rather pessimistic belief that a person&rsquo;s vote, especially in recent elections, can likely be fairly accurately predicted by partisan identification alone. I believe that the country has become increasingly polarized and that people vote based on their party more than other factors like the economy or a candidate&rsquo;s particular policies.</p>
 <p>I found and cleaned data for both national (Gallup and Pew Research) and state (ANES estimates) party identification historically. The graph below shows the relationship between national party ID &ldquo;swing&rdquo; between the year before an election and election year and the national popular vote. The &ldquo;swing&rdquo; measure attempts to get a feel for party momentum going into the election year.</p>
 <pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
@@ -48,29 +48,11 @@
 ##   dat &lt;- vroom(...)
 ##   problems(dat)
 </code></pre>
-<pre><code>## Warning: Removed 2 rows containing non-finite outside the scale range
-## (`stat_smooth()`).
-</code></pre>
-<pre><code>## Warning: Removed 2 rows containing missing values or values outside the scale range
-## (`geom_point()`).
-</code></pre>
 <img src="https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 <p>This graph shows, intuitively, a rough positive correlation. Generally, when party identification is changing in a positive direction between the year prior to the election and the election itself (momentum), the vote share for that party is higher.</p>
 <p>Looking at the relationship between partisan identification and popular vote on the state level, the relationship between party identification swing and popular vote in the state is much less conclusive.</p>
-<pre><code>## Warning: Removed 24 rows containing non-finite outside the scale range
-## (`stat_smooth()`).
-</code></pre>
-<pre><code>## Warning: Removed 24 rows containing missing values or values outside the scale range
-## (`geom_point()`).
-</code></pre>
 <img src="https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
 <p>Trends between partisan swing and state popular vote differ a lot between states. Michigan and Ohio would imply that there might be a small positive correlation, while Georgia would suggest just the opposite. This would imply that perhaps party identification is more predictive of national popular vote than state popular vote.</p>
-<pre><code class="language-r"># Ask about different methods of estimating Party-ID for each state
-# we can use the voter files for 2024
-# you can try to look for a historical data set for party
-# to weight party ID you can train a model only on party ID and then use ensembling
-# super learning would helo make weights that empirically are better
-</code></pre>
 <h2 id="national-popular-vote-predictions">National Popular Vote Predictions</h2>
 <p>For predictions this week, I make an effort to predict both national popular vote share and the electoral college outcome.</p>
 <p>For national popular vote, I used lasso to make a prediction based on the predictors that we&rsquo;ve discussed in previous classes (the economy, incumbency, polling) and this week I added national party identification.</p>
@@ -79,8 +61,6 @@
 ## [2,] 48.07179
 </code></pre>
 <p>The lasso regression found the popular vote to be extremely tight, with Kamala Harris receiving 48.91% and Donald Trump receiving 48.07%.</p>
-<pre><code class="language-r">coef(lasso.nat, s = lambda.min.lasso)
-</code></pre>
 <pre><code>## 50 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                             s1
 ## (Intercept)       19.049104982
@@ -135,7 +115,7 @@
 ## stock_adj_close    .
 </code></pre>
 <p>In the national popular vote predictions, Lasso selected the percent of independents in the country, the swing in party ID from the year prior to the election to the election year, the two party party identification from the previous election, the most recent week of polling, and one earlier week of polling as the most valuable predictors for national popular vote. This would support my theory that party identification may be very important in predicting election outcomes.</p>
-<p>Unfortunately, I spent a lot of time this week compiling and cleaning party identification and, despite many attempts, was unsuccessful in incorporating it into a state-level model to predict the electoral college this week. I look forward to incorporating party into my state prediction model next week now that I have the data wrangled and cleaned.</p>
+<p>Unfortunately, I spent a lot of time this week compiling and cleaning party identification data and analyzing it&rsquo;s possible impact. Despite many attempts, I was unsuccessful in incorporating it into a state-level model to predict the electoral college this week. I look forward to incorporating party into my state prediction model next week, now that I have the data wrangled and cleaned.</p>
 
 </main>
 

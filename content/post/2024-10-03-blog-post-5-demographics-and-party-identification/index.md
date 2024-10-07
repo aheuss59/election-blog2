@@ -11,9 +11,8 @@ tags: []
 
 ## Discussion of the Predicitive Power of Demographics and Party ID
 
-In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, la la la la la, provided some empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%. 
-
-## Considering Party ID
+In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, Kim & Zilinsky's "Division does not imply predictability: Demographics
+continue to reveal little about voting and partisanship", provided empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%. They also found though that party is more predictive, especially when combined with demographics. This motivates my own theory of the importance of partisan identification.
 
 My theory around election prediction involves a rather pessimistic belief that a person's vote, especially in recent elections, can likely be fairly accurately predicted by partisan identification alone. I believe that the country has become increasingly polarized and that people vote based on their party more than other factors like the economy or a candidate's particular policies. 
 
@@ -37,46 +36,17 @@ I found and cleaned data for both national (Gallup and Pew Research) and state (
 
 
 
-
-```
-## Warning: Removed 2 rows containing non-finite outside the scale range
-## (`stat_smooth()`).
-```
-
-```
-## Warning: Removed 2 rows containing missing values or values outside the scale range
-## (`geom_point()`).
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 
 This graph shows, intuitively, a rough positive correlation. Generally, when party identification is changing in a positive direction between the year prior to the election and the election itself (momentum), the vote share for that party is higher. 
 
 Looking at the relationship between partisan identification and popular vote on the state level, the relationship between party identification swing and popular vote in the state is much less conclusive.
 
-
-```
-## Warning: Removed 24 rows containing non-finite outside the scale range
-## (`stat_smooth()`).
-```
-
-```
-## Warning: Removed 24 rows containing missing values or values outside the scale range
-## (`geom_point()`).
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
 
 Trends between partisan swing and state popular vote differ a lot between states. Michigan and Ohio would imply that there might be a small positive correlation, while Georgia would suggest just the opposite. This would imply that perhaps party identification is more predictive of national popular vote than state popular vote. 
 
 
-``` r
-# Ask about different methods of estimating Party-ID for each state
-# we can use the voter files for 2024
-# you can try to look for a historical data set for party
-# to weight party ID you can train a model only on party ID and then use ensembling
-# super learning would helo make weights that empirically are better
-```
 
 ## National Popular Vote Predictions
 
@@ -92,10 +62,6 @@ For national popular vote, I used lasso to make a prediction based on the predic
 ```
 The lasso regression found the popular vote to be extremely tight, with Kamala Harris receiving 48.91% and Donald Trump receiving 48.07%. 
 
-
-``` r
-coef(lasso.nat, s = lambda.min.lasso)
-```
 
 ```
 ## 50 x 1 sparse Matrix of class "dgCMatrix"
@@ -154,7 +120,7 @@ coef(lasso.nat, s = lambda.min.lasso)
 
 In the national popular vote predictions, Lasso selected the percent of independents in the country, the swing in party ID from the year prior to the election to the election year, the two party party identification from the previous election, the most recent week of polling, and one earlier week of polling as the most valuable predictors for national popular vote. This would support my theory that party identification may be very important in predicting election outcomes. 
 
-Unfortunately, I spent a lot of time this week compiling and cleaning party identification and, despite many attempts, was unsuccessful in incorporating it into a state-level model to predict the electoral college this week. I look forward to incorporating party into my state prediction model next week now that I have the data wrangled and cleaned. 
+Unfortunately, I spent a lot of time this week compiling and cleaning party identification data and analyzing it's possible impact. Despite many attempts, I was unsuccessful in incorporating it into a state-level model to predict the electoral college this week. I look forward to incorporating party into my state prediction model next week, now that I have the data wrangled and cleaned. 
 
 
 
