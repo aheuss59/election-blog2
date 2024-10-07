@@ -34,379 +34,8 @@ I found and cleaned data for both national (Gallup and Pew Research) and state (
 ```
 
 
-``` r
-demographics <- read_csv("data/demographics.csv") |>
-  group_by(year, state) |>
-  mutate(hispanic = sum(c(hispanic_white, hispanic_black, hispanic_american_indian, hispanic_asian_pacific_islander, hispanic_other_race, hispanic_two_or_more_races), na.rm = TRUE),
-         age_18_to_29 = sum(c(age_18_to_19, age_20, age_21, age_22_to_24, age_25_to_29), na.rm=TRUE),
-         age_30_to_44 = sum(c(age_30_to_34, age_35_to_44), na.rm = TRUE),
-         age_45_to_59 = sum(c(age_45_to_54, age_55_to_59), na.rm = TRUE),
-         age_60_to_74 = sum(c(age_60_to_61, age_62_to_64, age_65_to_74), na.rm = TRUE),
-         ) |>
-  select(-1, -(9:38), -total_pop, -under18)
-```
-
-```
-## New names:
-## Rows: 663 Columns: 44
-## ── Column specification
-## ──────────────────────────────────────────────────────── Delimiter: "," chr
-## (1): state dbl (43): ...1, year, total_pop, white, black, american_indian,
-## asian_pacifi...
-## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
-## Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## • `` -> `...1`
-```
-
-``` r
-toss_lean_likely_states <- c("AZ", "GA", "MI", "NV", "NC", "PA", "WI", "ME", "MN", "NH", "NM", "VA", "FL", "TX")
-
-i = 0
-
-for (state in toss_lean_likely_states) {
-  # Load in the state's voter files
-  voter_file_state_data <- 
-    read_csv(paste0("data/state_1pc_samples_aug24/", state, "_sample.csv")) 
-  
-  # Count the number of voters in the voter files
-  voter_file_total_voters <- nrow(voter_file_state_data)
-  
-  # Clean the data a lot
-  voter_file_state_data <- 
-    voter_file_state_data |>
-    filter(sii_deceased == 0) |>
-    rename(stateab = sii_state) |>
-    left_join(stateabs, by = "stateab") |>
-    mutate(total_voters = voter_file_total_voters,
-           age_18_to_29 = ifelse(sii_age_range == "A", 1, 0),
-           age_30_to_44 = ifelse(sii_age >= 30 & sii_age <= 44, 1, 0),
-           age_45_to_59 = ifelse(sii_age >= 45 & sii_age <= 59, 1, 0),
-           age_60_to_74 = ifelse(sii_age >= 60 & sii_age <= 74, 1, 0),
-           age_75_to_84 = ifelse(sii_age >= 75 & sii_age <= 84, 1, 0),
-           age_85_and_over = ifelse(sii_age >= 85, 1, 0),
-           white = ifelse(sii_race == "W", 1, 0),
-           black = ifelse(sii_race == "B", 1, 0), 
-           american_indian = ifelse(sii_race == "N", 1, 0),
-           asian_pacific_islander = ifelse(sii_race == "A", 1, 0),
-           hispanic = ifelse(sii_race == "H", 1, 0),
-           registered_dem = ifelse(svi_party_registration == "D", 1, 0),
-           registered_rep = ifelse(svi_party_registration == "R", 1, 0),
-           state_ind = ifelse(svi_party_registration == "U", 1, 0),
-           less_than_college = ifelse(sii_education_level == "A" | sii_education_level == "E", 1, 0),
-           bachelors = ifelse(sii_education_level == "B", 1, 0),
-           graduate = ifelse(sii_education_level == "C", 1, 0)) |>
-    select(-stateab, -sii_deceased, -sii_age, -sii_age_range, -sii_race, -sii_gender, -sii_race, -svi_party_registration, -sii_education_level, -sii_homeowner, -sii_married, -sii_urbanicity, -svi_vh_2020p, -svi_vh_2020p_party, -svi_vh_2020pp, -svi_vh_2020pp_party, -svi_vh_2020g, -svi_vh_2021p, -svi_vh_2021p_party, -svi_vh_2021g, -svi_vh_2022p, -svi_vh_2022p_party, -svi_vh_2022g, -svi_vh_2023p, -svi_vh_2023p_party, -svi_vh_2023g, -svi_vh_2024p, -svi_vh_2024p_party, -svi_vh_2024pp, -svi_vh_2024pp_party, -svi_vh_2024g, -svi_vote_all_general, -svi_vote_all_general_fed, -svi_vote_all_general_fed_pct, -svi_vote_all_general_midterm, -svi_vote_all_general_midterm_pct, -svi_vote_all_general_pres, -svi_vote_all_general_pres_pct, -svi_vote_all_offyear, -svi_vote_all_primary, -svi_vote_all_primary_pres, -svi_vote_all_primary_pres_pct, -svi_vote_all_primary_dem_votes, -svi_vote_all_primary_dem_votes_pct) |>
-    group_by(state) |>
-    summarize(total_voters = mean(total_voters),
-              year = 2024,
-              age_18_to_29 = sum(age_18_to_29, na.rm = TRUE)/total_voters,
-              age_30_to_44 = sum(age_30_to_44, na.rm = TRUE)/total_voters,
-              age_45_to_59 = sum(age_45_to_59, na.rm = TRUE)/total_voters,
-              age_60_to_74 = sum(age_60_to_74, na.rm = TRUE)/total_voters,
-              age_75_to_84 = sum(age_75_to_84, na.rm = TRUE)/total_voters,
-              age_85_and_over = sum(age_85_and_over, na.rm = TRUE)/total_voters,
-              white = sum(white)/total_voters,
-              black = sum(black)/total_voters,
-              american_indian = sum(american_indian)/total_voters,
-              asian_pacific_islander = sum(asian_pacific_islander)/total_voters,
-              hispanic = sum(hispanic)/total_voters,
-              registered_dem = sum(registered_dem, na.rm = TRUE)/total_voters*100,
-              registered_rep = sum(registered_rep, na.rm = TRUE)/total_voters*100,
-              registered_ind = sum(state_ind, na.rm = TRUE)/total_voters*100,
-              less_than_college = sum(less_than_college, na.rm = TRUE)/total_voters,
-              bachelors = sum(bachelors, na.rm = TRUE)/total_voters,
-              graduate = sum(graduate, na.rm = TRUE)/total_voters)
-  
-  # Subset to just party
-  voter_file_party <- 
-    voter_file_state_data |>
-    select(state, year, registered_dem, registered_rep, registered_ind)
-  
-  # update party vars in state_data
-  state_data <- 
-    state_data |>
-    left_join(voter_file_party, by = c("year", "state")) 
-    
-  if (i >= 1) {
-    state_data <- 
-      state_data |>
-      mutate(registered_dem = coalesce(registered_dem.x, registered_dem.y), 
-             registered_rep = coalesce(registered_rep.x, registered_rep.y),
-             registered_ind = coalesce(registered_ind.x, registered_ind.y)) |>
-      select(-registered_dem.x, -registered_dem.y, -registered_rep.x, -registered_rep.y, -registered_ind.x, -registered_ind.y)
-  }
-    
-  state_data <- 
-    state_data |>
-    mutate(state_party_perc = case_when(year == 2024 & state==state & party == "democrat" ~ registered_dem,
-                                        year == 2024 & state == state & party == "republican" ~ registered_rep,
-                                        TRUE ~ state_party_perc),
-            state_ind_perc = ifelse(year == 2024 & state == state, registered_ind, state_ind_perc),
-            state_2p_perc = case_when(year == 2024 & state == state & party == "democrat" ~ registered_dem/(registered_dem + registered_rep),
-                                      year == 2024 & state == state & party == "republican" ~ registered_rep/(registered_dem + registered_rep),
-                                      TRUE ~ state_2p_perc))
-  
-  # Subset to just demographics and bind it with historical demographic data
-  voter_file_demographics <- 
-    voter_file_state_data |>
-    select(-registered_dem, -registered_rep, -registered_ind, -total_voters)
-  
-  demographics <- rbind(demographics, voter_file_demographics)
-  
-  i = i + 1
-}
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 65896 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (19): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (8): svi_vh_2020pp_party, svi_vh_2021p_party, svi_vh_2023p, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 103165 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (21): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (6): svi_vh_2020pp_party, svi_vh_2021p_party, svi_vh_2023p, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 100527 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (21): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (6): svi_vh_2021p_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023g...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 30038 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (18): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (9): svi_vh_2020pp_party, svi_vh_2021p_party, svi_vh_2023p, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 101796 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (22): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (5): svi_vh_2020pp_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 118713 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (22): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (5): svi_vh_2020pp_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 85513 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (21): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (6): svi_vh_2020pp_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 14924 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (23): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (4): svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023g, svi_vh_2024g
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 50590 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (23): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (4): svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023g, svi_vh_2024g
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 13017 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (23): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (4): svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023g, svi_vh_2024g
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 18327 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (21): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (6): svi_vh_2020pp_party, svi_vh_2021p_party, svi_vh_2023p, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 81119 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (22): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (5): svi_vh_2020pp_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 216941 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (22): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (5): svi_vh_2020pp_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
-
-```
-## Rows: 253672 Columns: 43
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (22): sii_state, sii_age_range, sii_gender, sii_race, svi_party_registra...
-## dbl (16): sii_deceased, sii_age, sii_married, svi_vote_all_general, svi_vote...
-## lgl  (5): svi_vh_2021p_party, svi_vh_2023p, svi_vh_2023p_party, svi_vh_2023g...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
 
 
-``` r
-state_data <- state_data |>
-  select(-registered_dem, -registered_rep, -registered_ind) |>
-  arrange(year) |>
-  group_by(party, state) |>
-  mutate(state_party_perc_lag1 = lag(state_party_perc, 1)) |>
-  left_join((nat_party |> select(year, party, percent, two_party_percent, year_prior, year_prior_2p, prior_election, prior_election_2p) |> rename(nat_party_perc = percent, nat_2p_perc = two_party_percent, nat_party_lag1 = prior_election, nat_party_2p_lag1 = prior_election_2p)), by = c("year", "party")) |>
-  mutate(state_party_perc = ifelse(is.na(state_party_perc) & year == 2024, nat_party_perc + (nat_party_lag1 - state_party_perc_lag1), state_party_perc))
-
-state_data_swing <- 
-  state_data |>
-  filter(state %in% c("Georgia", "Michigan", "Pennsylvania", "North Carolina", "Wisconsin", "Nevada", "Arizona"))
-```
 
 
 ```
@@ -425,21 +54,6 @@ This graph shows, intuitively, a rough positive correlation. Generally, when par
 
 Looking at the relationship between partisan identification and popular vote on the state level, the relationship between party identification swing and popular vote in the state is much less conclusive.
 
-
-``` r
-state_data |>
-  filter(state %in% c("Arizona", "Georgia", "Michigan", "North Carolina", "Ohio", "Nevada", "Pennsylvania")) |>
-  filter(year >= 1992) |>
-  ggplot(aes(x = state_swing4, y = state_pv, color = party)) +
-  geom_point(color = "gray") +
-  geom_smooth(method = "lm", se=FALSE) +
-  scale_color_manual(values = c("#00AEF3", "#E81B23")) +
-  facet_wrap(~ state)
-```
-
-```
-## `geom_smooth()` using formula = 'y ~ x'
-```
 
 ```
 ## Warning: Removed 24 rows containing non-finite outside the scale range
@@ -464,23 +78,90 @@ Trends between partisan swing and state popular vote differ a lot between states
 # super learning would helo make weights that empirically are better
 ```
 
-## Building a State-Level Model and Explaining Decisions and Assumptions
+## National Popular Vote Predictions
+
+For predictions this week, I make an effort to predict both national popular vote share and the electoral college outcome. 
+
+For national popular vote, I used lasso to make a prediction based on the predictors that we've discussed in previous classes (the economy, incumbency, polling) and this week I added national party identification. 
+
+
+```
+##            s1
+## [1,] 48.91190
+## [2,] 48.07179
+```
+The lasso regression found the popular vote to be extremely tight, with Kamala Harris receiving 48.91% and Donald Trump receiving 48.07%. 
 
 
 ``` r
-# Need to estimate 2024 party id per state
-# Ask about value imputation and what assumptions follow when we impute values
-# state's historical deviation from national popular vote or from total outcome
-# could create a separate model for states without polling
+coef(lasso.nat, s = lambda.min.lasso)
 ```
 
-
-``` r
-# Does it make sense to actually run each state's regression model separately or does that reduce the statistical power of results too much? 
-# When I use random forest, does that actually make a model that I could then hypothetically use to bootstrap a bunch of election simulations
-# A lot of my theory revolves around weighting partisan ID really high, how exactly can I incorporate that into the model?
-# Is there anyway to make it so that when it predicts Dems and Reps it won't be more than 100 or should I re-weight based on percentage (ex. Harris at 52 and Trump at 50, then Harris % of pop vote is 52/102)
-
-# People usually do simulationd for values of the polls
-# the bootstrap in gov51 is different than what we do here
 ```
+## 50 x 1 sparse Matrix of class "dgCMatrix"
+##                             s1
+## (Intercept)       19.049104982
+## party              .          
+## incumbent          .          
+## incumbent_party    .          
+## prev_admin         .          
+## deminc             .          
+## juneapp            .          
+## percent            .          
+## two_party_percent  .          
+## ind_percent       -0.078484476
+## year_prior         .          
+## year_prior_2p      .          
+## swing1             0.198030467
+## swing1_2p          .          
+## prior_election     .          
+## prior_election_2p -0.004282676
+## swing4             .          
+## swing4_2p          .          
+## nat_weeks_left_5   0.415767672
+## nat_weeks_left_6   .          
+## nat_weeks_left_7   .          
+## nat_weeks_left_8   .          
+## nat_weeks_left_9   .          
+## nat_weeks_left_10  .          
+## nat_weeks_left_11  .          
+## nat_weeks_left_12  .          
+## nat_weeks_left_13  .          
+## nat_weeks_left_14  .          
+## nat_weeks_left_15  .          
+## nat_weeks_left_16  .          
+## nat_weeks_left_17  .          
+## nat_weeks_left_18  0.286791505
+## nat_weeks_left_19  .          
+## nat_weeks_left_20  .          
+## nat_weeks_left_21  .          
+## nat_weeks_left_22  .          
+## nat_weeks_left_23  .          
+## nat_weeks_left_24  .          
+## nat_weeks_left_25  .          
+## nat_weeks_left_26  .          
+## nat_weeks_left_27  .          
+## nat_weeks_left_28  .          
+## nat_weeks_left_29  .          
+## nat_weeks_left_30  .          
+## q2_gdp_growth      .          
+## q2_rdpi_growth     .          
+## GDP                .          
+## RDPI               .          
+## nat_unemployment   .          
+## stock_adj_close    .
+```
+
+In the national popular vote predictions, Lasso selected the percent of independents in the country, the swing in party ID from the year prior to the election to the election year, the two party party identification from the previous election, the most recent week of polling, and one earlier week of polling as the most valuable predictors for national popular vote. This would support my theory that party identification may be very important in predicting election outcomes. 
+
+Unfortunately, I spent a lot of time this week compiling and cleaning party identification and, despite many attempts, was unsuccessful in incorporating it into a state-level model to predict the electoral college this week. I look forward to incorporating party into my state prediction model next week now that I have the data wrangled and cleaned. 
+
+
+
+
+
+
+
+
+
+

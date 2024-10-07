@@ -188,7 +188,7 @@ state_data <-
   left_join(anes_party_id, by = c("year", "state", "party"))
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 demographics <- read_csv("data/demographics.csv") |>
   group_by(year, state) |>
   mutate(hispanic = sum(c(hispanic_white, hispanic_black, hispanic_american_indian, hispanic_asian_pacific_islander, hispanic_other_race, hispanic_two_or_more_races), na.rm = TRUE),
@@ -298,7 +298,7 @@ for (state in toss_lean_likely_states) {
 
 ```
 
-```{r, creating state-level party estimates}
+```{r, finishing cleaning the data, echo=FALSE, message=FALSE}
 state_data <- state_data |>
   select(-registered_dem, -registered_rep, -registered_ind) |>
   arrange(year) |>
@@ -310,8 +310,6 @@ state_data <- state_data |>
 state_data_swing <- 
   state_data |>
   filter(state %in% c("Georgia", "Michigan", "Pennsylvania", "North Carolina", "Wisconsin", "Nevada", "Arizona"))
-
-
   
 ```
 
@@ -335,7 +333,7 @@ This graph shows, intuitively, a rough positive correlation. Generally, when par
 
 Looking at the relationship between partisan identification and popular vote on the state level, the relationship between party identification swing and popular vote in the state is much less conclusive.
 
-```{r}
+```{r, echo=FALSE, message=FALSE}
 state_data |>
   filter(state %in% c("Arizona", "Georgia", "Michigan", "North Carolina", "Ohio", "Nevada", "Pennsylvania")) |>
   filter(year >= 1992) |>
@@ -343,12 +341,13 @@ state_data |>
   geom_point(color = "gray") +
   geom_smooth(method = "lm", se=FALSE) +
   scale_color_manual(values = c("#00AEF3", "#E81B23")) +
-  facet_wrap(~ state)
+  facet_wrap(~ state) + 
+  theme_bw()
 ```
 
 Trends between partisan swing and state popular vote differ a lot between states. Michigan and Ohio would imply that there might be a small positive correlation, while Georgia would suggest just the opposite. This would imply that perhaps party identification is more predictive of national popular vote than state popular vote. 
 
-```{r}
+```{r, misc notes, each=FALSE}
 # Ask about different methods of estimating Party-ID for each state
 # we can use the voter files for 2024
 # you can try to look for a historical data set for party
@@ -356,23 +355,159 @@ Trends between partisan swing and state popular vote differ a lot between states
 # super learning would helo make weights that empirically are better
 ```
 
-## Building a State-Level Model and Explaining Decisions and Assumptions
+## National Popular Vote Predictions
 
-```{r, imputing missing values and setting up for models}
+For predictions this week, I make an effort to predict both national popular vote share and the electoral college outcome. 
+
+For national popular vote, I used lasso to make a prediction based on the predictors that we've discussed in previous classes (the economy, incumbency, polling) and this week I added national party identification. 
+
+```{r, national popular vote prediction, echo=FALSE, message=FALSE, warning=FALSE}
+nat_data_subset <- 
+  nat_data |>
+  select(-c(paste0("nat_weeks_left_", 0:4)),
+         -candidate, -winner)
+
+nat_train <- 
+  nat_data_subset |> 
+  filter(year <= 2020)
+
+nat_test <- 
+  nat_data_subset |>
+  filter(year == 2024)
+
+x.train <- nat_train |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+y.train <- nat_train$pv
+x.test <- nat_test |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+
+# Use Lasso for National Popular Vote
+lasso.nat <- glmnet(x = x.train, y = y.train, alpha = 1)
+set.seed(02138)
+cv.lasso.nat <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
+lambda.min.lasso <- cv.lasso.nat$lambda.min
+mse.lasso <- mean((predict(lasso.nat, s = lambda.min.lasso, newx = x.train) - y.train)^2)
+
+(lasso.nat.pred <- predict(lasso.nat, s = lambda.min.lasso, newx = x.test))
+
+```
+The lasso regression found the popular vote to be extremely tight, with Kamala Harris receiving 48.91% and Donald Trump receiving 48.07%. 
+
+```{r}
+coef(lasso.nat, s = lambda.min.lasso)
+```
+
+In the national popular vote predictions, Lasso selected the percent of independents in the country, the swing in party ID from the year prior to the election to the election year, the two party party identification from the previous election, the most recent week of polling, and one earlier week of polling as the most valuable predictors for national popular vote. This would support my theory that party identification may be very important in predicting election outcomes. 
+
+Unfortunately, I spent a lot of time this week compiling and cleaning party identification and, despite many attempts, was unsuccessful in incorporating it into a state-level model to predict the electoral college this week. I look forward to incorporating party into my state prediction model next week now that I have the data wrangled and cleaned. 
+
+```{r, misc. notes, echo=FALSE}
 # Need to estimate 2024 party id per state
 # Ask about value imputation and what assumptions follow when we impute values
 # state's historical deviation from national popular vote or from total outcome
 # could create a separate model for states without polling
+```
+
+```{r, trying to loop through swing states and make lasso predictions, echo=FALSE}
+#swing_states = c("Arizona", "Georgia", "Michigan", "North Carolina", "Ohio", "Nevada", "Pennsylvania")
+#state_preds <- vector(mode = "list", length = length(swing_states))
+#for (state in swing_states) {
+  #state_data_state <- 
+    #state_data |>
+    #filter(state == !!state) |>
+    #select(-c(paste0("poll_weeks_left_", 0:4)), -winner, -nat_winner, -state_2pv, -nat_pv, -nat_2pv)
+  #print(head(state_data_state))
+  #state_data_state_2020 <- 
+    #state_data_state |>
+    #filter(year <= 2020)
+  #print(head(state_data_state_2020))
+  
+  #mice_impute <- mice(state_data_state_2020, m=5, method="pmm")
+  #state_swing_mice <- complete(mice_impute)
+  #state_train <- 
+    #state_swing_mice |> 
+    #filter(year <= 2020)
+  
+  #state_test <- 
+    #state_data_state |>
+    #filter(year == 2024)
+  #print(head(state_test))
+  
+  #x.train.state <- state_train |>
+    #ungroup() |> 
+    #select(-state_pv, -year) |>
+    #as.matrix()
+  #y.train.state <- state_train$state_pv
+  #x.test.state <- state_test |>
+    #ungroup() |> 
+    #select(-state_pv, -year) |>
+    #as.matrix()
+  #lasso.state <- glmnet(x = x.train.state, y = y.train.state, alpha = 1)
+  #set.seed(02138)
+  #cv.lasso.state <- cv.glmnet(x = x.train.state, y = y.train.state, alpha = 1)
+  #lambda.min.lasso <- cv.lasso.state$lambda.min
+  
+  #(lasso.state.pred <- predict(lasso.state, s = lambda.min.lasso, newx = x.test.state))
+  
+#}
+```
+
+```{r, do state level preds for the swing states, echo=FALSE, eval=FALSE}
+#state_data_swing_filtered <-
+  #state_data_swing |>
+  #select(-c(paste0("poll_weeks_left_", 0:4)), -state_margin, -winner, -nat_winner, -nat_pv, -nat_2pv, -state_2pv)
+#print(head(state_data_swing_filtered))
+#state_data_swing_filtered_pre2020 <- 
+  #state_data_swing_filtered |>
+  #filter(year <= 2020)
+#print(head(state_data_swing_filtered_pre2020))
+#mice_impute <- mice(state_data_swing_filtered_pre2020, m=5, method="pmm")
+#state_swing_mice <- complete(mice_impute)
+  
+
+#x.train.state <- state_swing_mice |> 
+  #select(-c(year, state_pv)) |>
+  #as.matrix()
+#y.train.state <- state_swing_mice |> 
+  #select(state_pv) |> 
+  #as.matrix()
+#x.test.state <- state_data_swing_filtered |> 
+  #filter(year == 2024) |> 
+  #select(-c(year, state_pv)) |> 
+  #as.matrix()
+
+#set.seed(02138)
+#lasso.state <- cv.glmnet(x = x.train.state, y = y.train.state, alpha = 0.5)
+#lambda.min.lasso.state <- lasso.state$lambda.min
+
+#state.pred <- predict(lasso.state, s = lambda.min.lasso.state, newx = x.test.state[1, ])
 
 ```
 
-```{r, modeling}
+```{r, state random forest, echo=FALSE, eval=FALSE}
+#library(randomForest)
+#library(ranger)
+
+#set.seed(02138)
+#train.ind <- createDataPartition(state_data$state_pv, p = 0.8, list = FALSE)
+
+#anes_train <- anes_year[train.ind,]
+#anes_test <- anes_year[-train.ind,]
+
+
+```
+
+```{r, modeling notes, echo=FALSE}
 # Does it make sense to actually run each state's regression model separately or does that reduce the statistical power of results too much? 
 # When I use random forest, does that actually make a model that I could then hypothetically use to bootstrap a bunch of election simulations
 # A lot of my theory revolves around weighting partisan ID really high, how exactly can I incorporate that into the model?
 # Is there anyway to make it so that when it predicts Dems and Reps it won't be more than 100 or should I re-weight based on percentage (ex. Harris at 52 and Trump at 50, then Harris % of pop vote is 52/102)
 
-# People usually do simulationd for values of the polls
+# People usually do simulations for values of the polls
 # the bootstrap in gov51 is different than what we do here
 
 ```
