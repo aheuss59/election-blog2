@@ -21,16 +21,6 @@ I found and cleaned data for both national (Gallup and Pew Research) and state (
 
 
 
-```
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-## One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat <- vroom(...)
-##   problems(dat)
-```
 
 
 

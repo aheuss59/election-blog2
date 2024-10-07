@@ -31,7 +31,7 @@ My theory around election prediction involves a rather pessimistic belief that a
 
 I found and cleaned data for both national (Gallup and Pew Research) and state (ANES estimates) party identification historically. The graph below shows the relationship between national party ID "swing" between the year before an election and election year and the national popular vote. The "swing" measure attempts to get a feel for party momentum going into the election year. 
 
-```{r, creating national dataset, echo=FALSE, message=FALSE, show_col_types=FALSE}
+```{r, creating national dataset, echo=FALSE, message=FALSE, show_col_types=FALSE, warning=FALSE}
 # Complete except for turnout and demographics
 
 # National Dataset
@@ -74,7 +74,7 @@ nat_data <-
 
 ```
 
-```{r, creating state dataset, echo=FALSE, message=FALSE}
+```{r, creating state dataset, echo=FALSE, message=FALSE, warning=FALSE}
 # State Dataset
 #Load in EC data and subset it as a state abbreviation/full name key
 ec <- read_csv("data/corrected_ec_1948_2024.csv")
