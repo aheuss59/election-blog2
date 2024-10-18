@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Election Forecast 1 | A minimal Hugo website</title>
@@ -58,19 +58,19 @@
 </table>
 <p>As shown in the table, Democratic presidential candidates have won the popular vote in 11 of the past 19 elections, and Republican candidates 8. Though not a fifty-fifty split, no one party is winning every election. One takeaway to highlight from this table is that there truly are not many elections we can use to train predictive models. There have only been 19 presidential elections since 1948, which means that the impact of outliers in the data may be extra large.</p>
 <p>The graph below maps the two-party vote share for the Democratic and Republican parties since 1948.</p>
-<img src="/post/2024/09/05/testing-blog-upload/index_files/figure-html/bar chart-1.png" width="672" />
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/bar chart-1.png" width="672" />
 <p>Two-party vote share as a statistic measures the percentage of the vote that either party gets among only voters who voted for the Democratic or Republican candidate (and as such does not include third party votes). Looking at the graph we see that win margins have decreased over time, marking an increase in election competitiveness since the 1990s.</p>
 <p>Taking a look at each state over time, there really is a lot of consistency.</p>
-<img src="/post/2024/09/05/testing-blog-upload/index_files/figure-html/over the years-1.png" width="672" />
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/over the years-1.png" width="672" />
 <p>The West Coast (OR, WA, CA) is pretty steadily blue, along with the Northeast. Minnesota is pretty much always blue, even back when Reagan was running, which is really interesting to me (as a person from Minnesota). The states down the middle of the country and the south in general are red most or all of the time. States that are typically considered swing show a bit more variation. That being said, even those states usually fall one way. MI, WI, NV and PA almost always go blue, while GA, NC and AZ almost always go red.</p>
 <h2 id="2020-electoral-maps">2020 Electoral Maps</h2>
 <p>The map below shows the winner of the popular vote for each state in the 2020 election.</p>
-<img src="/post/2024/09/05/testing-blog-upload/index_files/figure-html/map of popular vote winner-1.png" width="672" />
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/map of popular vote winner-1.png" width="672" />
 And this one the vote margin in those states. 
-<img src="/post/2024/09/05/testing-blog-upload/index_files/figure-html/2020 vote margin-1.png" width="672" />
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/2020 vote margin-1.png" width="672" />
 As we can see in this map, the winning margin in swing states is very close to zero, and those states have very tight and competitive presidential races. Further, very few states are solid red or blue, which is something that isn't always clear in a simple non-gradient map like the first. 2020 was a particularly contentious election, with recounts requested in several swing states, several of which also heard cases in court about the election
 <h2 id="a-simple-prediction-of-2024">A Simple Prediction of 2024</h2>
-<img src="/post/2024/09/05/testing-blog-upload/index_files/figure-html/prediction-1.png" width="672" />
+<img src="https://example.org/post/2024/09/05/testing-blog-upload/index_files/figure-html/prediction-1.png" width="672" />
 <p>The graph above shows the predicted vote share for each party based on the a simple model: vote share 2024 = 0.75 * vote share 2020 + 0.2 * vote share 2016.</p>
 <p>The model, which is based only on the 2016 and 2020 elections, predicts that most states will lean slightly more Republican than in 2020.</p>
 <p>I look forward to making more sophisticated models as the semester continues on, incorporating both a finer-grain analysis and other variables that factor into presidential election outcomes like incumbency, economic conditions, the campaign, and so on.</p>

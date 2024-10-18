@@ -308,7 +308,7 @@ Looking at the results below, my state-level model predicts that Donald Trump wi
 |Winner     | States Won| Electors|
 |:----------|----------:|--------:|
 |Democrat   |         21|      263|
-|Republican |         29|      272|
+|Republican |         28|      267|
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/visualize results-1.png" width="672" />
 
