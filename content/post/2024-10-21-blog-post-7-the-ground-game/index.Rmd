@@ -30,6 +30,7 @@ library(sf)
 library(shinystan)
 library(tidyverse)
 library(viridis)
+library(mice)
 ```
 
 ```{r, load in the nat data, echo=FALSE, message=FALSE}
@@ -76,7 +77,7 @@ nat_data <-
 
 ```
 
-```{r, load in the state data, echo=FALSE, message=FALSE}
+```{r, load in the state data, echo=FALSE, message=FALSE, warning=FALSE}
 d_popvote <- read_csv("data/popvote_1948_2020.csv")
 d_state_popvote <- read_csv("data/state_popvote_1948_2020.csv")
 
@@ -203,7 +204,7 @@ for (s in stateabbreviations) {
 }
 ```
 
-```{r, clean state party data}
+```{r, clean state party data, echo=FALSE, message=FALSE}
 d_state_party_id <- 
   d_state_party_id |>
   group_by(state) |>
@@ -225,7 +226,7 @@ open_primaries <-
 
 This week, I started by re-running my national popular vote prediction model from past weeks with updated poll numbers from this week. 
 
-```{r, perform national pop vote lasso prediction}
+```{r, perform national pop vote lasso prediction, echo=FALSE, message=FALSE, warning=FALSE}
 # Subset to the weeks_left we have polling data for
 nat_data_subset <- 
   nat_data |>
@@ -263,9 +264,9 @@ The model's predictions have not changed much from last week, Kamala Harris' pop
 
 ## Electoral College Predictions
 
-In my electoral prediction model this week, I updated the polling data with polls from this week and changed the value I use to represent partisan identification. Last week, I made a mistake in my model and instead of using swing in party identification from one election to the next, I used the partisan identification of the state during the last election. I corrected it in this week's model. I also took a minute to try to find ways to correct for states with inaccurate party identification data for 2024, specifically states that have a very large proportion of voters registered as independent due to open state primaries. 
+In my electoral prediction model this week, I updated the polling data with polls from this week and changed the value I use to represent partisan identification. Last week, I made a mistake in my model and instead of using swing in party identification from one election to the next, I used the partisan identification of the state during the last election. I corrected it in this week's model. I also added a variable for open primaries (states that, in 2024, have a lot more registered independent voters than democrats and republicans combined), and controlled for it in an attempt to minimize the issues with the party identification variable for 2024. 
 
-```{r, predict electoral college for states with polls}
+```{r, predict electoral college for states with polls, echo=FALSE, message=FALSE}
 # Merge data.
 d <- d_pollav_state |>
   left_join(d_state_party_id, by = c("year", "state")) |>
@@ -284,7 +285,8 @@ d <- d_pollav_state |>
 states.2024 <- unique(d$state[d$year == 2024])
 states.2024 <- states.2024[-which(states.2024 == "Nebraska Cd 2")]
 
-d <- d |>
+d<- 
+  d |>
   filter(state %in% states.2024)
 
 # Separate into training and testing for simple poll prediction model. 
@@ -315,7 +317,6 @@ d.test <- d.test |>
 # Standard frequentist linear regression. 
 reg.ols <- lm(D_pv ~ latest_pollav_DEM + mean_pollav_DEM + D_pv_lag1 + D_pv_lag2 + incumbent_party + q2_gdp_growth + avg_state_unemployment + dem_perc_swing + rep_perc_swing + open_primary_2024 + state, 
               data = d.train)
-summary(reg.ols)
 pred.ols.dem <- predict(reg.ols, newdata = d.test)
 
 # Create dataset to summarize winners and EC vote distributions. 
@@ -380,7 +381,6 @@ d.test.nopolls <- d.test.nopolls |>
 # Standard frequentist linear regression. 
 reg.ols.nopolls <- lm(D_pv ~ D_pv_lag1 + D_pv_lag2 + incumbent_party + q2_gdp_growth + avg_state_unemployment + dem_perc_swing + rep_perc_swing + open_primary_2024 + state, 
               data = d.train.nopolls)
-summary(reg.ols.nopolls)
 pred.ols.dem.nopolls <- predict(reg.ols.nopolls, newdata = d.test.nopolls)
 
 # Create dataset to summarize winners and EC vote distributions. 
@@ -393,7 +393,7 @@ win_pred_nopolls <- data.frame(state = d.test.nopolls$state,
 
 ```
 
-```{r, visualize electoral college results, echo=FALSE, message=FALSE}
+```{r, breakdown electoral college results, echo=FALSE, message=FALSE}
 all_preds <- rbind(win_pred, win_pred_nopolls)
 
 states_map <- map_data("state")
@@ -402,7 +402,27 @@ all_preds |>
   group_by(Winner) |>
   summarize(`States Won` = n(), Electors = sum(electors)) |>
   knitr::kable()
+```
 
+Taking a look at the full election results, once again Kamala Harris loses the electoral college. DC is also not included in my model this week, but will almost certainly go to Harris, which would bring teh vote totals to 266 for Harris and 272 for Trump. 
+
+The next table visualizes the swing state breakdown. 
+
+```{r, swing state specific breakdown, echo=FALSE, message=FALSE}
+all_preds |>
+  filter(state %in% c("Michigan", "Wisconsin", "Pennsylvania", "Georgia", "North Carolina", "Arizona", "Nevada")) |>
+  mutate(Margin = simp_pred_dem - simp_pred_rep) |>
+  rename(State = state, Winner = winner) |>
+  select(State, Winner, Margin) |>
+  arrange(Winner) |>
+  knitr::kable()
+```
+
+My model predicts Harris to win Michigan, Pennsylvania and Wisconsin while Trump wins Arizona, Georgia, Nevada and North Carolina. 
+
+Finally, here's a look at the full map. 
+
+```{r, map, echo=FALSE, message=FALSE}
 all_preds |>
   mutate(region = tolower(state),
          Margin = simp_pred_dem - simp_pred_rep) |>
@@ -413,6 +433,149 @@ all_preds |>
   labs(title = "Electoral College Prediction Map") +
   theme_void()
 ```
+
+## An Attempt at Lasso Regression for Electoral College Predictions
+
+This week, I also wanted to try using a more sophisticated method for model selection and tried to run a LASSO prediction on my state-level data. After struggling with imputation and matrices for awhile, my model promptly predicted that Kamala Harris would win at least -35,000 percent of the vote share and Donald Trump at least -81,000. Due to the highly inaccurate nature of these predictions, I instead took the features LASSO suggested and fed them back into a linear model. 
+
+This model spit out some possible, but not necessarily realistic estimates for the states that currently have polling data (mostly toss up states or states that lean one way or another). 
+
+```{r, trying state-level lasso, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
+
+# Separate into training and testing for simple poll prediction model. 
+
+d.train.lasso <- d |> filter(year < 2024)
+mice_impute <- mice(d.train.lasso, m=5, method="cart")
+d.train.lasso <- complete(mice_impute) 
+d.train.lasso <- d.train.lasso |>
+  select(-c(43:55), -R_pv2p, -D_pv2p, -year, -total_voters, -votes_D, -votes_R, -total_votes, -two_party_votes, -party, -winner, -candidate, -pv, -pv2p) |>
+  drop_na()
+d.test.lasso <- d |> filter(year == 2024) 
+
+# Add back in lagged vote share for 2024. 
+t.lasso <- d |> 
+  filter(year >= 2016) |> 
+  arrange(year) |> 
+  group_by(state) |> 
+  mutate(
+    D_pv_lag1 = lag(D_pv, 1),
+    R_pv_lag1 = lag(R_pv, 1), 
+    D_pv_lag2 = lag(D_pv, 2),
+    R_pv_lag2 = lag(R_pv, 2),
+    D_pv2p_lag1 = lag(D_pv2p, 1),
+    R_pv2p_lag1 = lag(R_pv2p, 1),
+    D_pv2p_lag2 = lag(D_pv2p, 2),
+    R_pv2p_lag2 = lag(R_pv2p, 2)) |> 
+  filter(year == 2024) |> 
+  select(state, year, D_pv_lag1, R_pv_lag1, D_pv_lag2, R_pv_lag2, D_pv2p_lag1, D_pv2p_lag2, R_pv2p_lag1, R_pv2p_lag2)
+
+# Subset testing data to only relevant variables for our simple model. 
+d.test.lasso <- d.test.lasso |> 
+  select(-c(D_pv, D_pv_lag1, D_pv_lag2, R_pv, R_pv_lag1, R_pv_lag2, D_pv2p_lag1, D_pv2p_lag2, R_pv2p_lag1, R_pv2p_lag2)) |> 
+  left_join(t.lasso, by = c("state", "year"))
+
+x.train.state <- d.train.lasso |>
+  ungroup() |>
+  select(-D_pv, -R_pv, -state) 
+
+scaling_params <- apply(x.train.state, 2, function(x) c(mean = mean(x, na.rm = TRUE), sd = sd(x, na.rm = TRUE)))
+
+x.train.state <- scale(x.train.state, center = scaling_params["mean", ], scale = scaling_params["sd", ]) |>
+  as.matrix()
+
+y.train.state <- d.train.lasso$D_pv
+y.train.state.reps <- d.train.lasso$R_pv
+x.test.state <- d.test.lasso |>
+  ungroup() |> 
+  select(-c(33:45), -R_pv2p, -D_pv2p, -year, -total_voters, -votes_D, -votes_R, -total_votes, -two_party_votes, -party, -winner, -candidate, -pv, -pv2p, -state) 
+
+x.test.state <-
+  scale(x.test.state, center = scaling_params["mean", ], scale = scaling_params["sd", ]) |>
+  as.matrix()
+
+#Predict Dems
+
+lasso.state.dems <- glmnet(x = x.train.state, y = y.train.state, alpha = 1)
+set.seed(02138)
+cv.lasso.state.dems <- cv.glmnet(x = x.train.state, y = y.train.state, alpha = 1)
+lambda.min.lasso.state.dems <- cv.lasso.state.dems$lambda.min
+mse.lasso.state.dems <- mean((predict(lasso.state.dems, s = lambda.min.lasso.state.dems, newx = x.train.state) - y.train.state)^2)
+
+lasso.state.pred.dems <- predict(lasso.state.dems, s = lambda.min.lasso.state.dems, newx = x.test.state)
+
+#coef(lasso.state.dems, s = lambda.min.lasso.state.dems)
+
+#Predict Reps
+
+lasso.state.reps <- glmnet(x = x.train.state, y = y.train.state.reps, alpha = 1)
+set.seed(02138)
+cv.lasso.state.reps <- cv.glmnet(x = x.train.state, y = y.train.state.reps, alpha = 1)
+lambda.min.lasso.state.reps <- cv.lasso.state.reps$lambda.min
+mse.lasso.state.reps <- mean((predict(lasso.state.reps, s = lambda.min.lasso.state.reps, newx = x.train.state) - y.train.state.reps)^2)
+
+lasso.state.pred.reps <- predict(lasso.state.reps, s = lambda.min.lasso.state.reps, newx = x.test.state)
+
+# coef(lasso.state.reps, s = lambda.min.lasso.state.reps)
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Predict dem share
+
+reg.ols.lasso.polls <- lm(D_pv ~ latest_pollav_REP + latest_pollav_DEM + mean_pollav_REP + mean_pollav_DEM  + dem_perc_lag4 + rep_perc_lag4 + D_pv_lag1 + R_pv_lag1 + D_pv_lag2 + R_pv_lag2 + incumbent + incumbent_party + prev_admin + avg_state_unemployment + GDP + nat_unemployment + stock_adj_close + q2_gdp_growth + q2_rdpi_growth, 
+              data = d.train.lasso)
+pred.ols.lasso.polls <- predict(reg.ols.lasso.polls, newdata = d.test.lasso)
+
+lasso.state.pred <- data.frame(state = d.test$state,
+                       simp_pred_dem = pred.ols.lasso.polls,
+                       simp_pred_rep = 100 - pred.ols.lasso.polls) |> 
+            mutate(winner = ifelse(simp_pred_dem > simp_pred_rep, "Democrat", "Republican"))
+
+lasso.state.pred |> knitr::kable()
+
+```
+
+These results would suggest a pretty rough outcome for the Democrats in November. I unfortunately was unable to secure a possible prediction for vote share using the LASSO linear regression coefficients for states without polling data (the Democrats managed negative vote share and the Republicans more than 100). I hope to correct the error in my LASSO model for next week, but this week will have to stick with last week's model detailed in the previous section. 
+
+```{r, echo=FALSE, eval=FALSE, message=FALSE}
+d.train.lasso.nopolls <- d_no_polls |> filter(year < 2024) |>
+  select(-c(43:55), -R_pv2p, -D_pv2p, -year, -total_voters, -votes_D, -votes_R, -total_votes, -two_party_votes, -party, -winner, -candidate, -pv, -pv2p) |>
+  drop_na()
+d.test.lasso.nopolls <- d_no_polls |> filter(year == 2024)
+# Add back in lagged vote share for 2024. 
+t.lasso.nopolls <- d_no_polls |> 
+  filter(year >= 2016) |> 
+  arrange(year) |> 
+  group_by(state) |> 
+  mutate(
+    D_pv_lag1 = lag(D_pv, 1),
+    R_pv_lag1 = lag(R_pv, 1), 
+    D_pv_lag2 = lag(D_pv, 2),
+    R_pv_lag2 = lag(R_pv, 2),
+    D_pv2p_lag1 = lag(D_pv2p, 1),
+    R_pv2p_lag1 = lag(R_pv2p, 1),
+    D_pv2p_lag2 = lag(D_pv2p, 2),
+    R_pv2p_lag2 = lag(R_pv2p, 2)) |> 
+  filter(year == 2024) |> 
+  select(state, year, D_pv_lag1, R_pv_lag1, D_pv_lag2, R_pv_lag2, D_pv2p_lag1, D_pv2p_lag2, R_pv2p_lag1, R_pv2p_lag2)
+
+# Subset testing data to only relevant variables for our simple model. 
+d.test.lasso.nopolls <- d.test.lasso.nopolls |> 
+  select(-c(D_pv, D_pv_lag1, D_pv_lag2, R_pv, R_pv_lag1, R_pv_lag2, D_pv2p_lag1, D_pv2p_lag2, R_pv2p_lag1, R_pv2p_lag2)) |> 
+  left_join(t.lasso.nopolls, by = c("state", "year"))
+
+reg.ols.lasso.nopolls <- lm(D_pv ~ dem_perc_lag4 + rep_perc_lag4 + D_pv_lag1 + R_pv_lag1 + D_pv_lag2 + R_pv_lag2 + incumbent + incumbent_party + prev_admin + avg_state_unemployment + GDP + nat_unemployment + stock_adj_close + q2_gdp_growth + q2_rdpi_growth, 
+              data = d.train.lasso.nopolls)
+pred.ols.lasso.nopolls <- predict(reg.ols.lasso.nopolls, newdata = d.test.lasso.nopolls)
+
+```
+
+
+
+
+
+
+
 
 
 

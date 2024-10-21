@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog Post 7: The Ground Game | A minimal Hugo website</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/categories/">Categories</a></li>
+      
+      <li><a href="/tags/">Tags</a></li>
+      
+      <li><a href="/index.xml">Subscribe</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Blog Post 7: The Ground Game</span></h1>
+<h2 class="author">Alex Heuss</h2>
+<h2 class="date">2024/10/21</h2>
+</div>
+
+<main>
+<h2 id="national-popular-vote-prediction">National Popular Vote Prediction</h2>
+<p>This week, I started by re-running my national popular vote prediction model from past weeks with updated poll numbers from this week.</p>
+<pre><code>##            s1
+## [1,] 49.06439
+## [2,] 47.90759
+</code></pre>
+<p>The model&rsquo;s predictions have not changed much from last week, Kamala Harris&rsquo; popular vote share shrank by about 0.02 percentage points and Donald Trump&rsquo;s grew by 0.001 percentage points. It seems like if I continue to hold my LASSO model constant, the two candidates will probably remain about the same in the popular vote share prediction unless there are significant polling shifts.</p>
+<h2 id="electoral-college-predictions">Electoral College Predictions</h2>
+<p>In my electoral prediction model this week, I updated the polling data with polls from this week and changed the value I use to represent partisan identification. Last week, I made a mistake in my model and instead of using swing in party identification from one election to the next, I used the partisan identification of the state during the last election. I corrected it in this week&rsquo;s model. I also added a variable for open primaries (states that, in 2024, have a lot more registered independent voters than democrats and republicans combined), and controlled for it in an attempt to minimize the issues with the party identification variable for 2024.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Winner</th>
+<th style="text-align:right">States Won</th>
+<th style="text-align:right">Electors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Democrat</td>
+<td style="text-align:right">21</td>
+<td style="text-align:right">263</td>
+</tr>
+<tr>
+<td style="text-align:left">Republican</td>
+<td style="text-align:right">29</td>
+<td style="text-align:right">272</td>
+</tr>
+</tbody>
+</table>
+<p>Taking a look at the full election results, once again Kamala Harris loses the electoral college. DC is also not included in my model this week, but will almost certainly go to Harris, which would bring teh vote totals to 266 for Harris and 272 for Trump.</p>
+<p>The next table visualizes the swing state breakdown.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">State</th>
+<th style="text-align:left">Winner</th>
+<th style="text-align:right">Margin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Michigan</td>
+<td style="text-align:left">Democrat</td>
+<td style="text-align:right">3.9852186</td>
+</tr>
+<tr>
+<td style="text-align:left">Pennsylvania</td>
+<td style="text-align:left">Democrat</td>
+<td style="text-align:right">1.5026237</td>
+</tr>
+<tr>
+<td style="text-align:left">Wisconsin</td>
+<td style="text-align:left">Democrat</td>
+<td style="text-align:right">2.6973706</td>
+</tr>
+<tr>
+<td style="text-align:left">Arizona</td>
+<td style="text-align:left">Republican</td>
+<td style="text-align:right">-2.6033523</td>
+</tr>
+<tr>
+<td style="text-align:left">Georgia</td>
+<td style="text-align:left">Republican</td>
+<td style="text-align:right">-1.3832750</td>
+</tr>
+<tr>
+<td style="text-align:left">Nevada</td>
+<td style="text-align:left">Republican</td>
+<td style="text-align:right">-0.9808848</td>
+</tr>
+<tr>
+<td style="text-align:left">North Carolina</td>
+<td style="text-align:left">Republican</td>
+<td style="text-align:right">-4.8247507</td>
+</tr>
+</tbody>
+</table>
+<p>My model predicts Harris to win Michigan, Pennsylvania and Wisconsin while Trump wins Arizona, Georgia, Nevada and North Carolina.</p>
+<p>Finally, here&rsquo;s a look at the full map.</p>
+<img src="/post/2024/10/21/blog-post-7-the-ground-game/index_files/figure-html/map-1.png" width="672" />
+<h2 id="an-attempt-at-lasso-regression-for-electoral-college-predictions">An Attempt at Lasso Regression for Electoral College Predictions</h2>
+<p>This week, I also wanted to try using a more sophisticated method for model selection and tried to run a LASSO prediction on my state-level data. After struggling with imputation and matrices for awhile, my model promptly predicted that Kamala Harris would win at least -35,000 percent of the vote share and Donald Trump at least -81,000. Due to the highly inaccurate nature of these predictions, I instead took the features LASSO suggested and fed them back into a linear model.</p>
+<p>This model spit out some possible, but not necessarily realistic estimates for the states that currently have polling data (mostly toss up states or states that lean one way or another).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">state</th>
+<th style="text-align:right">simp_pred_dem</th>
+<th style="text-align:right">simp_pred_rep</th>
+<th style="text-align:left">winner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Arizona</td>
+<td style="text-align:right">44.78957</td>
+<td style="text-align:right">55.21043</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">California</td>
+<td style="text-align:right">59.64728</td>
+<td style="text-align:right">40.35272</td>
+<td style="text-align:left">Democrat</td>
+</tr>
+<tr>
+<td style="text-align:left">Florida</td>
+<td style="text-align:right">42.96216</td>
+<td style="text-align:right">57.03784</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Georgia</td>
+<td style="text-align:right">45.07681</td>
+<td style="text-align:right">54.92319</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Maryland</td>
+<td style="text-align:right">61.60806</td>
+<td style="text-align:right">38.39194</td>
+<td style="text-align:left">Democrat</td>
+</tr>
+<tr>
+<td style="text-align:left">Michigan</td>
+<td style="text-align:right">46.54002</td>
+<td style="text-align:right">53.45998</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Minnesota</td>
+<td style="text-align:right">48.64447</td>
+<td style="text-align:right">51.35553</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Missouri</td>
+<td style="text-align:right">38.67503</td>
+<td style="text-align:right">61.32497</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Montana</td>
+<td style="text-align:right">36.69100</td>
+<td style="text-align:right">63.30900</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Nebraska</td>
+<td style="text-align:right">35.22582</td>
+<td style="text-align:right">64.77418</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Nevada</td>
+<td style="text-align:right">46.49182</td>
+<td style="text-align:right">53.50818</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">New Hampshire</td>
+<td style="text-align:right">49.12235</td>
+<td style="text-align:right">50.87765</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">New Mexico</td>
+<td style="text-align:right">50.71686</td>
+<td style="text-align:right">49.28314</td>
+<td style="text-align:left">Democrat</td>
+</tr>
+<tr>
+<td style="text-align:left">New York</td>
+<td style="text-align:right">54.84929</td>
+<td style="text-align:right">45.15071</td>
+<td style="text-align:left">Democrat</td>
+</tr>
+<tr>
+<td style="text-align:left">North Carolina</td>
+<td style="text-align:right">44.82439</td>
+<td style="text-align:right">55.17561</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Ohio</td>
+<td style="text-align:right">41.54360</td>
+<td style="text-align:right">58.45640</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Pennsylvania</td>
+<td style="text-align:right">46.04213</td>
+<td style="text-align:right">53.95787</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Texas</td>
+<td style="text-align:right">42.15289</td>
+<td style="text-align:right">57.84711</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Virginia</td>
+<td style="text-align:right">49.65644</td>
+<td style="text-align:right">50.34356</td>
+<td style="text-align:left">Republican</td>
+</tr>
+<tr>
+<td style="text-align:left">Wisconsin</td>
+<td style="text-align:right">45.65095</td>
+<td style="text-align:right">54.34905</td>
+<td style="text-align:left">Republican</td>
+</tr>
+</tbody>
+</table>
+<p>These results would suggest a pretty rough outcome for the Democrats in November. I unfortunately was unable to secure a possible prediction for vote share using the LASSO linear regression coefficients for states without polling data (the Democrats managed negative vote share and the Republicans more than 100). I hope to correct the error in my LASSO model for next week, but this week will have to stick with last week&rsquo;s model detailed in the previous section.</p>
+
+</main>
+
+  <footer>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/combine/npm/katex/dist/katex.min.js,npm/katex/dist/contrib/auto-render.min.js,npm/@xiee/utils/js/render-katex.js" defer></script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+
+  
+  <hr/>
+  © <a href="https://yihui.org">Yihui Xie</a> 2017 &ndash; 2024 | <a href="https://github.com/yihui">Github</a> | <a href="https://twitter.com/xieyihui">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+
