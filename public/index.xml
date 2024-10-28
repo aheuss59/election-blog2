@@ -2,66 +2,73 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Home on A minimal Hugo website</title>
-    <link>http://localhost:4321/</link>
+    <link>https://example.org/</link>
     <description>Recent content in Home on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Oct 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:4321/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Blog Post 8: Shocks and Game Changing Events</title>
+      <link>https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/</link>
+      <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/</guid>
+      <description>Discussion of Shocks and Game Changing Events Table: (#tab:explore the hurricane data)Counties in Each State Impacted by a Hurricanes in Election Years&#xA;State 1996 2000 2004 2008 2012 Alabama 0 0 14 0 0 Arkansas 0 0 0 0 0 Delaware 0 0 0 0 0 Florida 4 25 71 0 0 Georgia 8 0 0 0 0 Louisiana 0 0 14 39 31 Maine 8 0 0 0 0 Maryland 10 0 0 0 0 Mississippi 0 0 25 8 0 New Hampshire 1 0 0 0 0 New Jersey 0 0 0 0 0 North Carolina 124 0 33 0 0 South Carolina 15 0 4 0 0 Texas 0 0 0 24 0 Virginia 4 0 0 0 0 ## Warning: There were 2 warnings in `mutate()`.</description>
+    </item>
     <item>
       <title>Blog Post 7: The Ground Game</title>
-      <link>http://localhost:4321/post/2024/10/21/blog-post-7-the-ground-game/</link>
+      <link>https://example.org/post/2024/10/21/blog-post-7-the-ground-game/</link>
       <pubDate>Mon, 21 Oct 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/10/21/blog-post-7-the-ground-game/</guid>
+      <guid>https://example.org/post/2024/10/21/blog-post-7-the-ground-game/</guid>
       <description>National Popular Vote Prediction This week, I started by re-running my national popular vote prediction model from past weeks with updated poll numbers from this week.&#xA;## s1&#xD;## [1,] 49.06439&#xD;## [2,] 47.90759&#xD;The model&amp;rsquo;s predictions have not changed much from last week, Kamala Harris&amp;rsquo; popular vote share shrank by about 0.02 percentage points and Donald Trump&amp;rsquo;s grew by 0.001 percentage points. It seems like if I continue to hold my LASSO model constant, the two candidates will probably remain about the same in the popular vote share prediction unless there are significant polling shifts.</description>
     </item>
     <item>
       <title>Blog Post 6: Campaign Ads and Spending</title>
-      <link>http://localhost:4321/post/2024/10/14/blog-post-6-campaign-ads-and-spending/</link>
+      <link>https://example.org/post/2024/10/14/blog-post-6-campaign-ads-and-spending/</link>
       <pubDate>Mon, 14 Oct 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/10/14/blog-post-6-campaign-ads-and-spending/</guid>
+      <guid>https://example.org/post/2024/10/14/blog-post-6-campaign-ads-and-spending/</guid>
       <description>This week in class, we discussed the air war in campaigns, particularly the possible impact of advertising over television and radio on the outcome of elections. In section, we also discussed candidate contributions at the state level and how they may be a way to predict election outcomes.&#xA;Campaign Contribution Visualization Visualizing campaign contributions per state and that state&amp;rsquo;s popular vote, there does appear to be a positive correlation, although certainly nothing conclusive, as most of the points are centered on one point of the graph (most candiadtes do not receive a ton of contributions from any one state or another).</description>
     </item>
     <item>
       <title>Blog Post 5: Demographics and Party Identification</title>
-      <link>http://localhost:4321/post/2024/10/03/blog-post-5-demographics-and-party-identification/</link>
+      <link>https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/</link>
       <pubDate>Thu, 03 Oct 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/10/03/blog-post-5-demographics-and-party-identification/</guid>
+      <guid>https://example.org/post/2024/10/03/blog-post-5-demographics-and-party-identification/</guid>
       <description>Discussion of the Predicitive Power of Demographics and Party ID In class this week, we discussed the power of demographic variables in predicting election outcomes. The paper we read this week, Kim &amp;amp; Zilinsky&amp;rsquo;s &amp;ldquo;Division does not imply predictability: Demographics continue to reveal little about voting and partisanship&amp;rdquo;, provided empirical evidence that demographic data can predict vote choice with an accuracy of approximately 63%. They also found though that party is more predictive, especially when combined with demographics.</description>
     </item>
     <item>
       <title>Blog Post 4: Incumbency and Expert Opinions</title>
-      <link>http://localhost:4321/post/2024/09/30/blog-post-4-incumbency-and-expert-opinions/</link>
+      <link>https://example.org/post/2024/09/30/blog-post-4-incumbency-and-expert-opinions/</link>
       <pubDate>Mon, 30 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/30/blog-post-4-incumbency-and-expert-opinions/</guid>
+      <guid>https://example.org/post/2024/09/30/blog-post-4-incumbency-and-expert-opinions/</guid>
       <description>This week, we discussed incumbency, federal spending and expert opinions as they relate to election forecasting.&#xA;How does incumbency influence presidential races? The question of how incumbency will play into the 2024 election is a complicated one. Historically, the advantage or disadvantage of running as a presidential candidate for the incumbent party, but not the incumbent president has been rather unclear. To narrow in on Harris&amp;rsquo; situation a little further, the graph below shows the elections where a member of the incumbent administration has run for president, but not the incumbent themselves.</description>
     </item>
     <item>
       <title>Blog Post 3: Polling</title>
-      <link>http://localhost:4321/post/2024/09/23/blog-post-3-polling/</link>
+      <link>https://example.org/post/2024/09/23/blog-post-3-polling/</link>
       <pubDate>Mon, 23 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/23/blog-post-3-polling/</guid>
+      <guid>https://example.org/post/2024/09/23/blog-post-3-polling/</guid>
       <description>Historic Accuracy of Polls Poll averages seem like an intuitive way to predict elections - if I walk around and ask everyone who they are going to vote for, I should get a pretty good idea of how many people are voting for each candidate. Polls are a valuable prediction tool for election forecasts. However, not all weeks of polling are the same. Historically, polls become more accurate as the election approaches, often converging near the correct value within a week or so of the election.</description>
     </item>
     <item>
       <title>Blog Post 2: The Economy</title>
-      <link>http://localhost:4321/post/2024/09/16/blog-post-2-the-economy/</link>
+      <link>https://example.org/post/2024/09/16/blog-post-2-the-economy/</link>
       <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/16/blog-post-2-the-economy/</guid>
+      <guid>https://example.org/post/2024/09/16/blog-post-2-the-economy/</guid>
       <description>The Influence of the Economy on Elections The economy has long been thought a fundamental predictor of election outcomes. The basic premise is: when the economy is doing well, incumbent vote share is higher and vice-versa. In the book Democracy for Realists, Larry Bartels and Christopher Achen describe this theory at length and the predictive power of economic conditions in the months leading up the election. My second blog post explores the predictive power of economic conditions on incumbent party vote share, especially quarter 2 (Q2) GDP growth.</description>
     </item>
     <item>
       <title>Election Forecast 1</title>
-      <link>http://localhost:4321/post/2024/09/05/testing-blog-upload/</link>
+      <link>https://example.org/post/2024/09/05/testing-blog-upload/</link>
       <pubDate>Thu, 05 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/post/2024/09/05/testing-blog-upload/</guid>
+      <guid>https://example.org/post/2024/09/05/testing-blog-upload/</guid>
       <description>General Exploration and Popular Vote Over Time This is my first blog post, for the week of September 2nd. The primary method of prediction for this week is a simple model based on the results of the past two presidential elections, 2016 and 2020.&#xA;In considering the data to begin with, it is interesting, though not particularly informative to take a look at how many elections each party has won in elections since the end of WWII.</description>
     </item>
     <item>
       <title>About Hugo XMin</title>
-      <link>http://localhost:4321/about/</link>
+      <link>https://example.org/about/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:4321/about/</guid>
+      <guid>https://example.org/about/</guid>
       <description>XMin is the first Hugo theme I have designed. The original reason that I wrote it was I needed a minimal example of Hugo themes when I was writing the blogdown book. Basically I wanted a simple theme that supports a navigation menu, a home page, other single pages, lists of pages, blog posts, categories, tags, and RSS. That is all. Nothing fancy. In terms of CSS and JavaScript, I really want to keep them minimal.</description>
     </item>
   </channel>
