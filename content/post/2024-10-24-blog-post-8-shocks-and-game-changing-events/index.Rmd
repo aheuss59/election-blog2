@@ -216,6 +216,12 @@ d_state_party_id <-
 
 ## Discussion of Shocks and Game Changing Events
 
+This week in class, we discussed shocks that sometimes are theorized to have played a role in election outcomes. These can be non-political shocks like natural disasters, or more political ones like a truly awful debate performance. 
+
+In this election cycle, it seems like hardly anything can truly move the polls much. (My theory is that we are numb to crazy things happening now and it just doesn't phase us anymore). This election cycle, unpredictable shocks have almost been the norm. There have been two attempted assassination attempts on Former President Trump and President Biden dropped his re-election campaign extremely late in the game. Trump has said and done some very strange or alarming things. Two serious hurricanes hit the Southern coast in a matter of two weeks. Yet, almost none of these "game-changing" events have made a significant or lasting impact on the polls. 
+
+The one shock that did make a clear difference was Biden's dropping out in late July. The Democrats went from polling barely above 40% to 45% in a matter of days. Looking at the graph below too, it does look like the first assassination attempt on Former President Trump also had an impact, but was masked somewhat by Harris' entrance into the race as the new Democratic nominee.
+
 ```{r, plot Biden dropout, echo=FALSE, message=FALSE}
 read_csv("data/national_polls_1968-2024.csv") |>
   mutate(party = ifelse(party == "DEM", "democrat", "republican")) |>
@@ -225,9 +231,14 @@ read_csv("data/national_polls_1968-2024.csv") |>
   ggplot(aes(x = poll_date, y = poll_support, color=Candidate)) +
   geom_point() +
   geom_line() +
-  geom_smooth(method="lm", se=FALSE, linewidth= 0.5) +
+  geom_vline(xintercept=as.Date("2024-07-21"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-07-13"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-06-15"), linetype="dashed") +
   labs(x = "", y = "Poll Support", title="2024 Presidential Polling: Biden Drops Out") +
   scale_color_manual(values = c("gray", "#00AEF3", "#E81B23")) + 
+  annotate(x=as.Date("2024-06-15"), y=46, label="RNC", geom="label", size=3) +
+  annotate(x=as.Date("2024-07-21"), y=47, label="Biden Drops", geom="label", size=3) +
+  annotate(x=as.Date("2024-07-13"), y=48, label="1st Assasination Attempt", geom="label", size=3) +
   theme_bw() 
 
 ```
@@ -241,19 +252,28 @@ read_csv("data/national_polls_1968-2024.csv") |>
   ggplot(aes(x = poll_date, y = poll_support, color=Candidate)) +
   geom_point() +
   geom_line() +
-  geom_smooth(method="lm", se=FALSE, linewidth= 0.5) +
+  geom_vline(xintercept=as.Date("2024-09-15"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-08-19"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-09-10"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-10-01"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-08-06"), linetype="dashed") +
   labs(x = "", y = "Poll Support", title="2024 Presidential Polling: Shocks Since Biden Dropped Out") +
   scale_color_manual(values = c("#00AEF3", "#E81B23")) + 
+  annotate(x=as.Date("2024-09-15"),y=47,label="2nd Assasination Attempt",vjust=2,geom="label", size=3) +
+  annotate(x=as.Date("2024-08-19"), y=46, label="DNC", geom="label", size=3) +
+  annotate(x=as.Date("2024-09-10"), y=46, label="Presidential Debate", geom="label", size=3) +
+  annotate(x=as.Date("2024-10-01"), y=47.5, label="VP Debate", geom="label", size=3) +
+  annotate(x=as.Date("2024-08-06"), y=46.5, label="Walz VP Pick", geom="label", size=3) +
   theme_bw() 
 ```
 
-
+One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and eocnomic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared. 
 
 ```{r, load hurricane data, echo=FALSE, message=FALSE}
 hurricanes <- read_csv("data/hurricanes_1996_2016.csv")
 ```
 
-```{r, explore the hurricane data, echo=FALSE, message=FALSE}
+```{r, explore the hurricane data, echo=FALSE, message=FALSE, results=FALSE}
 hurricanes |>
   filter(!(STATE %in% c("AMERICAN SAMOA", "GUAM", "PUERTO RICO", "VIRGIN ISLANDS"))) |>
   group_by(STATE, YEAR) |>
@@ -267,8 +287,29 @@ hurricanes |>
 
 ```
 
-```{r, cleaning the hurricane data, echo=FALSE, message=FALSE}
-hurricanes |>
+```{r, look at polls in NC and Georgia to see if there are clear effects, fig.width=12, fig.height=5, echo=FALSE, message=FALSE}
+d_state_polls |>
+  filter(year == 2024 & state %in% c("North Carolina", "Georgia") & poll_date > "2024-07-21") |>
+  rename(Candidate=candidate) |>
+  ggplot(aes(x=poll_date, y=poll_support, color=Candidate)) +
+  geom_point() + 
+  geom_line() +
+  geom_vline(xintercept=as.Date("2024-09-26"), linetype="dashed") +
+  geom_vline(xintercept=as.Date("2024-10-09"), linetype="dashed") +
+  scale_color_manual(values = c("#00AEF3", "#E81B23")) +
+  facet_wrap(~state) +
+  labs(x = "", y = "Polled Vote Share", title="Polling in Florida and North Carolina, Post-Biden Dropout") +
+  annotate(x=as.Date("2024-09-26"), y=46.5, label="Helene hits in FL", geom="label", size=3) +
+  annotate(x=as.Date("2024-10-09"), y=45, label="Milton hits in FL", geom="label", size=3) +
+  theme_bw()
+
+```
+
+If we had to draw conclusions from a these two graphs, we would probably conclude that the hurricanes reduced support for the Democrats in these two states, specifically Helene. That said, it doesn't make a whole lot of sense to draw those conclusions from this evidence alone given confounding variables. Communities that were hit hard by the hurricanes or their aftermath probably don't have a lot of people in them right now who are just sitting at home answering poll questions. They are out there trying to help build back their communities. It is unlikely we will be able to truly look at the impact of these events until after election day. 
+
+```{r, cleaning the hurricane data, echo=FALSE, message=FALSE, warning=FALSE}
+clean_hurricanes <- 
+  hurricanes |>
   mutate(state = str_to_title(STATE),
          month_numb = case_when(MONTH_NAME == "January" ~ "01",
                                 MONTH_NAME == "February" ~ "02",
@@ -310,6 +351,8 @@ hurricanes |>
 ```
 
 ## National Popular Vote Prediction
+
+I did not change anything in my model for predicting the national popular vote this week, but the national polling averages were updated.
 
 ```{r, perform national pop vote lasso prediction, echo=FALSE, message=FALSE, warning=FALSE}
 # Subset to the weeks_left we have polling data for

@@ -20,67 +20,31 @@ tags: []
 
 ## Discussion of Shocks and Game Changing Events
 
+This week in class, we discussed shocks that sometimes are theorized to have played a role in election outcomes. These can be non-political shocks like natural disasters, or more political ones like a truly awful debate performance. 
+
+In this election cycle, it seems like hardly anything can truly move the polls much. (My theory is that we are numb to crazy things happening now and it just doesn't phase us anymore). This election cycle, unpredictable shocks have almost been the norm. There have been two attempted assassination attempts on Former President Trump and President Biden dropped his re-election campaign extremely late in the game. Trump has said and done some very strange or alarming things. Two serious hurricanes hit the Southern coast in a matter of two weeks. Yet, almost none of these "game-changing" events have made a significant or lasting impact on the polls. 
+
+The one shock that did make a clear difference was Biden's dropping out in late July. The Democrats went from polling barely above 40% to 45% in a matter of days. Looking at the graph below too, it does look like the first assassination attempt on Former President Trump also had an impact, but was masked somewhat by Harris' entrance into the race as the new Democratic nominee.
+
 <img src="{{< blogdown/postref >}}index_files/figure-html/plot Biden dropout-1.png" width="672" />
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/plot other shocks-1.png" width="672" />
 
+One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and eocnomic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared. 
 
 
 
 
 
-Table: (\#tab:explore the hurricane data)Counties in Each State Impacted by a Hurricanes in Election Years
+<img src="{{< blogdown/postref >}}index_files/figure-html/look at polls in NC and Georgia to see if there are clear effects-1.png" width="1152" />
 
-|State          | 1996| 2000| 2004| 2008| 2012|
-|:--------------|----:|----:|----:|----:|----:|
-|Alabama        |    0|    0|   14|    0|    0|
-|Arkansas       |    0|    0|    0|    0|    0|
-|Delaware       |    0|    0|    0|    0|    0|
-|Florida        |    4|   25|   71|    0|    0|
-|Georgia        |    8|    0|    0|    0|    0|
-|Louisiana      |    0|    0|   14|   39|   31|
-|Maine          |    8|    0|    0|    0|    0|
-|Maryland       |   10|    0|    0|    0|    0|
-|Mississippi    |    0|    0|   25|    8|    0|
-|New Hampshire  |    1|    0|    0|    0|    0|
-|New Jersey     |    0|    0|    0|    0|    0|
-|North Carolina |  124|    0|   33|    0|    0|
-|South Carolina |   15|    0|    4|    0|    0|
-|Texas          |    0|    0|    0|   24|    0|
-|Virginia       |    4|    0|    0|    0|    0|
+If we had to draw conclusions from a these two graphs, we would probably conclude that the hurricanes reduced support for the Democrats in these two states, specifically Helene. That said, it doesn't make a whole lot of sense to draw those conclusions from this evidence alone given confounding variables. Communities that were hit hard by the hurricanes or their aftermath probably don't have a lot of people in them right now who are just sitting at home answering poll questions. They are out there trying to help build back their communities. It is unlikely we will be able to truly look at the impact of these events until after election day. 
 
 
-```
-## Warning: There were 2 warnings in `mutate()`.
-## The first warning was:
-## ℹ In argument: `damage_property = case_when(...)`.
-## Caused by warning:
-## ! NAs introduced by coercion
-## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
-```
-
-```
-## # A tibble: 138 × 13
-## # Groups:   state [15]
-##    state    ymd       year month   day counties_affected injuries_direct
-##    <chr>    <chr>    <dbl> <dbl> <dbl>             <int>           <dbl>
-##  1 Alabama  07092005  2005     7     9                15               0
-##  2 Alabama  07102005  2005     7    10                 3               0
-##  3 Alabama  07181997  1997     7    18                 4               0
-##  4 Alabama  07211997  1997     7    21                 1               0
-##  5 Alabama  08272005  2005     8    27                 6               0
-##  6 Alabama  09011998  1998     9     1                 4               0
-##  7 Alabama  09132004  2004     9    13                14               0
-##  8 Alabama  09251998  1998     9    25                13               0
-##  9 Alabama  10022002  2002    10     2                 4               0
-## 10 Arkansas 08292005  2005     8    29                 2               0
-## # ℹ 128 more rows
-## # ℹ 6 more variables: injuries_indirect <dbl>, deaths_direct <dbl>,
-## #   deaths_indirect <dbl>, magnitude <dbl>, damage_property <dbl>,
-## #   damage_crops <dbl>
-```
 
 ## National Popular Vote Prediction
+
+I did not change anything in my model for predicting the national popular vote this week, but the national polling averages were updated.
 
 
 ```
