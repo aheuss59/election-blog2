@@ -40,9 +40,56 @@
 <p>The one shock that did make a clear difference was Biden&rsquo;s dropping out in late July. The Democrats went from polling barely above 40% to 45% in a matter of days. Looking at the graph below too, it does look like the first assassination attempt on Former President Trump also had an impact, but was masked somewhat by Harris&rsquo; entrance into the race as the new Democratic nominee.</p>
 <img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/plot Biden dropout-1.png" width="672" />
 <img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/plot other shocks-1.png" width="672" />
-<p>One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and eocnomic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared.</p>
+<p>One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and economic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared.</p>
 <img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/look at polls in NC and Georgia to see if there are clear effects-1.png" width="1152" />
 <p>If we had to draw conclusions from a these two graphs, we would probably conclude that the hurricanes reduced support for the Democrats in these two states, specifically Helene. That said, it doesn&rsquo;t make a whole lot of sense to draw those conclusions from this evidence alone given confounding variables. Communities that were hit hard by the hurricanes or their aftermath probably don&rsquo;t have a lot of people in them right now who are just sitting at home answering poll questions. They are out there trying to help build back their communities. It is unlikely we will be able to truly look at the impact of these events until after election day.</p>
+<p>Looking at historical data for the effects of hurricanes on state-level popular vote, effects are unclear. Below is the coefficient breakdown for a simple linear model predicting state-level popular vote share for Democratic candidates based on their interaction terms between incumbency status or incumbent party status and whether a hurricane hit the state or how many hurricanes hit the state between July and October of that year (4 separate interaction terms).</p>
+<pre><code>## 
+## Call:
+## lm(formula = D_pv ~ D_pv_lag1 + D_pv_lag2 + incumbent_total_interaction + 
+##     incumbent_any_interaction + party_total_interaction + party_any_interaction + 
+##     state, data = pop_hurricanes)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.0171 -2.1104 -0.0268  1.8362  9.0436 
+## 
+## Coefficients: (1 not defined because of singularities)
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                 21.57183    3.87110   5.573 2.90e-07 ***
+## D_pv_lag1                    0.38702    0.09532   4.060 0.000109 ***
+## D_pv_lag2                    0.04504    0.08366   0.538 0.591710    
+## incumbent_total_interaction  1.09092    1.96972   0.554 0.581139    
+## incumbent_any_interaction    2.50258    2.45686   1.019 0.311279    
+## party_total_interaction     -1.87564    1.81054  -1.036 0.303160    
+## party_any_interaction             NA         NA      NA       NA    
+## stateArkansas                0.62808    1.75031   0.359 0.720606    
+## stateDelaware               11.30072    2.14180   5.276 9.92e-07 ***
+## stateFlorida                 7.07906    1.93638   3.656 0.000443 ***
+## stateGeorgia                 4.39665    1.79797   2.445 0.016535 *  
+## stateLouisiana               1.96362    1.77716   1.105 0.272312    
+## stateMaine                   8.76159    2.03881   4.297 4.58e-05 ***
+## stateMaryland               13.10823    2.40257   5.456 4.72e-07 ***
+## stateMississippi             2.21724    1.70546   1.300 0.197088    
+## stateNew Hampshire           7.67852    1.92987   3.979 0.000145 ***
+## stateNew Jersey             11.13578    2.12901   5.230 1.20e-06 ***
+## stateNorth Carolina          5.43516    1.83687   2.959 0.003998 ** 
+## stateSouth Carolina          3.09701    1.77583   1.744 0.084778 .  
+## stateTexas                   2.92751    1.69591   1.726 0.087942 .  
+## stateVirginia                7.00646    1.86158   3.764 0.000307 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.162 on 85 degrees of freedom
+## Multiple R-squared:  0.8307,	Adjusted R-squared:  0.7928 
+## F-statistic: 21.94 on 19 and 85 DF,  p-value: &lt; 2.2e-16
+</code></pre>
+<p>We can see that none of the hurricane relevant variables were statistically significant predictors for incumbent vote share. This finding held true when using all states or just the states in which hurricanes typically impact. It also held true for both predictions of Democratic and Republican popular vote share.</p>
+<p>For a visual of the relationship, we see a very slight negative relationship between interaction of number of hurricanes and incumbency and Democratic popular vote share, but with a very large standard error.</p>
+<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/a graph about hurricanes-1.png" width="672" />
+<p>The next graph gives the same visualization but for the interaction between incumbency and the binary variable of whether a state was hit by a hurricane. It too shows virtually no relationship.</p>
+<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/another graph for hurricanes-1.png" width="672" />
+<p>There are a few reasons this might be the case. I would expect that the most prominent is a lack of training data. The data for hurricanes only goes back to 1996, encompassing only seven elections and only a few instances of hurricanes in each. It also may be the case that my analysis just wasn&rsquo;t granular enough and really needed to be at the county-level.</p>
 <h2 id="national-popular-vote-prediction">National Popular Vote Prediction</h2>
 <p>I did not change anything in my model for predicting the national popular vote this week, but the national polling averages were updated.</p>
 <pre><code>##            s1

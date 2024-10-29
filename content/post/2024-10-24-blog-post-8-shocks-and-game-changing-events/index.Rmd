@@ -267,7 +267,7 @@ read_csv("data/national_polls_1968-2024.csv") |>
   theme_bw() 
 ```
 
-One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and eocnomic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared. 
+One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and economic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared. 
 
 ```{r, load hurricane data, echo=FALSE, message=FALSE}
 hurricanes <- read_csv("data/hurricanes_1996_2016.csv")
@@ -350,6 +350,84 @@ clean_hurricanes <-
   
 ```
 
+```{r, cleaning the hurricane data differently, echo=FALSE, message=FALSE}
+cleaner_hurricanes <- 
+  clean_hurricanes |>
+  mutate(july_hurricane=ifelse(month == 7, 1, 0),
+         aug_hurricane = ifelse(month == 8, 1, 0),
+         sep_hurricane = ifelse(month == 9, 1, 0),
+         oct_hurricane = ifelse(month == 10, 1, 0)) |>
+  select(state, year, counties_affected, injuries_direct, injuries_indirect, deaths_direct, deaths_indirect, damage_property, damage_crops, july_hurricane, aug_hurricane, sep_hurricane, oct_hurricane) |>
+  group_by(state, year) |>
+  summarize(counties_affected = sum(counties_affected),
+            injuries_direct = sum(injuries_direct),
+            injuries_indirect = sum(injuries_indirect),
+            deaths_direct = sum(deaths_direct),
+            deaths_indirect = sum(deaths_indirect),
+            damage_property = sum(damage_property, na.rm=TRUE),
+            damage_crops = sum(damage_crops, na.rm=TRUE),
+            july_hurricane = sum(july_hurricane),
+            aug_hurricane = sum(aug_hurricane),
+            sep_hurricane = sum(sep_hurricane),
+            oct_hurricane = sum(oct_hurricane))
+  
+```
+
+Looking at historical data for the effects of hurricanes on state-level popular vote, effects are unclear. Below is the coefficient breakdown for a simple linear model predicting state-level popular vote share for Democratic candidates based on their interaction terms between incumbency status or incumbent party status and whether a hurricane hit the state or how many hurricanes hit the state between July and October of that year (4 separate interaction terms). 
+
+```{r, running a simple linear regression on hurricanes, echo=FALSE, message=FALSE}
+nat_pop_hurr <- 
+  nat_pop |>
+  filter(party == "democrat") |>
+  select(incumbent, incumbent_party, year)
+
+pop_hurricanes <- 
+  d_state_popvote |>
+  left_join(cleaner_hurricanes, by = c("state", "year")) |>
+  left_join(nat_pop_hurr, by = "year") |>
+  filter(year >= 1996 & state %in% unique(cleaner_hurricanes$state)) |>
+  mutate(total_hurricanes = july_hurricane + aug_hurricane + sep_hurricane + oct_hurricane,
+         any_hurricanes = ifelse(total_hurricanes > 0, TRUE, FALSE),
+         incumbent_any_interaction = ifelse(is.na(any_hurricanes), 0, incumbent*any_hurricanes),
+         incumbent_total_interaction = ifelse(is.na(total_hurricanes), 0, incumbent*total_hurricanes),
+         party_any_interaction = ifelse(is.na(any_hurricanes), 0, incumbent_party*any_hurricanes),
+         party_total_interaction = ifelse(is.na(total_hurricanes), 0, incumbent_party*total_hurricanes))
+  
+
+hurricane_lm <- lm(D_pv ~ D_pv_lag1 + D_pv_lag2 + incumbent_total_interaction + incumbent_any_interaction + party_total_interaction + party_any_interaction + state, data = pop_hurricanes)
+
+summary(hurricane_lm)
+
+```
+
+We can see that none of the hurricane relevant variables were statistically significant predictors for incumbent vote share. This finding held true when using all states or just the states in which hurricanes typically impact. It also held true for both predictions of Democratic and Republican popular vote share. 
+
+For a visual of the relationship, we see a very slight negative relationship between interaction of number of hurricanes and incumbency and Democratic popular vote share, but with a very large standard error. 
+
+```{r, a graph about hurricanes, echo=FALSE, message=FALSE}
+pop_hurricanes |>
+  ggplot(aes(x = party_total_interaction, y = D_pv)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  labs(title="Visualizing Incumbency and Amount of Hurricane Interaction",
+       x = "Incumbency x Number of Hurricanes",
+       y = "State Popular Vote")
+```
+
+The next graph gives the same visualization but for the interaction between incumbency and the binary variable of whether a state was hit by a hurricane. It too shows virtually no relationship. 
+
+```{r, another graph for hurricanes, echo=FALSE, message=FALSE}
+pop_hurricanes |>
+  ggplot(aes(x = party_any_interaction, y = D_pv)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  labs(title="Visualizing Incumbency and Hurricane Interaction",
+       x = "Incumbency x Occurance of Hurricanes",
+       y = "State Popular Vote")
+```
+
+There are a few reasons this might be the case. I would expect that the most prominent is a lack of training data. The data for hurricanes only goes back to 1996, encompassing only seven elections and only a few instances of hurricanes in each. It also may be the case that my analysis just wasn't granular enough and really needed to be at the county-level. 
+
 ## National Popular Vote Prediction
 
 I did not change anything in my model for predicting the national popular vote this week, but the national polling averages were updated.
@@ -385,6 +463,8 @@ lambda.min.lasso <- cv.lasso.nat$lambda.min
 mse.lasso <- mean((predict(lasso.nat, s = lambda.min.lasso, newx = x.train) - y.train)^2)
 
 (lasso.nat.pred <- predict(lasso.nat, s = lambda.min.lasso, newx = x.test))
+
+
 
 ```
 
