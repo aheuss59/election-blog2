@@ -462,17 +462,22 @@ cv.lasso.nat <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
 lambda.min.lasso <- cv.lasso.nat$lambda.min
 mse.lasso <- mean((predict(lasso.nat, s = lambda.min.lasso, newx = x.train) - y.train)^2)
 
+lasso.coef.model <- glmnet(x = x.train, y = y.train, alpha = 1, lambda = lambda.min.lasso)
+coef(lasso.coef.model)
+
+```
+
+This week, I wanted to take a closer look at which variables are chosen as significant by my LASSO model. Percentage of independent voters, party identification swing from the previous year, popular vote share from the last election, and polls at weeks 3, 5, and 18 were chosen as the most important predictors.
+
+```{r, predict, echo=FALSE, message=FALSE, warning=FALSE}
 (lasso.nat.pred <- predict(lasso.nat, s = lambda.min.lasso, newx = x.test))
-
-
-
 ```
 
 This week's national vote prediction predicts an even tighter popular vote margin for Kamala Harris, who would win 49.17% of the popular vote compared to Trump's 48.04%. Trump gained on Harris from last week's prediction by 0.03 percentage points. 
 
 ## Electoral College Prediction
 
-This week, I again did not make major changes to my electoral college prediction model. 538 has not updated it's polling averages from the ones I used last week, so those were held constant in this week's model as well. This week though, we were given access to estimated voter roll party identification, so I was able to use a more accurate value for party identification swing. 
+This week, I again did not make major changes to my electoral college prediction model. 538 has not updated it's polling averages from the ones I used last week, so those were held constant in this week's model as well. We were given access to estimated voter roll party identification, so I was able to update my data to use a more accurate value for party identification swing. 
 
 ```{r, predict electoral college for states with polls, echo=FALSE, message=FALSE}
 # Merge data.

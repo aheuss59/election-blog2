@@ -92,13 +92,71 @@
 <p>There are a few reasons this might be the case. I would expect that the most prominent is a lack of training data. The data for hurricanes only goes back to 1996, encompassing only seven elections and only a few instances of hurricanes in each. It also may be the case that my analysis just wasn&rsquo;t granular enough and really needed to be at the county-level.</p>
 <h2 id="national-popular-vote-prediction">National Popular Vote Prediction</h2>
 <p>I did not change anything in my model for predicting the national popular vote this week, but the national polling averages were updated.</p>
+<pre><code>## 54 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                            s0
+## (Intercept)       13.66702333
+## party              .         
+## incumbent          .         
+## incumbent_party    .         
+## prev_admin         .         
+## deminc             .         
+## juneapp            .         
+## percent            .         
+## two_party_percent  .         
+## ind_percent       -0.04382826
+## year_prior         .         
+## year_prior_2p      .         
+## swing1             0.14046105
+## swing1_2p          .         
+## prior_election     .         
+## prior_election_2p  .         
+## swing4             .         
+## swing4_2p          .         
+## pv_lag1            0.07091508
+## pv_lag2            .         
+## nat_weeks_left_3   0.25133117
+## nat_weeks_left_4   .         
+## nat_weeks_left_5   0.19292073
+## nat_weeks_left_6   .         
+## nat_weeks_left_7   .         
+## nat_weeks_left_8   .         
+## nat_weeks_left_9   .         
+## nat_weeks_left_10  .         
+## nat_weeks_left_11  .         
+## nat_weeks_left_12  .         
+## nat_weeks_left_13  .         
+## nat_weeks_left_14  .         
+## nat_weeks_left_15  .         
+## nat_weeks_left_16  .         
+## nat_weeks_left_17  .         
+## nat_weeks_left_18  0.27481302
+## nat_weeks_left_19  .         
+## nat_weeks_left_20  .         
+## nat_weeks_left_21  .         
+## nat_weeks_left_22  .         
+## nat_weeks_left_23  .         
+## nat_weeks_left_24  .         
+## nat_weeks_left_25  .         
+## nat_weeks_left_26  .         
+## nat_weeks_left_27  .         
+## nat_weeks_left_28  .         
+## nat_weeks_left_29  .         
+## nat_weeks_left_30  .         
+## q2_gdp_growth      .         
+## q2_rdpi_growth     .         
+## GDP                .         
+## RDPI               .         
+## nat_unemployment   .         
+## stock_adj_close    .
+</code></pre>
+<p>This week, I wanted to take a closer look at which variables are chosen as significant by my LASSO model. Percentage of independent voters, party identification swing from the previous year, popular vote share from the last election, and polls at weeks 3, 5, and 18 were chosen as the most important predictors.</p>
 <pre><code>##            s1
 ## [1,] 49.17162
 ## [2,] 48.04352
 </code></pre>
 <p>This week&rsquo;s national vote prediction predicts an even tighter popular vote margin for Kamala Harris, who would win 49.17% of the popular vote compared to Trump&rsquo;s 48.04%. Trump gained on Harris from last week&rsquo;s prediction by 0.03 percentage points.</p>
 <h2 id="electoral-college-prediction">Electoral College Prediction</h2>
-<p>This week, I again did not make major changes to my electoral college prediction model. 538 has not updated it&rsquo;s polling averages from the ones I used last week, so those were held constant in this week&rsquo;s model as well. This week though, we were given access to estimated voter roll party identification, so I was able to use a more accurate value for party identification swing.</p>
+<p>This week, I again did not make major changes to my electoral college prediction model. 538 has not updated it&rsquo;s polling averages from the ones I used last week, so those were held constant in this week&rsquo;s model as well. We were given access to estimated voter roll party identification, so I was able to update my data to use a more accurate value for party identification swing.</p>
 <pre><code>## 
 ## Call:
 ## lm(formula = D_pv ~ latest_pollav_DEM + mean_pollav_DEM + D_pv_lag1 + 

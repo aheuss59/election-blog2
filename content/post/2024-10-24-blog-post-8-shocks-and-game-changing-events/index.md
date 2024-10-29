@@ -107,6 +107,68 @@ I did not change anything in my model for predicting the national popular vote t
 
 
 ```
+## 54 x 1 sparse Matrix of class "dgCMatrix"
+##                            s0
+## (Intercept)       13.66702333
+## party              .         
+## incumbent          .         
+## incumbent_party    .         
+## prev_admin         .         
+## deminc             .         
+## juneapp            .         
+## percent            .         
+## two_party_percent  .         
+## ind_percent       -0.04382826
+## year_prior         .         
+## year_prior_2p      .         
+## swing1             0.14046105
+## swing1_2p          .         
+## prior_election     .         
+## prior_election_2p  .         
+## swing4             .         
+## swing4_2p          .         
+## pv_lag1            0.07091508
+## pv_lag2            .         
+## nat_weeks_left_3   0.25133117
+## nat_weeks_left_4   .         
+## nat_weeks_left_5   0.19292073
+## nat_weeks_left_6   .         
+## nat_weeks_left_7   .         
+## nat_weeks_left_8   .         
+## nat_weeks_left_9   .         
+## nat_weeks_left_10  .         
+## nat_weeks_left_11  .         
+## nat_weeks_left_12  .         
+## nat_weeks_left_13  .         
+## nat_weeks_left_14  .         
+## nat_weeks_left_15  .         
+## nat_weeks_left_16  .         
+## nat_weeks_left_17  .         
+## nat_weeks_left_18  0.27481302
+## nat_weeks_left_19  .         
+## nat_weeks_left_20  .         
+## nat_weeks_left_21  .         
+## nat_weeks_left_22  .         
+## nat_weeks_left_23  .         
+## nat_weeks_left_24  .         
+## nat_weeks_left_25  .         
+## nat_weeks_left_26  .         
+## nat_weeks_left_27  .         
+## nat_weeks_left_28  .         
+## nat_weeks_left_29  .         
+## nat_weeks_left_30  .         
+## q2_gdp_growth      .         
+## q2_rdpi_growth     .         
+## GDP                .         
+## RDPI               .         
+## nat_unemployment   .         
+## stock_adj_close    .
+```
+
+This week, I wanted to take a closer look at which variables are chosen as significant by my LASSO model. Percentage of independent voters, party identification swing from the previous year, popular vote share from the last election, and polls at weeks 3, 5, and 18 were chosen as the most important predictors.
+
+
+```
 ##            s1
 ## [1,] 49.17162
 ## [2,] 48.04352
@@ -116,7 +178,7 @@ This week's national vote prediction predicts an even tighter popular vote margi
 
 ## Electoral College Prediction
 
-This week, I again did not make major changes to my electoral college prediction model. 538 has not updated it's polling averages from the ones I used last week, so those were held constant in this week's model as well. This week though, we were given access to estimated voter roll party identification, so I was able to use a more accurate value for party identification swing. 
+This week, I again did not make major changes to my electoral college prediction model. 538 has not updated it's polling averages from the ones I used last week, so those were held constant in this week's model as well. We were given access to estimated voter roll party identification, so I was able to update my data to use a more accurate value for party identification swing. 
 
 
 
