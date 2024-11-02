@@ -1,0 +1,622 @@
+---
+title: 'Final Post: 2024 Presidential Forecast'
+author: Alex Heuss
+date: '2024-11-03'
+slug: final-post-2024-presidential-forecast
+categories: []
+tags: []
+---
+```{r, load packages, echo=FALSE, message=FALSE}
+library(car)
+library(caret)
+library(cowplot)
+library(curl)
+library(CVXR)
+library(foreign)
+library(geofacet)
+library(glmnet)
+library(haven)
+library(janitor)
+library(kableExtra)
+library(maps)
+library(mlr3)
+library(randomForest)
+library(ranger)
+library(RColorBrewer)
+library(rstan)
+library(scales)
+library(sf)
+library(shinystan)
+library(tidyverse)
+library(viridis)
+library(mice)
+library(sf)
+library(plotly)
+```
+
+```{r, load in the nat data, echo=FALSE, message=FALSE}
+# National Dataset
+nat_pop <- read_csv("data/popvote_1948_2020.csv")
+nat_party <- read_csv("data/national_party_id.csv") |>
+  mutate(swing1 = percent - year_prior,
+         swing1_2p = two_party_percent - year_prior_2p) |>
+  arrange(year) |>
+  group_by(party) |>
+  mutate(prior_election = lag(percent, 1),
+         prior_election_2p = lag(two_party_percent, 1),
+         swing4 = percent - prior_election, 
+         swing4_2p = two_party_percent - prior_election_2p)
+nat_polls <- read_csv("data/national_polls_1968-2024.csv") |>
+  mutate(party = ifelse(party == "DEM", "democrat", "republican")) |>
+  filter(weeks_left <= 30) |>
+  group_by(party, year, weeks_left) |>
+  summarize(nat_poll = mean(poll_support)) |>
+  pivot_wider(names_from = weeks_left, values_from = nat_poll)
+colnames(nat_polls)[3:33] <- paste0("nat_weeks_left_", 0:30)
+nat_econ_q2 <- read_csv("data/fred_econ.csv") |>
+  filter(year >= 1968 & quarter == 2) |>
+  rename(q2_gdp_growth = GDP_growth_quarterly,
+         q2_rdpi_growth = RDPI_growth_quarterly) |>
+  select(year, q2_gdp_growth, q2_rdpi_growth)
+nat_econ_ann <- read_csv("data/fred_econ.csv") |>
+  filter(year >= 1968) |>
+  group_by(year) |>
+  summarize(GDP = mean(GDP),
+            RDPI = mean(RDPI),
+            nat_unemployment = mean(unemployment),
+            stock_adj_close = mean(sp500_adj_close))
+nat_data <- 
+  nat_pop |>
+  left_join(nat_party, by = c("year", "party")) |>
+  group_by(party) |>
+  mutate(pv_lag1 = lag(pv, 1),
+         pv_lag2 = lag(pv, 2)) |>
+  left_join(nat_polls, by = c("year", "party")) |>
+  filter(year >= 1968) |>
+  left_join(nat_econ_q2, by = "year") |>
+  left_join(nat_econ_ann, by = "year")
+
+```
+
+```{r, load in the state data, echo=FALSE, message=FALSE, warning=FALSE}
+d_popvote <- read_csv("data/popvote_1948_2020.csv")
+d_state_popvote <- read_csv("data/state_popvote_1948_2020.csv")
+
+# Read elector distribution dataset. 
+d_ec <- read_csv("data/corrected_ec_1948_2024.csv")
+
+# Read ads datasets. 
+campaign_spending <- read_csv("data/FEC_contributions_by_state_2008_2024.csv")
+
+# Read polling data. 
+d_polls <- read_csv("data/national_polls_1968-2024.csv")
+d_state_polls <- read_csv("data/state_polls_1968-2024.csv")
+
+# Read turnout data. 
+d_turnout <- read_csv("data/state_turnout_1980_2022.csv")
+
+d_campaign_spending <- d_state_popvote |> 
+  mutate(state_abb = state.abb[match(d_state_popvote$state, state.name)]) |> 
+  left_join(campaign_spending |> filter(party == "Democrat"), by = c("year" = "election_year", "state_abb" = "contribution_state")) |>
+  filter(year >= 2008)
+
+d_pollav_state <- d_state_polls |>
+  group_by(year, state, party) |>
+  mutate(mean_pollav = mean(poll_support, na.rm = TRUE)) |>
+  top_n(1, poll_date) |>
+  rename(latest_pollav = poll_support) |>
+  select(-c(weeks_left, days_left, poll_date, candidate, before_convention)) |>
+  pivot_wider(names_from = party, values_from = c(latest_pollav, mean_pollav))
+
+d_state_econ <- 
+  read_csv("data/Historical_State_Unemployment.csv") |>
+  mutate(year = format(as.Date(date), "%Y")) |>
+  mutate(year = as.double(year)) |>
+  group_by(state, year) |>
+  summarize(avg_state_unemployment = mean(unemployment)) |>
+  left_join(nat_econ_ann, by = "year") |>
+  left_join(nat_econ_q2, by = "year")
+
+```
+
+```{r, create state level historical party ID, echo=FALSE, message=FALSE, warning=FALSE}
+stateabs <- d_ec |>
+  filter(year == 2024) |>
+  select(state, stateab)
+
+stateabs_post1968 <- 
+  d_ec |>
+  filter(year >= 1968) |>
+  select(year, state)
+
+anes_party_id <- 
+  read_csv("data/anes_timeseries_cdf_csv_20220916.csv") |>
+  select(VCF0004, VCF0901b, VCF0302) |>
+  rename(year = VCF0004,
+         stateab = VCF0901b,
+         party = VCF0302) |>
+  filter(year >= 1968) |>
+  left_join(stateabs, by = "stateab") |>
+  select(year, state, party) |>
+  mutate(party = case_when(party == 1 ~ "republican",
+                           party == 2 ~ "independent",
+                           party == 3 ~ "none",
+                           party == 4 ~ "other",
+                           party == 5 ~ "democrat")) |>
+  filter(party == "republican" | party == "democrat" | party == "independent") |>
+  group_by(year, state, party) |>
+  summarize(count = n()) |>
+  pivot_wider(names_from = party, values_from = count) |>
+  mutate(democrat = ifelse(is.na(democrat), 0, democrat),
+         republican = ifelse(is.na(republican), 0, republican),
+         independent = ifelse(is.na(independent), 0, independent),
+         state_total = sum(democrat, independent, republican),
+         two_party_total = sum(democrat, republican),
+         dem_perc = round((democrat/state_total)*100, 2),
+         rep_perc = round((republican/state_total)*100, 2),
+         ind_perc = round((independent/state_total)*100, 2),
+         dem_2p_perc = round((democrat/two_party_total)*100, 2),
+         rep_2p_perc = round((republican/two_party_total)*100, 2)) |>
+  group_by(state)
+
+d_state_party_id <- 
+  stateabs_post1968 |>
+  left_join(anes_party_id, by = c("year", "state")) |>
+  filter(year != 2024) |>
+  select(-democrat, -republican, -independent, -state_total, -two_party_total) |>
+  mutate(total_voters = NA)
+```
+
+```{r, loop for 2024 Party ID, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+stateabbreviations <- unique((d_ec |> filter(stateab != "DC"))$stateab) 
+i = 0
+for (s in stateabbreviations) {
+  # Load in the state's voter files
+  voter_file_state_data <- 
+    read_csv(paste0("data/state_1pc_samples_oct24/", s, "_sample.csv")) 
+  
+  # Count the number of voters in the voter files
+  voter_file_total_voters <- nrow(voter_file_state_data)
+  
+  # Clean the data a lot
+  voter_file_state_data <- 
+    voter_file_state_data |>
+    rename(stateab = sii_state) |>
+    left_join(stateabs, by = "stateab") |>
+    mutate(total_voters = voter_file_total_voters,
+           dem_perc = ifelse(svi_party_modeled_rollup == "D", 1, 0),
+           rep_perc = ifelse(svi_party_modeled_rollup == "R", 1, 0),
+           ind_perc = ifelse(svi_party_modeled_rollup == "U", 1, 0))|>
+    select(total_voters, dem_perc, rep_perc, ind_perc, state) |>
+    group_by(state) |>
+    summarize(total_voters = mean(total_voters),
+              year = 2024,
+              state = state,
+              dem_perc = sum(dem_perc, na.rm = TRUE)/total_voters*100,
+              rep_perc = sum(rep_perc, na.rm = TRUE)/total_voters*100,
+              ind_perc = sum(ind_perc, na.rm = TRUE)/total_voters*100,
+              dem_2p_perc = dem_perc / (dem_perc + rep_perc),
+              rep_2p_perc = rep_perc / (rep_perc + dem_perc))
+  
+  voter_file_state_data <- slice(voter_file_state_data, 0:1)
+  
+  d_state_party_id <- rbind(d_state_party_id, voter_file_state_data)
+}
+```
+
+```{r, clean state party data, echo=FALSE, message=FALSE}
+d_state_party_id <- 
+  d_state_party_id |>
+  group_by(state) |>
+  arrange(year) |>
+  mutate(dem_perc_lag4 = lag(dem_perc, 1),
+         rep_perc_lag4 = lag(rep_perc, 1),
+         dem_perc_swing = dem_perc - dem_perc_lag4,
+         rep_perc_swing = rep_perc - rep_perc_lag4)
+  
+```
+
+## Introductory Note
+
+Over the course of nine weeks, we've explored the power of the economy, incumbency, polling, demographics, and certain campaign data in predicting election outcomes. For the past several weeks, my model has predicted the same outcome: Harris wins Wisconsin, Michigan and Pennsylvania, while Trump takes the rest. My national popular vote prediction has steadily narrowed, with Trump now within a percentage point of Harris. If anything has become clear to me over the course of this process, it is that this race is truly a coin flip. I'm excited to see how my predictions fare. 
+
+## Model Breakdown
+
+In forecasting the 2024 Presidential Election, I created two separate models, one to forecast the national popular vote and another to predict the electoral college. Both of my forecasts rely primarily on fundamentals, polling and lagged vote share. My models also include measures of “partisan swing,” which measures the change in partisan identification for a party between 2024 and either the year prior or the election prior, and is motivated by an underlying theory of increasing partisanship and polarization in the electorate. 
+
+### National Popular Vote
+
+My national popular vote prediction model uses LASSO to select the most influential predictors from a lengthy list of options including: incumbency measures, June presidential approval rating, percent of the country identifying as Democrat, Republican or Independent, and how those numbers changed from both the previous year and the prior election, lagged vote share, weekly polling averages in the 30 weeks leading up to the election, and economic measures of GDP, RDPI and stock prices. 
+
+[model formula]
+
+```{r, perform national pop vote lasso prediction, echo=FALSE, message=FALSE, warning=FALSE}
+# Subset to the weeks_left we have polling data for
+nat_data_subset <- 
+  nat_data |>
+  select(-c(paste0("nat_weeks_left_", 0)),
+         -candidate, -winner)
+# Train and Test splits
+nat_train <- 
+  nat_data_subset |> 
+  filter(year <= 2020)
+nat_test <- 
+  nat_data_subset |>
+  filter(year == 2024)
+x.train <- nat_train |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+y.train <- nat_train$pv
+x.test <- nat_test |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+
+# Use Lasso for National Popular Vote
+lasso.nat <- glmnet(x = x.train, y = y.train, alpha = 1)
+set.seed(02138)
+cv.lasso.nat <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
+lambda.min.lasso <- cv.lasso.nat$lambda.min
+mse.lasso <- mean((predict(lasso.nat, s = lambda.min.lasso, newx = x.train) - y.train)^2)
+
+lasso.coef.model <- glmnet(x = x.train, y = y.train, alpha = 1, lambda = lambda.min.lasso)
+coef(lasso.coef.model)
+
+# Construct confidence intervals
+predictions <- matrix(NA, nrow = 1000, ncol = nrow(x.test))
+set.seed(02138)
+
+# loop over lots of bootstraps
+for (i in 1:1000) {
+  bootstrap_indices <- sample(1:nrow(x.train), size = nrow(x.train), replace = TRUE)
+  x.train_bootstrap <- x.train[bootstrap_indices, ]
+  y.train_bootstrap <- y.train[bootstrap_indices]
+
+  # Fit model
+  lasso_bootstrap <- glmnet(x = x.train_bootstrap, y = y.train_bootstrap, alpha = 1, lambda = lambda.min.lasso)
+
+  # Predict
+  predictions[i, ] <- predict(lasso_bootstrap, newx = x.test)
+}
+
+# Calculate standard deviation
+pred_sd <- apply(predictions, 2, sd)
+predictions_og <- predict(lasso.nat, s = lambda.min.lasso, newx = x.test)
+
+# Construct 95% confidence intervals
+ci_lower <- predictions_og - 1.96 * pred_sd
+ci_upper <- predictions_og + 1.96 * pred_sd
+
+# Combine results into a data frame
+national_results <- 
+  data.frame(cand = c("Harris", "Trump"),
+             pred = predictions_og,
+             lwr = ci_lower,
+             upr = ci_upper) |>
+  rename(pred = s1,
+         lower = `s1.1`,
+         upper = `s1.2`)
+
+# Calculate the cross validation r squared
+cv_predictions <- predict(cv.lasso.nat, newx = x.train, s = lambda.min.lasso)
+
+# Calculate R squared
+ss_total <- sum((y.train - mean(y.train))^2)
+ss_residual <- sum((y.train - cv_predictions)^2)
+cv_r_squared <- 1 - (ss_residual / ss_total)
+```
+
+My LASSO model selected 8 predictors as important in reducing the error of my model: percent of the country identifying as independent, the change in party identification for either party from the year preceding the election, vote share from the previous election, and five different weeks of polling, including the week just prior to the election. The cross-validated R-squared value for my model is 0.88. Polling data and partisan swing have the largest coefficient sizes. An example interpretation of one of the coefficients would be: for each increase of one percentage point in a party's identification from the year prior to the election to election year, that party's candidate's vote share increases by 0.1 percentage points. On the surface, that may not seem like a lot, but several "small" coefficient predictors add up. 
+
+### Electoral College Vote
+
+My electoral college model takes in less predictive variables. I make two separate models for predicting the electoral college, one for states with significant polling aggregate data on FiveThirtyEight, and one for those without. Predictive variables for both models include: state-level lagged vote share for the two prior elections, whether the candidate is a member of the incumbent party, national quarter 2 GDP growth, average state-level unemployment, the change in partisan identification for either party from the last election, and state fixed effects. For states with polling aggregates, the mean polling average and latest polling average are included in my model. 
+
+[model formula]
+
+```{r, hand code Maine and Colorado polls to get more accurate predictions, echo=FALSE, message=FALSE}
+five38 <- read_csv("data/president_polls.csv")
+
+maine_polls <- 
+  five38 |>
+  filter(state == "Maine" & candidate_name == c("Kamala Harris", "Donald Trump")) |>
+  select(state, candidate_name, pct, start_date, end_date) |>
+  mutate(start_date = as.Date.character(start_date, format = "%m/%d/%y"),
+         end_date = as.Date.character(end_date, format = "%m/%d/%y")) |>
+  group_by(candidate_name) |> 
+  mutate(mean_pollav = mean(pct)) |>
+  top_n(1, end_date) |>
+  group_by(candidate_name, state, mean_pollav) |>
+  summarize(year = 2024,
+            latest_pollav = mean(pct)) |>
+  mutate(latest_pollav_REP = ifelse(candidate_name == "Donald Trump", latest_pollav, 0),
+         latest_pollav_DEM = ifelse(candidate_name == "Kamala Harris", latest_pollav, 0),
+         mean_pollav_REP = ifelse(candidate_name == "Donald Trump", mean_pollav, 0),
+         mean_pollav_DEM = ifelse(candidate_name == "Kamala Harris", mean_pollav, 0)) |>
+  select(-candidate_name, -mean_pollav, -latest_pollav) |>
+  group_by(state, year) |>
+  summarize(latest_pollav_REP = sum(latest_pollav_REP),
+            latest_pollav_DEM = sum(latest_pollav_DEM),
+            mean_pollav_REP = sum(mean_pollav_REP),
+            mean_pollav_DEM = sum(mean_pollav_DEM))
+d_pollav_state <- rbind(d_pollav_state, maine_polls)
+
+colorado_polls <- 
+  five38 |>
+  filter(state == "Colorado" & candidate_name == c("Kamala Harris", "Donald Trump")) |>
+  select(state, candidate_name, pct, start_date, end_date) |>
+  mutate(start_date = as.Date.character(start_date, format = "%m/%d/%y"),
+         end_date = as.Date.character(end_date, format = "%m/%d/%y")) |>
+  group_by(candidate_name) |> 
+  mutate(mean_pollav = mean(pct)) |>
+  top_n(1, end_date) |>
+  group_by(candidate_name, state, mean_pollav) |>
+  summarize(year = 2024,
+            latest_pollav = mean(pct)) |>
+  mutate(latest_pollav_REP = ifelse(candidate_name == "Donald Trump", latest_pollav, 0),
+         latest_pollav_DEM = ifelse(candidate_name == "Kamala Harris", latest_pollav, 0),
+         mean_pollav_REP = ifelse(candidate_name == "Donald Trump", mean_pollav, 0),
+         mean_pollav_DEM = ifelse(candidate_name == "Kamala Harris", mean_pollav, 0)) |>
+  select(-candidate_name, -mean_pollav, -latest_pollav) |>
+  group_by(state, year) |>
+  summarize(latest_pollav_REP = sum(latest_pollav_REP),
+            latest_pollav_DEM = sum(latest_pollav_DEM),
+            mean_pollav_REP = sum(mean_pollav_REP),
+            mean_pollav_DEM = sum(mean_pollav_DEM))
+d_pollav_state <- rbind(d_pollav_state, colorado_polls)
+```
+
+```{r, predict electoral college for states with polls, echo=FALSE, message=FALSE}
+# Merge data.
+d <- d_pollav_state |>
+  left_join(d_state_party_id, by = c("year", "state")) |>
+  left_join(d_state_popvote, by = c("year", "state")) |>
+  left_join(d_popvote |> filter(party == "democrat"), by = "year") |>
+  left_join(d_turnout, by = c("year", "state")) |>
+  left_join(d_state_econ, by = c("state", "year")) |>
+  filter(year >= 1980 & state != "Maine Cd 2") |>
+  ungroup()
+
+# Sequester states for which we have polling data for 2024.
+
+states.2024 <- unique(d$state[d$year == 2024])
+states.2024 <- states.2024[-which(states.2024 == "Nebraska Cd 2")]
+
+d<- 
+  d |>
+  filter(state %in% states.2024)
+
+# Separate into training and testing for simple poll prediction model. 
+d.train <- d |> filter(year < 2024) |> select(year, state, D_pv, latest_pollav_DEM, mean_pollav_DEM, 
+                                              D_pv_lag1, D_pv_lag2, incumbent_party, avg_state_unemployment, q2_gdp_growth, dem_perc, rep_perc, ind_perc, dem_perc_lag4, rep_perc_lag4, dem_perc_swing, rep_perc_swing) |> drop_na()
+
+d.test <- d |> filter(year == 2024) |> select(year, state, D_pv, latest_pollav_DEM, mean_pollav_DEM, 
+                                              D_pv_lag1, D_pv_lag2, incumbent_party, avg_state_unemployment, q2_gdp_growth, dem_perc, rep_perc, ind_perc, dem_perc_lag4, rep_perc_lag4, dem_perc_swing, rep_perc_swing)
+
+# Add back in lagged vote share for 2024. 
+t <- d |> 
+  filter(year >= 2016) |> 
+  arrange(year) |> 
+  group_by(state) |> 
+  mutate(
+    D_pv_lag1 = lag(D_pv, 1),
+    R_pv_lag1 = lag(R_pv, 1), 
+    D_pv_lag2 = lag(D_pv, 2),
+    R_pv_lag2 = lag(R_pv, 2)) |> 
+  filter(year == 2024) |> 
+  select(state, year, D_pv, R_pv, D_pv_lag1, R_pv_lag1, D_pv_lag2, R_pv_lag2)
+
+# Subset testing data to only relevant variables for our simple model. 
+d.test <- d.test |> 
+  select(-c(D_pv, D_pv_lag1, D_pv_lag2)) |> 
+  left_join(t, by = c("state", "year"))
+
+# Set up cross validation
+train_control <- trainControl(method = "LOOCV")
+
+# Standard frequentist linear regression. 
+reg.ols <- train(D_pv ~ latest_pollav_DEM + mean_pollav_DEM + D_pv_lag1 + D_pv_lag2 + incumbent_party + q2_gdp_growth + avg_state_unemployment + dem_perc_swing + rep_perc_swing + state, 
+              data = d.train,
+              method = "lm",
+              trControl = train_control)
+(pred.ols.dem <- predict(reg.ols, newdata = d.test))
+residuals_polls <- resid(reg.ols$finalModel)
+rse_polls <- sqrt(sum(residuals_polls^2) / reg.ols$finalModel$df.residual)
+
+# Approximate confidence intervals
+ci_upper_polls <- pred.ols.dem + (1.96 * rse_polls)
+ci_lower_polls <- pred.ols.dem - (1.96 * rse_polls)
+
+# Combine into a data frame
+dem_pred_with_ci_polls <- data.frame(
+  pred = pred.ols.dem,
+  lwr = ci_lower_polls,
+  upr = ci_upper_polls
+)
+
+dem_pred_with_ci_polls
+
+# Create dataset to summarize winners and EC vote distributions. 
+win_pred <- data.frame(state = d.test$state,
+                       year = rep(2024, length(d.test$state)),
+                       simp_pred_dem = pred.ols.dem,
+                       simp_pred_rep = 100 - pred.ols.dem,
+                       lower = ci_lower_polls,
+                       upper = ci_upper_polls) |> 
+            mutate(winner = ifelse(simp_pred_dem > simp_pred_rep, "Democrat", "Republican")) |>
+            left_join(d_ec, by = c("state", "year"))
+
+reg_ols_results <- reg.ols$results
+```
+
+```{r, predict electoral college for states without polls, echo=FALSE, message=FALSE}
+missing_state_polls <- 
+  read_csv("data/missing_poll_states_csv.csv")
+missing_state_polls <- 
+  missing_state_polls |>
+  filter(party == "DEM" & !state %in% states.2024) |>
+  mutate(latest_pollav_REP = poll_support,
+         latest_pollav_DEM = poll_support,
+         mean_pollav_REP = poll_support,
+         mean_pollav_DEM = poll_support) |>
+  select(year, state, latest_pollav_REP, latest_pollav_DEM, mean_pollav_REP, mean_pollav_DEM)
+missing_state_polls <- rbind(d_pollav_state, missing_state_polls)
+
+d_no_polls <- missing_state_polls |>
+  left_join(d_state_party_id, by = c("year", "state")) |>
+  left_join(d_state_popvote, by = c("year", "state")) |>
+  left_join(d_popvote |> filter(party == "democrat"), by = "year") |>
+  left_join(d_turnout, by = c("year", "state")) |>
+  left_join(d_state_econ, by = c("state", "year")) |>
+  filter(year >= 1980 & state != "Nebraska Cd 2") |>
+  ungroup()|>
+  filter(!state %in% states.2024 & state != "Maine Cd 2")
+
+# Separate into training and testing for simple poll prediction model. 
+d.train.nopolls <- d_no_polls |> filter(year < 2024) |> select(year, state, D_pv, 
+                                              D_pv_lag1, D_pv_lag2, incumbent_party, avg_state_unemployment, q2_gdp_growth, dem_perc, rep_perc, ind_perc, dem_perc_lag4, rep_perc_lag4, dem_perc_swing, rep_perc_swing) |> drop_na()
+d.test.nopolls <- d_no_polls |> filter(year == 2024) |> select(year, state, D_pv, 
+                                              D_pv_lag1, D_pv_lag2, incumbent_party, avg_state_unemployment, q2_gdp_growth, dem_perc, rep_perc, ind_perc, dem_perc_lag4, rep_perc_lag4, dem_perc_swing, rep_perc_swing)
+
+# Add back in lagged vote share for 2024. 
+t.nopolls <- d_no_polls |> 
+  filter(year >= 2016) |> 
+  arrange(year) |> 
+  group_by(state) |> 
+  mutate(
+    D_pv_lag1 = lag(D_pv, 1),
+    R_pv_lag1 = lag(R_pv, 1), 
+    D_pv_lag2 = lag(D_pv, 2),
+    R_pv_lag2 = lag(R_pv, 2)) |> 
+  filter(year == 2024) |> 
+  select(state, year, D_pv, R_pv, D_pv_lag1, R_pv_lag1, D_pv_lag2, R_pv_lag2)
+
+# Subset testing data to only relevant variables for our simple model. 
+d.test.nopolls <- d.test.nopolls |> 
+  select(-c(D_pv, D_pv_lag1, D_pv_lag2)) |> 
+  left_join(t.nopolls, by = c("state", "year"))
+
+# Set up cross validation
+train_control_nopolls <- trainControl(method = "LOOCV")
+
+# Standard frequentist linear regression. 
+reg.ols.nopolls <- train(D_pv ~ D_pv_lag1 + D_pv_lag2 + incumbent_party + q2_gdp_growth + avg_state_unemployment + dem_perc_swing + rep_perc_swing + state, 
+              data = d.train.nopolls,
+              method = "lm",
+              trControl = train_control_nopolls)
+
+pred.ols.dem.nopolls <- predict(reg.ols.nopolls, newdata = d.test.nopolls)
+residuals <- resid(reg.ols.nopolls$finalModel)
+rse <- sqrt(sum(residuals^2) / reg.ols.nopolls$finalModel$df.residual)
+
+# Approximate confidence intervals
+ci_upper <- pred.ols.dem.nopolls + (1.96 * rse)
+ci_lower <- pred.ols.dem.nopolls - (1.96 * rse)
+
+# Combine into a data frame
+dem_pred_with_ci <- data.frame(
+  pred = pred.ols.dem.nopolls,
+  lwr = ci_lower,
+  upr = ci_upper
+)
+
+dem_pred_with_ci
+
+# Create dataset to summarize winners and EC vote distributions. 
+win_pred_nopolls <- data.frame(state = d.test.nopolls$state,
+                       year = rep(2024, length(d.test.nopolls$state)),
+                       simp_pred_dem = pred.ols.dem.nopolls,
+                       simp_pred_rep = 100 - pred.ols.dem.nopolls,
+                       upper = ci_upper,
+                       lower = ci_lower) |> 
+            mutate(winner = ifelse(simp_pred_dem > simp_pred_rep, "Democrat", "Republican")) |>
+            left_join(d_ec, by = c("state", "year"))
+
+results_reg_ols_nopolls <- reg.ols.nopolls$results
+
+```
+
+```{r, show coefficients, echo=FALSE, message=FALSE}
+summary(reg.ols)
+summary(reg.ols.nopolls)
+```
+
+For my model with polls, the latest poll average holds significant predictive weight, as does a state's most recent presidential election vote share. On the other hand, lagged vote share is the most important for state's without polls, followed by incumbency. We see also in both models that state fixed effects can have very large coefficients and thus may have large predictive power, despite being less significant than other variables. My models with polls has a 0.91 cross-validated r-squared, however my model without polls only has an r-squared of 0.66. Luckily, the states without polls are not close in this election, so the precise vote share prediction is not as important as in swing states. 
+
+## Predictions
+
+### National Popular Vote
+```{r, predict, echo=FALSE, message=FALSE, warning=FALSE}
+national_results |>
+  knitr::kable(col.names=c("Candidate", "Predicted Vote Share", "Lower Bound", "Upper Bound"))
+```
+
+### Electoral College
+
+All in all, my model predicts that Harris will win the electoral college, 270-268 - an insanely tight margin. 
+
+```{r, breakdown electoral college results, echo=FALSE, message=FALSE}
+all_preds <- rbind(win_pred, win_pred_nopolls)
+dc <- data.frame(state = "District of Columbia", 
+                 year = 2024,
+                 simp_pred_dem = NA,
+                 simp_pred_rep = NA,
+                 upper = NA,
+                 lower = NA,
+                 winner = "Democrat",
+                 stateab = "DC",
+                 electors = 3) 
+all_preds <- rbind(all_preds, dc)
+
+states_map <- map_data("state")
+all_preds |>
+  rename(Winner = winner) |>
+  group_by(Winner) |>
+  summarize(`States Won` = n(), Electors = sum(electors)) |>
+  knitr::kable()
+```
+
+The following graph presents the breakdown for my swing state predictions including confidence intervals. 
+
+```{r, swing state specific breakdown, echo=FALSE, message=FALSE}
+all_preds |>
+  filter(state %in% c("Michigan", "Wisconsin", "Pennsylvania", "Georgia", "North Carolina", "Arizona", "Nevada")) |>
+  mutate(Margin = simp_pred_dem - simp_pred_rep) |>
+  rename(State = state, Winner = winner, `Harris Prediction` = simp_pred_dem, Upper = upper, Lower = lower ) |>
+  select(State, `Harris Prediction`, Lower, Upper, Margin, Winner) |>
+  arrange(Winner) |>
+  knitr::kable(caption="Swing State Prediction Breakdown")
+```
+
+In a race as tight as 2024, it is nearly impossible to predict tight swing states and have a confidence interval that puts one candidate as a clear winner, and my predictions are no exception. 
+
+Below is the map of all my electoral college predictions and their associated vote share margins. Negative vote shares represent Trump wins and positive values represent Harris wins.
+
+```{r, map, echo=FALSE, message=FALSE, warning=FALSE}
+us_geo <- st_read("data/states.shp")
+
+geo_data <- 
+  us_geo |> 
+  filter(us_geo$NAME %in% unique(all_preds$state)) |> 
+  left_join(all_preds, by = c("NAME" = "state")) |>
+  mutate(Margin = simp_pred_dem - simp_pred_rep)
+
+plot_with_ak <- ggplot() + 
+  geom_sf(data = geo_data, aes(fill = Margin, text = paste("State:", NAME, "<br>Margin:", round(Margin, 2), "<br>Electors:", electors))) +
+  scale_fill_gradient2(midpoint = 0, low = "#E81B23", mid = "white", high = "#00AEF3") +
+  theme_void() +
+  labs(title="2024 Electoral College Predictions")
+
+interactive_plot <- ggplotly(plot_with_ak, tooltip = "text")
+
+interactive_plot
+```
+
+
+
+
+
+
+
+

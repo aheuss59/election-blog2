@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Blog Post 8: Shocks and Game Changing Events | A minimal Hugo website</title>
@@ -38,10 +38,10 @@
 <p>This week in class, we discussed shocks that sometimes are theorized to have played a role in election outcomes. These can be non-political shocks like natural disasters, or more political ones like a truly awful debate performance.</p>
 <p>In this election cycle, it seems like hardly anything can truly move the polls much. (My theory is that we are numb to crazy things happening now and it just doesn&rsquo;t phase us anymore). This election cycle, unpredictable shocks have almost been the norm. There have been two attempted assassination attempts on Former President Trump and President Biden dropped his re-election campaign extremely late in the game. Trump has said and done some very strange or alarming things. Two serious hurricanes hit the Southern coast in a matter of two weeks. Yet, almost none of these &ldquo;game-changing&rdquo; events have made a significant or lasting impact on the polls.</p>
 <p>The one shock that did make a clear difference was Biden&rsquo;s dropping out in late July. The Democrats went from polling barely above 40% to 45% in a matter of days. Looking at the graph below too, it does look like the first assassination attempt on Former President Trump also had an impact, but was masked somewhat by Harris&rsquo; entrance into the race as the new Democratic nominee.</p>
-<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/plot Biden dropout-1.png" width="672" />
-<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/plot other shocks-1.png" width="672" />
+<img src="/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/plot Biden dropout-1.png" width="672" />
+<img src="/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/plot other shocks-1.png" width="672" />
 <p>One shock that may have been less predictable are the hurricanes that slammed Florida and North Carolina earlier this month. There are two different theories of voter behavior in situations like this. First, the idea that voters will punish the incumbent no matter their response, simply because it happened and it reduced their well-being. Theories like this are backed up by research like that of Achen and Bartels who found that voters punish the incumbent for shark attacks. On the other hand, another theory is that voters will reward incumbents who respond promptly and efficiently, which is supported by research like the Healy et al paper on tornados and economic impact, which found that voters punished incumbents when economic damage results from tornados, but only with strong effects when a state of emergency was not declared.</p>
-<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/look at polls in NC and Georgia to see if there are clear effects-1.png" width="1152" />
+<img src="/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/look at polls in NC and Georgia to see if there are clear effects-1.png" width="1152" />
 <p>If we had to draw conclusions from a these two graphs, we would probably conclude that the hurricanes reduced support for the Democrats in these two states, specifically Helene. That said, it doesn&rsquo;t make a whole lot of sense to draw those conclusions from this evidence alone given confounding variables. Communities that were hit hard by the hurricanes or their aftermath probably don&rsquo;t have a lot of people in them right now who are just sitting at home answering poll questions. They are out there trying to help build back their communities. It is unlikely we will be able to truly look at the impact of these events until after election day.</p>
 <p>Looking at historical data for the effects of hurricanes on state-level popular vote, effects are unclear. Below is the coefficient breakdown for a simple linear model predicting state-level popular vote share for Democratic candidates based on their interaction terms between incumbency status or incumbent party status and whether a hurricane hit the state or how many hurricanes hit the state between July and October of that year (4 separate interaction terms).</p>
 <pre><code>## 
@@ -86,9 +86,9 @@
 </code></pre>
 <p>We can see that none of the hurricane relevant variables were statistically significant predictors for incumbent vote share. This finding held true when using all states or just the states in which hurricanes typically impact. It also held true for both predictions of Democratic and Republican popular vote share.</p>
 <p>For a visual of the relationship, we see a very slight negative relationship between interaction of number of hurricanes and incumbency and Democratic popular vote share, but with a very large standard error.</p>
-<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/a graph about hurricanes-1.png" width="672" />
+<img src="/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/a graph about hurricanes-1.png" width="672" />
 <p>The next graph gives the same visualization but for the interaction between incumbency and the binary variable of whether a state was hit by a hurricane. It too shows virtually no relationship.</p>
-<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/another graph for hurricanes-1.png" width="672" />
+<img src="/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/another graph for hurricanes-1.png" width="672" />
 <p>There are a few reasons this might be the case. I would expect that the most prominent is a lack of training data. The data for hurricanes only goes back to 1996, encompassing only seven elections and only a few instances of hurricanes in each. It also may be the case that my analysis just wasn&rsquo;t granular enough and really needed to be at the county-level.</p>
 <h2 id="national-popular-vote-prediction">National Popular Vote Prediction</h2>
 <p>I did not change anything in my model for predicting the national popular vote this week, but the national polling averages were updated.</p>
@@ -332,7 +332,7 @@
 </table>
 <p>Looking at the specific state-level predictions for swing states this week, most of the states are further red than last week with the correction of my partisan swing variable.</p>
 <p>A full look at the electoral college mapping of predictions is below.</p>
-<img src="https://example.org/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/map-1.png" width="672" />
+<img src="/post/2024/10/24/blog-post-8-shocks-and-game-changing-events/index_files/figure-html/map-1.png" width="672" />
 
 </main>
 
