@@ -228,7 +228,16 @@ In forecasting the 2024 Presidential Election, I created two separate models, on
 
 My national popular vote prediction model uses LASSO to select the most influential predictors from a lengthy list of options including: incumbency measures, June presidential approval rating, percent of the country identifying as Democrat, Republican or Independent, and how those numbers changed from both the previous year and the prior election, lagged vote share, weekly polling averages in the 30 weeks leading up to the election, and economic measures of GDP, RDPI and stock prices. 
 
-[model formula]
+The Lasso regression model minimizes the following loss function:
+
+$$ 
+\underset{\beta}{\text{min}}\quad \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2 + \lambda \sum_{j=1}^{p} |\beta_j|
+$$
+
+where:
+- $y_i$ is the observed outcome for the $i$-th observation and $\hat{y}_i$ is the predicted value for the $i$-th observation,,
+- $\beta_j$ is the coefficient for the $j$-th predictor,
+- and $\lambda$ dictates the strength of the Lasso penalty.
 
 ```{r, perform national pop vote lasso prediction, echo=FALSE, message=FALSE, warning=FALSE}
 # Subset to the weeks_left we have polling data for
@@ -311,9 +320,13 @@ My LASSO model selected 8 predictors as important in reducing the error of my mo
 
 ### Electoral College Vote
 
-My electoral college model takes in less predictive variables. I make two separate models for predicting the electoral college, one for states with significant polling aggregate data on FiveThirtyEight, and one for those without. Predictive variables for both models include: state-level lagged vote share for the two prior elections, whether the candidate is a member of the incumbent party, national quarter 2 GDP growth, average state-level unemployment, the change in partisan identification for either party from the last election, and state fixed effects. For states with polling aggregates, the mean polling average and latest polling average are included in my model. 
+My electoral college model takes in less predictive variables. I make two separate models for predicting the electoral college, one for states with significant polling aggregate data on FiveThirtyEight, and one for those without. Predictive variables for both models include: state-level lagged vote share for the two prior elections, whether the candidate is a member of the incumbent party, national quarter 2 GDP growth, average state-level unemployment, the change in partisan identification for either party from the last election, and state fixed effects. For states with polling aggregates, the mean polling average and latest polling average are included in my model. My linear model uses the following equation:
 
-[model formula]
+$$ 
+y_{ij} = \beta_0 + \beta voteshare_{ij-1} + \beta voteshare_{ij-2} + \beta incumbentparty_{j} + \beta Q2GDP_{j} + \beta unemployment_{ij} + \beta partyswing_{j} + \alpha_{i} + \epsilon_{ij}
+$$
+
+Where $i$ denotes the state and $j$ the year. 
 
 ```{r, hand code Maine and Colorado polls to get more accurate predictions, echo=FALSE, message=FALSE}
 five38 <- read_csv("data/president_polls.csv")
@@ -420,7 +433,7 @@ reg.ols <- train(D_pv ~ latest_pollav_DEM + mean_pollav_DEM + D_pv_lag1 + D_pv_l
               data = d.train,
               method = "lm",
               trControl = train_control)
-(pred.ols.dem <- predict(reg.ols, newdata = d.test))
+pred.ols.dem <- predict(reg.ols, newdata = d.test)
 residuals_polls <- resid(reg.ols$finalModel)
 rse_polls <- sqrt(sum(residuals_polls^2) / reg.ols$finalModel$df.residual)
 
@@ -434,8 +447,6 @@ dem_pred_with_ci_polls <- data.frame(
   lwr = ci_lower_polls,
   upr = ci_upper_polls
 )
-
-dem_pred_with_ci_polls
 
 # Create dataset to summarize winners and EC vote distributions. 
 win_pred <- data.frame(state = d.test$state,
@@ -586,7 +597,7 @@ all_preds |>
   rename(State = state, Winner = winner, `Harris Prediction` = simp_pred_dem, Upper = upper, Lower = lower ) |>
   select(State, `Harris Prediction`, Lower, Upper, Margin, Winner) |>
   arrange(Winner) |>
-  knitr::kable(caption="Swing State Prediction Breakdown")
+  knitr::kable(caption="Swing State Prediction Breakdown", digits=4)
 ```
 
 In a race as tight as 2024, it is nearly impossible to predict tight swing states and have a confidence interval that puts one candidate as a clear winner, and my predictions are no exception. 

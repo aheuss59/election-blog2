@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Blog Post 7: The Ground Game | A minimal Hugo website</title>
@@ -114,7 +114,7 @@
 </table>
 <p>My model predicts Harris to win Michigan, Pennsylvania and Wisconsin while Trump wins Arizona, Georgia, Nevada and North Carolina.</p>
 <p>Finally, here&rsquo;s a look at the full map.</p>
-<img src="/post/2024/10/21/blog-post-7-the-ground-game/index_files/figure-html/map-1.png" width="672" />
+<img src="https://example.org/post/2024/10/21/blog-post-7-the-ground-game/index_files/figure-html/map-1.png" width="672" />
 <h2 id="an-attempt-at-lasso-regression-for-electoral-college-predictions">An Attempt at Lasso Regression for Electoral College Predictions</h2>
 <p>This week, I also wanted to try using a more sophisticated method for model selection and tried to run a LASSO prediction on my state-level data. After struggling with imputation and matrices for awhile, my model promptly predicted that Kamala Harris would win at least -35,000 percent of the vote share and Donald Trump at least -81,000. Due to the highly inaccurate nature of these predictions, I instead took the features LASSO suggested and fed them back into a linear model.</p>
 <p>This model spit out some possible, but not necessarily realistic estimates for the states that currently have polling data (mostly toss up states or states that lean one way or another).</p>

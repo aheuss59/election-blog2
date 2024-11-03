@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Blog Post 6: Campaign Ads and Spending | A minimal Hugo website</title>
@@ -37,9 +37,9 @@
 <p>This week in class, we discussed the air war in campaigns, particularly the possible impact of advertising over television and radio on the outcome of elections. In section, we also discussed candidate contributions at the state level and how they may be a way to predict election outcomes.</p>
 <h2 id="campaign-contribution-visualization">Campaign Contribution Visualization</h2>
 <p>Visualizing campaign contributions per state and that state&rsquo;s popular vote, there does appear to be a positive correlation, although certainly nothing conclusive, as most of the points are centered on one point of the graph (most candiadtes do not receive a ton of contributions from any one state or another). Thus, it is hard to be certain about any trends we may be seeing.</p>
-<img src="/post/2024/10/14/blog-post-6-campaign-ads-and-spending/index_files/figure-html/contribution data and basic national visualization-1.png" width="672" />
+<img src="https://example.org/post/2024/10/14/blog-post-6-campaign-ads-and-spending/index_files/figure-html/contribution data and basic national visualization-1.png" width="672" />
 <p>Looking at that relationship in individual swing states, the relationship is inconclusive. One takeaway from this graph is that the relationship between contributions and popular vote varies between states, highlighting the importance of including state fixed effects in any regression analysis.</p>
-<img src="/post/2024/10/14/blog-post-6-campaign-ads-and-spending/index_files/figure-html/swing states and contributions-1.png" width="672" />
+<img src="https://example.org/post/2024/10/14/blog-post-6-campaign-ads-and-spending/index_files/figure-html/swing states and contributions-1.png" width="672" />
 <pre><code>## 
 ## Call:
 ## lm(formula = D_pv ~ contribution_receipt_amount + factor(state), 
@@ -316,7 +316,7 @@
 </tr>
 </tbody>
 </table>
-<img src="/post/2024/10/14/blog-post-6-campaign-ads-and-spending/index_files/figure-html/visualize results-1.png" width="672" />
+<img src="https://example.org/post/2024/10/14/blog-post-6-campaign-ads-and-spending/index_files/figure-html/visualize results-1.png" width="672" />
 <h2 id="conclusion">Conclusion</h2>
 <p>I&rsquo;m finally close to being happy with my prediction models this week. Next week, I hope to incorporate more Lasso regression or machine learning techniques into my models to make my predictions more sophisticated and help to keep my model from being overfitted.</p>
 
