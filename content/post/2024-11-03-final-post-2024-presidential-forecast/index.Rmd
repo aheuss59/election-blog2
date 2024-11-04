@@ -1,8 +1,8 @@
 ---
 title: 'Final Post: 2024 Presidential Forecast'
-author: Alex Heuss
-date: '2024-11-03'
-slug: final-post-2024-presidential-forecast
+author: "Alex Heuss"
+date: "2024-11-03"
+slug: "final-post-2024-presidential-forecast"
 categories: []
 tags: []
 ---
@@ -235,8 +235,8 @@ $$
 $$
 
 where:
-- $y_i$ is the observed outcome for the $i$-th observation and $\hat{y}_i$ is the predicted value for the $i$-th observation,,
-- $\beta_j$ is the coefficient for the $j$-th predictor,
+- $y_i$ is the observed outcome for the $i$-th observation and $\hat{y}_i$ is the predicted value for the $i$-th observation,
+- $\beta$ is the coefficient for the $j$-th predictor,
 - and $\lambda$ dictates the strength of the Lasso penalty.
 
 ```{r, perform national pop vote lasso prediction, echo=FALSE, message=FALSE, warning=FALSE}
@@ -270,7 +270,6 @@ lambda.min.lasso <- cv.lasso.nat$lambda.min
 mse.lasso <- mean((predict(lasso.nat, s = lambda.min.lasso, newx = x.train) - y.train)^2)
 
 lasso.coef.model <- glmnet(x = x.train, y = y.train, alpha = 1, lambda = lambda.min.lasso)
-coef(lasso.coef.model)
 
 # Construct confidence intervals
 predictions <- matrix(NA, nrow = 1000, ncol = nrow(x.test))
@@ -316,6 +315,10 @@ ss_residual <- sum((y.train - cv_predictions)^2)
 cv_r_squared <- 1 - (ss_residual / ss_total)
 ```
 
+```{r, print out coefficients, echo=FALSE, message=FALSE}
+coef(lasso.coef.model)
+```
+
 My LASSO model selected 8 predictors as important in reducing the error of my model: percent of the country identifying as independent, the change in party identification for either party from the year preceding the election, vote share from the previous election, and five different weeks of polling, including the week just prior to the election. The cross-validated R-squared value for my model is 0.88. Polling data and partisan swing have the largest coefficient sizes. An example interpretation of one of the coefficients would be: for each increase of one percentage point in a party's identification from the year prior to the election to election year, that party's candidate's vote share increases by 0.1 percentage points. On the surface, that may not seem like a lot, but several "small" coefficient predictors add up. 
 
 ### Electoral College Vote
@@ -323,7 +326,7 @@ My LASSO model selected 8 predictors as important in reducing the error of my mo
 My electoral college model takes in less predictive variables. I make two separate models for predicting the electoral college, one for states with significant polling aggregate data on FiveThirtyEight, and one for those without. Predictive variables for both models include: state-level lagged vote share for the two prior elections, whether the candidate is a member of the incumbent party, national quarter 2 GDP growth, average state-level unemployment, the change in partisan identification for either party from the last election, and state fixed effects. For states with polling aggregates, the mean polling average and latest polling average are included in my model. My linear model uses the following equation:
 
 $$ 
-y_{ij} = \beta_0 + \beta voteshare_{ij-1} + \beta voteshare_{ij-2} + \beta incumbentparty_{j} + \beta Q2GDP_{j} + \beta unemployment_{ij} + \beta partyswing_{j} + \alpha_{i} + \epsilon_{ij}
+y_{ij} = \beta_0 + \beta_1 \text{voteshare}_{ij-1} + \beta_2 \text{voteshare}_{ij-2} + \beta_3 \text{incumbentparty}_{j} + \beta_4 \text{Q2GDP}_{j} + \beta_5 \text{unemployment}_{ij} + \beta_6 \text{partyswing}_{j} + \alpha_{i} + \epsilon_{ij}
 $$
 
 Where $i$ denotes the state and $j$ the year. 
@@ -532,8 +535,6 @@ dem_pred_with_ci <- data.frame(
   upr = ci_upper
 )
 
-dem_pred_with_ci
-
 # Create dataset to summarize winners and EC vote distributions. 
 win_pred_nopolls <- data.frame(state = d.test.nopolls$state,
                        year = rep(2024, length(d.test.nopolls$state)),
@@ -597,7 +598,7 @@ all_preds |>
   rename(State = state, Winner = winner, `Harris Prediction` = simp_pred_dem, Upper = upper, Lower = lower ) |>
   select(State, `Harris Prediction`, Lower, Upper, Margin, Winner) |>
   arrange(Winner) |>
-  knitr::kable(caption="Swing State Prediction Breakdown", digits=4)
+  knitr::kable(digits=4)
 ```
 
 In a race as tight as 2024, it is nearly impossible to predict tight swing states and have a confidence interval that puts one candidate as a clear winner, and my predictions are no exception. 
@@ -605,7 +606,7 @@ In a race as tight as 2024, it is nearly impossible to predict tight swing state
 Below is the map of all my electoral college predictions and their associated vote share margins. Negative vote shares represent Trump wins and positive values represent Harris wins.
 
 ```{r, map, echo=FALSE, message=FALSE, warning=FALSE}
-us_geo <- st_read("data/states.shp")
+us_geo <- st_read("data/states.shp", quiet=TRUE)
 
 geo_data <- 
   us_geo |> 
