@@ -315,8 +315,14 @@ ss_residual <- sum((y.train - cv_predictions)^2)
 cv_r_squared <- 1 - (ss_residual / ss_total)
 ```
 
+The LASSO coefficients are shown in the following table:
+
 ```{r, print out coefficients, echo=FALSE, message=FALSE}
-coef(lasso.coef.model)
+coefficients <- as.data.frame(as.matrix(coef(lasso.coef.model)))
+colnames(coefficients) <- "Coefficient"
+
+# Display the table with kable
+kable(coefficients, digits=3)
 ```
 
 My LASSO model selected 8 predictors as important in reducing the error of my model: percent of the country identifying as independent, the change in party identification for either party from the year preceding the election, vote share from the previous election, and five different weeks of polling, including the week just prior to the election. The cross-validated R-squared value for my model is 0.88. Polling data and partisan swing have the largest coefficient sizes. An example interpretation of one of the coefficients would be: for each increase of one percentage point in a party's identification from the year prior to the election to election year, that party's candidate's vote share increases by 0.1 percentage points. On the surface, that may not seem like a lot, but several "small" coefficient predictors add up. 
