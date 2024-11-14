@@ -1,0 +1,148 @@
+---
+title: 'Post-Election Reflection: What Went Wrong?'
+author: Alex Heuss
+date: '2024-11-08'
+slug: post-election-reflection-what-went-wrong
+categories: []
+tags: []
+---
+
+```{r, load packages, echo=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+Since the election on November 5th, many Democrats across the country have been asking themselves one question: what happened? The presidential election was essentially over by 3:00 a.m. on November 6th, when the Associated Press formally called Pennsylvania for Trump, who now looks posed to win every swing state and the national popular vote. So what did happen? Here is an overview of how my model differed from the actual election results and why that might be. 
+
+## A Refresher
+
+In case you missed it, or in case you need a refresher, my model predicted a 270-268 Harris victory in the Electoral College and a 49% to 48% Harris victory for the national popular vote. 
+
+Below is a breakdown of my predictions for each state. 
+
+```{r, print out prediction table, echo=FALSE, message=FALSE}
+preds <- read_csv("heuss_preds.csv")
+preds |>
+  select(state, lower_dem, dem_pred, upper_dem) |>
+  filter(state != "District of Columbia") |>
+  arrange(state) |>
+  knitr::kable(caption="State Level Two-Party Predictions for Kamala Harris (%)", col.names=c("State", "Lower Bound", "Prediction", "Upper Bound"), digits=2)
+
+```
+
+## Assessment of Accuracy
+
+```{r, load in the real deal and merge, echo=FALSE, message=TRUE}
+state_2024 <- read_csv("data/state_votes_pres_2024.csv") |>
+  filter(FIPS != "fips") |>
+  rename(kamala = `Kamala D. Harris`,
+         trump = `Donald J. Trump`,
+         total_vote = `Total Vote`,
+         state = `Geographic Name`) |>
+  mutate(true_perc = as.numeric(kamala)/(as.numeric(kamala) + as.numeric(trump))*100) |>
+  select(state, true_perc)
+  
+preds_and_true <- 
+  preds |>
+  left_join(state_2024, by="state") |>
+  filter(state != "District of Columbia")
+
+```
+
+The confusion matrix below shows how my predictions played out. 
+
+```{r, create confusion matrix, echo=FALSE, message=FALSE}
+preds_and_true <- 
+  preds_and_true |> 
+  mutate(pred_class = as.factor(case_when(dem_pred > 50 ~ "DEM", 
+                                          .default = "REP")),
+         result_class = as.factor(case_when(true_perc > 50 ~ "DEM", 
+                                            .default = "REP")))
+
+table("Actual" = preds_and_true$result_class, 
+      "Prediction" = preds_and_true$pred_class)
+
+```
+
+I didn't do too bad, but unfortunately the three states that I missed were the key swing states of Michigan, Pennsylvania and Wisconsin, which decided the outcome of the election.
+
+Here's a further breakdown of every state, and it's prediction, true outcome, and error. Positive errors show an error in favor of Harris, and negative for Trump. 
+
+```{r, print out all state margins, echo=FALSE, message=FALSE}
+preds_and_true |>
+  select(state, dem_pred, true_perc) |>
+  mutate(margin = dem_pred - true_perc) |>
+  arrange(margin) |>
+  knitr::kable(col.names=c("State", "Prediction", "True Value", "Error"), digits=2)
+```
+
+```{r, calculate bias, echo=FALSE, message=FALSE}
+swing <- 
+  preds_and_true |> 
+  filter(state %in% c("Arizona", "Georgia", "Michigan", "North Carolina", "Nevada", "Pennsylvania", "Wisconsin"))
+
+bias <- mean(preds_and_true$true_perc - preds_and_true$dem_pred)
+swing_bias <- mean(swing$true_perc - swing$dem_pred)
+
+mse <- mean((preds_and_true$true_perc - preds_and_true$dem_pred)^2)
+rmse <- sqrt(mean((preds_and_true$true_perc - preds_and_true$dem_pred)^2))
+mae <- mean(abs(preds_and_true$true_perc - preds_and_true$dem_pred))
+
+swing_mse <- mean((swing$true_perc - swing$dem_pred)^2)
+swing_rmse <- sqrt(mean((swing$true_perc - swing$dem_pred)^2))
+swing_mae <- mean(abs(swing$true_perc - swing$dem_pred))
+
+```
+
+My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, by average bias was 0.58 percentage points for Harris. 
+
+For error, my MSE across all states was 6.34, and my RMSE was 2.52 percentage points. This error was lower among swing states, where the MSE was 1.40 and the RMSE was 1.18. While this is still a pretty large MSE for swing states that can sometimes come down to fractions of percentage points, the fact that the error is less speaks to the value that polling still holds, even though it can be biased (the model for many non-swing states did not include any polling). 
+
+```{r, graph national popular vote prediction line over scatter plot and also include the actual popular vote, message=FALSE, echo=FALSE}
+
+
+```
+
+```{r, create a dot chart, echo=FALSE, message=FALSE}
+
+
+```
+
+[text about which states were the furthest off, did any fall outside their confidence intervals?]
+
+## What went wrong? A few theories
+
+### National Popular Vote Specific
+
+- For popular vote, Democratic bias in the lagged vote share
+- Maybe because her campaign was so much shorter, she didn’t get as much support in Democratic strongholds because she didn’t have the time to make many visits there. 
+
+### State-Level Specific
+
+- Split ballots
+- Hispanic shifts
+
+### General
+
+- Harris is a woman
+- polls under weighted Trump again
+- maybe the assassination attempt actually did matter
+
+## Here's What I Would Change For Next Time
+
+1. I would use ensembling to combine predictions based on fundamentals and predictions based on the polls. I expect that a lot of people in the class are questioning their model's reliance on polls right now, and whether they should even be included. I think my model for Electoral College predictions offers an especially interesting perspective in this area because there were actually several states for which my predictions did not factor in polls at all, and these states were usually the states with the largest prediction errors. Luckily, these states were usually also safe states (which is why they didn't have much polling), so errors in vote margin during the prediction process did not have serious consequences for my overall predictions. However, these larger errors convince me to not give up incorporating polling altogether, just to down weight them more. 
+
+2. I would include interaction effects in a future model. I suspect that the economic factors would have more predictive power if they were more specifically in relationship with incumbency. I believe the same would be true for approval rating and incumbency/incumbent party. I think including interaction effects like these may have given my model the opportunity to account for the influence of the Biden Administration on Harris' ultimate loss.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

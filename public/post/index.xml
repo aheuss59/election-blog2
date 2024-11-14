@@ -6,8 +6,15 @@
     <description>Recent content in Posts on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 03 Nov 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 08 Nov 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Post-Election Reflection: What Went Wrong?</title>
+      <link>https://example.org/post/2024/11/08/post-election-reflection-what-went-wrong/</link>
+      <pubDate>Fri, 08 Nov 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/11/08/post-election-reflection-what-went-wrong/</guid>
+      <description>Since the election on November 5th, many Democrats across the country have been asking themselves one question: what happened? The presidential election was essentially over by 3:00 a.m. on November 6th, when the Associated Press formally called Pennsylvania for Trump, who now looks posed to win every swing state and the national popular vote. So what did happen? Here is an overview of how my model differed from the actual election results and why that might be.</description>
+    </item>
     <item>
       <title>Final Post: 2024 Presidential Forecast</title>
       <link>https://example.org/post/2024/11/03/final-post-2024-presidential-forecast/</link>

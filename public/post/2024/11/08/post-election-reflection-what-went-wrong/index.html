@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Post-Election Reflection: What Went Wrong? | A minimal Hugo website</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/categories/">Categories</a></li>
+      
+      <li><a href="/tags/">Tags</a></li>
+      
+      <li><a href="/index.xml">Subscribe</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Post-Election Reflection: What Went Wrong?</span></h1>
+<h2 class="author">Alex Heuss</h2>
+<h2 class="date">2024/11/08</h2>
+</div>
+
+<main>
+<p>Since the election on November 5th, many Democrats across the country have been asking themselves one question: what happened? The presidential election was essentially over by 3:00 a.m. on November 6th, when the Associated Press formally called Pennsylvania for Trump, who now looks posed to win every swing state and the national popular vote. So what did happen? Here is an overview of how my model differed from the actual election results and why that might be.</p>
+<h2 id="a-refresher">A Refresher</h2>
+<p>In case you missed it, or in case you need a refresher, my model predicted a 270-268 Harris victory in the Electoral College and a 49% to 48% Harris victory for the national popular vote.</p>
+<p>Below is a breakdown of my predictions for each state.</p>
+<p>Table: (#tab:print out prediction table)State Level Two-Party Predictions for Kamala Harris (%)</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">State</th>
+<th style="text-align:right">Lower Bound</th>
+<th style="text-align:right">Prediction</th>
+<th style="text-align:right">Upper Bound</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Alabama</td>
+<td style="text-align:right">25.22</td>
+<td style="text-align:right">34.47</td>
+<td style="text-align:right">43.71</td>
+</tr>
+<tr>
+<td style="text-align:left">Alaska</td>
+<td style="text-align:right">30.58</td>
+<td style="text-align:right">39.83</td>
+<td style="text-align:right">49.07</td>
+</tr>
+<tr>
+<td style="text-align:left">Arizona</td>
+<td style="text-align:right">44.58</td>
+<td style="text-align:right">48.33</td>
+<td style="text-align:right">52.08</td>
+</tr>
+<tr>
+<td style="text-align:left">Arkansas</td>
+<td style="text-align:right">25.99</td>
+<td style="text-align:right">35.24</td>
+<td style="text-align:right">44.48</td>
+</tr>
+<tr>
+<td style="text-align:left">California</td>
+<td style="text-align:right">57.18</td>
+<td style="text-align:right">60.93</td>
+<td style="text-align:right">64.68</td>
+</tr>
+<tr>
+<td style="text-align:left">Colorado</td>
+<td style="text-align:right">52.86</td>
+<td style="text-align:right">56.61</td>
+<td style="text-align:right">60.36</td>
+</tr>
+<tr>
+<td style="text-align:left">Connecticut</td>
+<td style="text-align:right">46.20</td>
+<td style="text-align:right">55.44</td>
+<td style="text-align:right">64.68</td>
+</tr>
+<tr>
+<td style="text-align:left">Delaware</td>
+<td style="text-align:right">45.75</td>
+<td style="text-align:right">54.99</td>
+<td style="text-align:right">64.24</td>
+</tr>
+<tr>
+<td style="text-align:left">Florida</td>
+<td style="text-align:right">41.86</td>
+<td style="text-align:right">45.61</td>
+<td style="text-align:right">49.36</td>
+</tr>
+<tr>
+<td style="text-align:left">Georgia</td>
+<td style="text-align:right">44.56</td>
+<td style="text-align:right">48.31</td>
+<td style="text-align:right">52.06</td>
+</tr>
+<tr>
+<td style="text-align:left">Hawaii</td>
+<td style="text-align:right">49.84</td>
+<td style="text-align:right">59.08</td>
+<td style="text-align:right">68.33</td>
+</tr>
+<tr>
+<td style="text-align:left">Idaho</td>
+<td style="text-align:right">19.00</td>
+<td style="text-align:right">28.24</td>
+<td style="text-align:right">37.48</td>
+</tr>
+<tr>
+<td style="text-align:left">Illinois</td>
+<td style="text-align:right">45.56</td>
+<td style="text-align:right">54.80</td>
+<td style="text-align:right">64.05</td>
+</tr>
+<tr>
+<td style="text-align:left">Indiana</td>
+<td style="text-align:right">29.33</td>
+<td style="text-align:right">38.58</td>
+<td style="text-align:right">47.82</td>
+</tr>
+<tr>
+<td style="text-align:left">Iowa</td>
+<td style="text-align:right">33.00</td>
+<td style="text-align:right">42.24</td>
+<td style="text-align:right">51.48</td>
+</tr>
+<tr>
+<td style="text-align:left">Kansas</td>
+<td style="text-align:right">28.71</td>
+<td style="text-align:right">37.96</td>
+<td style="text-align:right">47.20</td>
+</tr>
+<tr>
+<td style="text-align:left">Kentucky</td>
+<td style="text-align:right">23.01</td>
+<td style="text-align:right">32.25</td>
+<td style="text-align:right">41.49</td>
+</tr>
+<tr>
+<td style="text-align:left">Louisiana</td>
+<td style="text-align:right">29.83</td>
+<td style="text-align:right">39.07</td>
+<td style="text-align:right">48.32</td>
+</tr>
+<tr>
+<td style="text-align:left">Maine</td>
+<td style="text-align:right">51.92</td>
+<td style="text-align:right">55.67</td>
+<td style="text-align:right">59.42</td>
+</tr>
+<tr>
+<td style="text-align:left">Maryland</td>
+<td style="text-align:right">60.34</td>
+<td style="text-align:right">64.09</td>
+<td style="text-align:right">67.84</td>
+</tr>
+<tr>
+<td style="text-align:left">Massachusetts</td>
+<td style="text-align:right">60.21</td>
+<td style="text-align:right">63.96</td>
+<td style="text-align:right">67.71</td>
+</tr>
+<tr>
+<td style="text-align:left">Michigan</td>
+<td style="text-align:right">47.45</td>
+<td style="text-align:right">51.20</td>
+<td style="text-align:right">54.95</td>
+</tr>
+<tr>
+<td style="text-align:left">Minnesota</td>
+<td style="text-align:right">48.55</td>
+<td style="text-align:right">52.30</td>
+<td style="text-align:right">56.06</td>
+</tr>
+<tr>
+<td style="text-align:left">Mississippi</td>
+<td style="text-align:right">30.24</td>
+<td style="text-align:right">39.48</td>
+<td style="text-align:right">48.72</td>
+</tr>
+<tr>
+<td style="text-align:left">Missouri</td>
+<td style="text-align:right">39.49</td>
+<td style="text-align:right">43.24</td>
+<td style="text-align:right">46.99</td>
+</tr>
+<tr>
+<td style="text-align:left">Montana</td>
+<td style="text-align:right">35.28</td>
+<td style="text-align:right">39.03</td>
+<td style="text-align:right">42.78</td>
+</tr>
+<tr>
+<td style="text-align:left">Nebraska</td>
+<td style="text-align:right">34.25</td>
+<td style="text-align:right">38.00</td>
+<td style="text-align:right">41.75</td>
+</tr>
+<tr>
+<td style="text-align:left">Nevada</td>
+<td style="text-align:right">45.25</td>
+<td style="text-align:right">49.00</td>
+<td style="text-align:right">52.75</td>
+</tr>
+<tr>
+<td style="text-align:left">New Hampshire</td>
+<td style="text-align:right">47.74</td>
+<td style="text-align:right">51.49</td>
+<td style="text-align:right">55.24</td>
+</tr>
+<tr>
+<td style="text-align:left">New Jersey</td>
+<td style="text-align:right">44.70</td>
+<td style="text-align:right">53.94</td>
+<td style="text-align:right">63.19</td>
+</tr>
+<tr>
+<td style="text-align:left">New Mexico</td>
+<td style="text-align:right">48.84</td>
+<td style="text-align:right">52.59</td>
+<td style="text-align:right">56.35</td>
+</tr>
+<tr>
+<td style="text-align:left">New York</td>
+<td style="text-align:right">52.89</td>
+<td style="text-align:right">56.64</td>
+<td style="text-align:right">60.40</td>
+</tr>
+<tr>
+<td style="text-align:left">North Carolina</td>
+<td style="text-align:right">43.28</td>
+<td style="text-align:right">47.03</td>
+<td style="text-align:right">50.78</td>
+</tr>
+<tr>
+<td style="text-align:left">North Dakota</td>
+<td style="text-align:right">17.60</td>
+<td style="text-align:right">26.85</td>
+<td style="text-align:right">36.09</td>
+</tr>
+<tr>
+<td style="text-align:left">Ohio</td>
+<td style="text-align:right">41.05</td>
+<td style="text-align:right">44.80</td>
+<td style="text-align:right">48.55</td>
+</tr>
+<tr>
+<td style="text-align:left">Oklahoma</td>
+<td style="text-align:right">20.31</td>
+<td style="text-align:right">29.55</td>
+<td style="text-align:right">38.79</td>
+</tr>
+<tr>
+<td style="text-align:left">Oregon</td>
+<td style="text-align:right">42.64</td>
+<td style="text-align:right">51.88</td>
+<td style="text-align:right">61.12</td>
+</tr>
+<tr>
+<td style="text-align:left">Pennsylvania</td>
+<td style="text-align:right">46.41</td>
+<td style="text-align:right">50.16</td>
+<td style="text-align:right">53.91</td>
+</tr>
+<tr>
+<td style="text-align:left">Rhode Island</td>
+<td style="text-align:right">48.15</td>
+<td style="text-align:right">57.39</td>
+<td style="text-align:right">66.64</td>
+</tr>
+<tr>
+<td style="text-align:left">South Carolina</td>
+<td style="text-align:right">31.66</td>
+<td style="text-align:right">40.90</td>
+<td style="text-align:right">50.15</td>
+</tr>
+<tr>
+<td style="text-align:left">South Dakota</td>
+<td style="text-align:right">19.37</td>
+<td style="text-align:right">28.61</td>
+<td style="text-align:right">37.86</td>
+</tr>
+<tr>
+<td style="text-align:left">Tennessee</td>
+<td style="text-align:right">27.13</td>
+<td style="text-align:right">36.37</td>
+<td style="text-align:right">45.61</td>
+</tr>
+<tr>
+<td style="text-align:left">Texas</td>
+<td style="text-align:right">41.22</td>
+<td style="text-align:right">44.97</td>
+<td style="text-align:right">48.72</td>
+</tr>
+<tr>
+<td style="text-align:left">Utah</td>
+<td style="text-align:right">23.29</td>
+<td style="text-align:right">32.54</td>
+<td style="text-align:right">41.78</td>
+</tr>
+<tr>
+<td style="text-align:left">Vermont</td>
+<td style="text-align:right">49.58</td>
+<td style="text-align:right">58.82</td>
+<td style="text-align:right">68.07</td>
+</tr>
+<tr>
+<td style="text-align:left">Virginia</td>
+<td style="text-align:right">48.19</td>
+<td style="text-align:right">51.94</td>
+<td style="text-align:right">55.69</td>
+</tr>
+<tr>
+<td style="text-align:left">Washington</td>
+<td style="text-align:right">53.97</td>
+<td style="text-align:right">57.72</td>
+<td style="text-align:right">61.47</td>
+</tr>
+<tr>
+<td style="text-align:left">West Virginia</td>
+<td style="text-align:right">21.25</td>
+<td style="text-align:right">30.49</td>
+<td style="text-align:right">39.74</td>
+</tr>
+<tr>
+<td style="text-align:left">Wisconsin</td>
+<td style="text-align:right">46.82</td>
+<td style="text-align:right">50.57</td>
+<td style="text-align:right">54.32</td>
+</tr>
+<tr>
+<td style="text-align:left">Wyoming</td>
+<td style="text-align:right">15.13</td>
+<td style="text-align:right">24.37</td>
+<td style="text-align:right">33.61</td>
+</tr>
+</tbody>
+</table>
+<h2 id="assessment-of-accuracy">Assessment of Accuracy</h2>
+<pre><code>## New names:
+## Rows: 52 Columns: 42
+## ── Column specification
+## ──────────────────────────────────────────────────────── Delimiter: &quot;,&quot; chr
+## (42): FIPS, Geographic Name, Geographic Subtype, Total Vote, Kamala D. H...
+## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+## Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## • `0` -&gt; `0...31`
+## • `0` -&gt; `0...32`
+## • `0` -&gt; `0...33`
+## • `0` -&gt; `0...34`
+## • `0` -&gt; `0...35`
+## • `0` -&gt; `0...36`
+## • `0` -&gt; `0...37`
+## • `0` -&gt; `0...38`
+## • `0` -&gt; `0...39`
+## • `0` -&gt; `0...40`
+## • `0` -&gt; `0...41`
+## • `0` -&gt; `0...42`
+</code></pre>
+<p>The confusion matrix below shows how my predictions played out.</p>
+<pre><code>##       Prediction
+## Actual DEM REP
+##    DEM  19   0
+##    REP   3  28
+</code></pre>
+<p>I didn&rsquo;t do too bad, but unfortunately the three states that I missed were the key swing states of Michigan, Pennsylvania and Wisconsin, which decided the outcome of the election.</p>
+<p>Here&rsquo;s a further breakdown of every state, and it&rsquo;s prediction, true outcome, and error. Positive errors show an error in favor of Harris, and negative for Trump.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">State</th>
+<th style="text-align:right">Prediction</th>
+<th style="text-align:right">True Value</th>
+<th style="text-align:right">Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Vermont</td>
+<td style="text-align:right">58.82</td>
+<td style="text-align:right">66.39</td>
+<td style="text-align:right">-7.56</td>
+</tr>
+<tr>
+<td style="text-align:left">Utah</td>
+<td style="text-align:right">32.54</td>
+<td style="text-align:right">39.41</td>
+<td style="text-align:right">-6.87</td>
+</tr>
+<tr>
+<td style="text-align:left">South Dakota</td>
+<td style="text-align:right">28.61</td>
+<td style="text-align:right">35.05</td>
+<td style="text-align:right">-6.44</td>
+</tr>
+<tr>
+<td style="text-align:left">Oregon</td>
+<td style="text-align:right">51.88</td>
+<td style="text-align:right">57.30</td>
+<td style="text-align:right">-5.42</td>
+</tr>
+<tr>
+<td style="text-align:left">North Dakota</td>
+<td style="text-align:right">26.85</td>
+<td style="text-align:right">31.28</td>
+<td style="text-align:right">-4.43</td>
+</tr>
+<tr>
+<td style="text-align:left">Kansas</td>
+<td style="text-align:right">37.96</td>
+<td style="text-align:right">41.78</td>
+<td style="text-align:right">-3.82</td>
+</tr>
+<tr>
+<td style="text-align:left">Idaho</td>
+<td style="text-align:right">28.24</td>
+<td style="text-align:right">31.24</td>
+<td style="text-align:right">-3.00</td>
+</tr>
+<tr>
+<td style="text-align:left">Oklahoma</td>
+<td style="text-align:right">29.55</td>
+<td style="text-align:right">32.53</td>
+<td style="text-align:right">-2.98</td>
+</tr>
+<tr>
+<td style="text-align:left">Hawaii</td>
+<td style="text-align:right">59.08</td>
+<td style="text-align:right">61.79</td>
+<td style="text-align:right">-2.71</td>
+</tr>
+<tr>
+<td style="text-align:left">Delaware</td>
+<td style="text-align:right">54.99</td>
+<td style="text-align:right">57.48</td>
+<td style="text-align:right">-2.49</td>
+</tr>
+<tr>
+<td style="text-align:left">Alaska</td>
+<td style="text-align:right">39.83</td>
+<td style="text-align:right">42.15</td>
+<td style="text-align:right">-2.32</td>
+</tr>
+<tr>
+<td style="text-align:left">Kentucky</td>
+<td style="text-align:right">32.25</td>
+<td style="text-align:right">34.41</td>
+<td style="text-align:right">-2.16</td>
+</tr>
+<tr>
+<td style="text-align:left">Wyoming</td>
+<td style="text-align:right">24.37</td>
+<td style="text-align:right">26.52</td>
+<td style="text-align:right">-2.15</td>
+</tr>
+<tr>
+<td style="text-align:left">Washington</td>
+<td style="text-align:right">57.72</td>
+<td style="text-align:right">59.85</td>
+<td style="text-align:right">-2.13</td>
+</tr>
+<tr>
+<td style="text-align:left">Connecticut</td>
+<td style="text-align:right">55.44</td>
+<td style="text-align:right">57.44</td>
+<td style="text-align:right">-2.00</td>
+</tr>
+<tr>
+<td style="text-align:left">Indiana</td>
+<td style="text-align:right">38.58</td>
+<td style="text-align:right">40.34</td>
+<td style="text-align:right">-1.77</td>
+</tr>
+<tr>
+<td style="text-align:left">Nebraska</td>
+<td style="text-align:right">38.00</td>
+<td style="text-align:right">39.38</td>
+<td style="text-align:right">-1.38</td>
+</tr>
+<tr>
+<td style="text-align:left">North Carolina</td>
+<td style="text-align:right">47.03</td>
+<td style="text-align:right">48.30</td>
+<td style="text-align:right">-1.27</td>
+</tr>
+<tr>
+<td style="text-align:left">Iowa</td>
+<td style="text-align:right">42.24</td>
+<td style="text-align:right">43.33</td>
+<td style="text-align:right">-1.09</td>
+</tr>
+<tr>
+<td style="text-align:left">Virginia</td>
+<td style="text-align:right">51.94</td>
+<td style="text-align:right">52.85</td>
+<td style="text-align:right">-0.91</td>
+</tr>
+<tr>
+<td style="text-align:left">Montana</td>
+<td style="text-align:right">39.03</td>
+<td style="text-align:right">39.64</td>
+<td style="text-align:right">-0.60</td>
+</tr>
+<tr>
+<td style="text-align:left">Georgia</td>
+<td style="text-align:right">48.31</td>
+<td style="text-align:right">48.88</td>
+<td style="text-align:right">-0.57</td>
+</tr>
+<tr>
+<td style="text-align:left">New Mexico</td>
+<td style="text-align:right">52.59</td>
+<td style="text-align:right">53.00</td>
+<td style="text-align:right">-0.41</td>
+</tr>
+<tr>
+<td style="text-align:left">Alabama</td>
+<td style="text-align:right">34.47</td>
+<td style="text-align:right">34.55</td>
+<td style="text-align:right">-0.08</td>
+</tr>
+<tr>
+<td style="text-align:left">South Carolina</td>
+<td style="text-align:right">40.90</td>
+<td style="text-align:right">40.94</td>
+<td style="text-align:right">-0.03</td>
+</tr>
+<tr>
+<td style="text-align:left">New Hampshire</td>
+<td style="text-align:right">51.49</td>
+<td style="text-align:right">51.41</td>
+<td style="text-align:right">0.08</td>
+</tr>
+<tr>
+<td style="text-align:left">Minnesota</td>
+<td style="text-align:right">52.30</td>
+<td style="text-align:right">52.17</td>
+<td style="text-align:right">0.14</td>
+</tr>
+<tr>
+<td style="text-align:left">Illinois</td>
+<td style="text-align:right">54.80</td>
+<td style="text-align:right">54.62</td>
+<td style="text-align:right">0.18</td>
+</tr>
+<tr>
+<td style="text-align:left">California</td>
+<td style="text-align:right">60.93</td>
+<td style="text-align:right">60.73</td>
+<td style="text-align:right">0.20</td>
+</tr>
+<tr>
+<td style="text-align:left">Louisiana</td>
+<td style="text-align:right">39.07</td>
+<td style="text-align:right">38.81</td>
+<td style="text-align:right">0.26</td>
+</tr>
+<tr>
+<td style="text-align:left">Rhode Island</td>
+<td style="text-align:right">57.39</td>
+<td style="text-align:right">56.92</td>
+<td style="text-align:right">0.47</td>
+</tr>
+<tr>
+<td style="text-align:left">Ohio</td>
+<td style="text-align:right">44.80</td>
+<td style="text-align:right">44.27</td>
+<td style="text-align:right">0.53</td>
+</tr>
+<tr>
+<td style="text-align:left">Nevada</td>
+<td style="text-align:right">49.00</td>
+<td style="text-align:right">48.38</td>
+<td style="text-align:right">0.62</td>
+</tr>
+<tr>
+<td style="text-align:left">Maryland</td>
+<td style="text-align:right">64.09</td>
+<td style="text-align:right">63.31</td>
+<td style="text-align:right">0.78</td>
+</tr>
+<tr>
+<td style="text-align:left">New York</td>
+<td style="text-align:right">56.64</td>
+<td style="text-align:right">55.83</td>
+<td style="text-align:right">0.82</td>
+</tr>
+<tr>
+<td style="text-align:left">Colorado</td>
+<td style="text-align:right">56.61</td>
+<td style="text-align:right">55.69</td>
+<td style="text-align:right">0.92</td>
+</tr>
+<tr>
+<td style="text-align:left">Arkansas</td>
+<td style="text-align:right">35.24</td>
+<td style="text-align:right">34.30</td>
+<td style="text-align:right">0.94</td>
+</tr>
+<tr>
+<td style="text-align:left">Wisconsin</td>
+<td style="text-align:right">50.57</td>
+<td style="text-align:right">49.53</td>
+<td style="text-align:right">1.04</td>
+</tr>
+<tr>
+<td style="text-align:left">New Jersey</td>
+<td style="text-align:right">53.94</td>
+<td style="text-align:right">52.78</td>
+<td style="text-align:right">1.16</td>
+</tr>
+<tr>
+<td style="text-align:left">Pennsylvania</td>
+<td style="text-align:right">50.16</td>
+<td style="text-align:right">48.98</td>
+<td style="text-align:right">1.18</td>
+</tr>
+<tr>
+<td style="text-align:left">Arizona</td>
+<td style="text-align:right">48.33</td>
+<td style="text-align:right">47.15</td>
+<td style="text-align:right">1.18</td>
+</tr>
+<tr>
+<td style="text-align:left">Massachusetts</td>
+<td style="text-align:right">63.96</td>
+<td style="text-align:right">62.66</td>
+<td style="text-align:right">1.30</td>
+</tr>
+<tr>
+<td style="text-align:left">Tennessee</td>
+<td style="text-align:right">36.37</td>
+<td style="text-align:right">34.94</td>
+<td style="text-align:right">1.43</td>
+</tr>
+<tr>
+<td style="text-align:left">Mississippi</td>
+<td style="text-align:right">39.48</td>
+<td style="text-align:right">37.91</td>
+<td style="text-align:right">1.57</td>
+</tr>
+<tr>
+<td style="text-align:left">Michigan</td>
+<td style="text-align:right">51.20</td>
+<td style="text-align:right">49.30</td>
+<td style="text-align:right">1.90</td>
+</tr>
+<tr>
+<td style="text-align:left">Texas</td>
+<td style="text-align:right">44.97</td>
+<td style="text-align:right">42.98</td>
+<td style="text-align:right">1.99</td>
+</tr>
+<tr>
+<td style="text-align:left">West Virginia</td>
+<td style="text-align:right">30.49</td>
+<td style="text-align:right">28.49</td>
+<td style="text-align:right">2.00</td>
+</tr>
+<tr>
+<td style="text-align:left">Maine</td>
+<td style="text-align:right">55.67</td>
+<td style="text-align:right">53.48</td>
+<td style="text-align:right">2.19</td>
+</tr>
+<tr>
+<td style="text-align:left">Florida</td>
+<td style="text-align:right">45.61</td>
+<td style="text-align:right">43.38</td>
+<td style="text-align:right">2.23</td>
+</tr>
+<tr>
+<td style="text-align:left">Missouri</td>
+<td style="text-align:right">43.24</td>
+<td style="text-align:right">40.64</td>
+<td style="text-align:right">2.59</td>
+</tr>
+</tbody>
+</table>
+<p>My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, by average bias was 0.58 percentage points for Harris.</p>
+<p>For error, my MSE across all states was 6.34, and my RMSE was 2.52 percentage points. This error was lower among swing states, where the MSE was 1.40 and the RMSE was 1.18. While this is still a pretty large MSE for swing states that can sometimes come down to fractions of percentage points, the fact that the error is less speaks to the value that polling still holds, even though it can be biased (the model for many non-swing states did not include any polling).</p>
+<p>[text about which states were the furthest off, did any fall outside their confidence intervals?]</p>
+<h2 id="what-went-wrong-a-few-theories">What went wrong? A few theories</h2>
+<h3 id="national-popular-vote-specific">National Popular Vote Specific</h3>
+<ul>
+<li>For popular vote, Democratic bias in the lagged vote share</li>
+<li>Maybe because her campaign was so much shorter, she didn’t get as much support in Democratic strongholds because she didn’t have the time to make many visits there.</li>
+</ul>
+<h3 id="state-level-specific">State-Level Specific</h3>
+<ul>
+<li>Split ballots</li>
+<li>Hispanic shifts</li>
+</ul>
+<h3 id="general">General</h3>
+<ul>
+<li>Harris is a woman</li>
+<li>polls under weighted Trump again</li>
+<li>maybe the assassination attempt actually did matter</li>
+</ul>
+<h2 id="heres-what-i-would-change-for-next-time">Here&rsquo;s What I Would Change For Next Time</h2>
+<ol>
+<li>
+<p>I would use ensembling to combine predictions based on fundamentals and predictions based on the polls. I expect that a lot of people in the class are questioning their model&rsquo;s reliance on polls right now, and whether they should even be included. I think my model for Electoral College predictions offers an especially interesting perspective in this area because there were actually several states for which my predictions did not factor in polls at all, and these states were usually the states with the largest prediction errors. Luckily, these states were usually also safe states (which is why they didn&rsquo;t have much polling), so errors in vote margin during the prediction process did not have serious consequences for my overall predictions. However, these larger errors convince me to not give up incorporating polling altogether, just to down weight them more.</p>
+</li>
+<li>
+<p>I would include interaction effects in a future model. I suspect that the economic factors would have more predictive power if they were more specifically in relationship with incumbency. I believe the same would be true for approval rating and incumbency/incumbent party. I think including interaction effects like these may have given my model the opportunity to account for the influence of the Biden Administration on Harris&rsquo; ultimate loss.</p>
+</li>
+</ol>
+
+</main>
+
+  <footer>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/combine/npm/katex/dist/katex.min.js,npm/katex/dist/contrib/auto-render.min.js,npm/@xiee/utils/js/render-katex.js" defer></script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+
+<script src="//yihui.org/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+  
+  <hr/>
+  © <a href="https://yihui.org">Yihui Xie</a> 2017 &ndash; 2024 | <a href="https://github.com/yihui">Github</a> | <a href="https://twitter.com/xieyihui">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+
