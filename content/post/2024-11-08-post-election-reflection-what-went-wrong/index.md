@@ -1,19 +1,66 @@
 ---
-title: 'Post-Election Reflection: What Went Wrong?'
-author: Alex Heuss
-date: '2024-11-08'
-slug: post-election-reflection-what-went-wrong
+title: "Post-Election Reflection: What Went Wrong?"
+author: "Alex Heuss"
+date: "2024-11-08"
+output: pdf_document
 categories: []
 tags: []
+slug: "post-election-reflection-what-went-wrong"
 ---
 
 
+
+
+```
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+```
+
+```
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+```
+
+```
+## Warning: Option grouped=FALSE enforced in cv.glmnet, since < 3 observations per
+## fold
+```
+
+```
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+```
+
+```
+## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
+```
 
 Since the election on November 5th, many Democrats across the country have been asking themselves one question: what happened? The presidential election was essentially over by 3:00 a.m. on November 6th, when the Associated Press formally called Pennsylvania for Trump, who now looks posed to win every swing state and the national popular vote. So what did happen? Here is an overview of how my model differed from the actual election results and why that might be. 
 
 ## A Refresher
 
-In case you missed it, or in case you need a refresher, my model predicted a 270-268 Harris victory in the Electoral College and a 49% to 48% Harris victory for the national popular vote. 
+In case you missed it, or in case you need a refresher, my model predicted a 270-268 Harris victory in the Electoral College and a 49% to 48% Harris victory for the national popular vote.
+
+My national popular vote model used LASSO to select from a large number of potential predictive variables and ended up using a series of eight: percent of the country identifying as independent, the change in party identification for either party from the year preceding the election, vote share from the previous election, and five different weeks of polling, including the week just prior to the election.
+
+I made two separate models for predicting the electoral college, one for states with significant polling aggregate data on FiveThirtyEight, and one for those without. Predictive variables for both models included: state-level lagged vote share for the two prior elections, whether the candidate is a member of the incumbent party, national Q2 GDP growth, average state-level unemployment, the change in partisan identification for either party from the last election, and state fixed effects. For states with polling aggregates, the mean polling average and latest polling average are included in my model.
 
 Below is a breakdown of my predictions for each state. 
 
@@ -108,7 +155,7 @@ The confusion matrix below shows how my predictions played out.
 ##    REP   3  28
 ```
 
-I didn't do too bad, but unfortunately the three states that I missed were the key swing states of Michigan, Pennsylvania and Wisconsin, which decided the outcome of the election.
+I correctly predicted 28 states to go to Trump and 19 to go to Harris. I only got three states wrong, which I predicted to go to Harris, but actually went to Trump. Unfortunately those states were the key swing states of Michigan, Pennsylvania and Wisconsin, which decided the outcome of the election.
 
 Here's a further breakdown of every state, and it's prediction, true outcome, and error. Positive errors show an error in favor of Harris, and negative for Trump. 
 
@@ -168,11 +215,26 @@ Here's a further breakdown of every state, and it's prediction, true outcome, an
 
 
 
-My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, by average bias was 0.58 percentage points for Harris. 
+My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, my average bias was 0.58 percentage points for Harris. 
 
 For error, my MSE across all states was 6.34, and my RMSE was 2.52 percentage points. This error was lower among swing states, where the MSE was 1.40 and the RMSE was 1.18. While this is still a pretty large MSE for swing states that can sometimes come down to fractions of percentage points, the fact that the error is less speaks to the value that polling still holds, even though it can be biased (the model for many non-swing states did not include any polling). 
 
 
+```
+## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
+```
+
+```
+## Warning in geom_abline(slope = 1, intercept = 0, label = "Perfect Prediction"):
+## Ignoring unknown parameters: `label`
+```
+
+```
+## Warning: Removed 1 row containing missing values or values outside the scale range
+## (`geom_point()`).
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/visualize errors nat pop vote-1.png" width="672" />
 
 
 

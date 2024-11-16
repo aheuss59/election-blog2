@@ -1,21 +1,102 @@
 ---
-title: 'Post-Election Reflection: What Went Wrong?'
-author: Alex Heuss
-date: '2024-11-08'
-slug: post-election-reflection-what-went-wrong
+title: "Post-Election Reflection: What Went Wrong?"
+author: "Alex Heuss"
+date: "2024-11-08"
+output: pdf_document
 categories: []
 tags: []
+slug: "post-election-reflection-what-went-wrong"
 ---
 
 ```{r, load packages, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(glmnet)
+```
+
+```{r, load in all the nat data and make the model for a later graph, echo=FALSE, message=FALSE}
+# National Dataset
+nat_pop <- read_csv("data/popvote_1948_2020.csv")
+nat_party <- read_csv("data/national_party_id.csv") |>
+  mutate(swing1 = percent - year_prior,
+         swing1_2p = two_party_percent - year_prior_2p) |>
+  arrange(year) |>
+  group_by(party) |>
+  mutate(prior_election = lag(percent, 1),
+         prior_election_2p = lag(two_party_percent, 1),
+         swing4 = percent - prior_election, 
+         swing4_2p = two_party_percent - prior_election_2p)
+nat_polls <- read_csv("data/national_polls_1968-2024.csv") |>
+  mutate(party = ifelse(party == "DEM", "democrat", "republican")) |>
+  filter(weeks_left <= 30) |>
+  group_by(party, year, weeks_left) |>
+  summarize(nat_poll = mean(poll_support)) |>
+  pivot_wider(names_from = weeks_left, values_from = nat_poll)
+colnames(nat_polls)[3:33] <- paste0("nat_weeks_left_", 0:30)
+nat_econ_q2 <- read_csv("data/fred_econ.csv") |>
+  filter(year >= 1968 & quarter == 2) |>
+  rename(q2_gdp_growth = GDP_growth_quarterly,
+         q2_rdpi_growth = RDPI_growth_quarterly) |>
+  select(year, q2_gdp_growth, q2_rdpi_growth)
+nat_econ_ann <- read_csv("data/fred_econ.csv") |>
+  filter(year >= 1968) |>
+  group_by(year) |>
+  summarize(GDP = mean(GDP),
+            RDPI = mean(RDPI),
+            nat_unemployment = mean(unemployment),
+            stock_adj_close = mean(sp500_adj_close))
+nat_data <- 
+  nat_pop |>
+  left_join(nat_party, by = c("year", "party")) |>
+  group_by(party) |>
+  mutate(pv_lag1 = lag(pv, 1),
+         pv_lag2 = lag(pv, 2)) |>
+  left_join(nat_polls, by = c("year", "party")) |>
+  filter(year >= 1968) |>
+  left_join(nat_econ_q2, by = "year") |>
+  left_join(nat_econ_ann, by = "year")
+
+# Subset to the weeks_left we have polling data for
+nat_data_subset <- 
+  nat_data |>
+  select(-c(paste0("nat_weeks_left_", 0)),
+         -candidate, -winner)
+# Train and Test splits
+nat_train <- 
+  nat_data_subset |> 
+  filter(year <= 2020)
+nat_test <- 
+  nat_data_subset |>
+  filter(year == 2024)
+x.train <- nat_train |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+y.train <- nat_train$pv
+x.test <- nat_test |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+
+# Use Lasso for National Popular Vote
+lasso.nat <- glmnet(x = x.train, y = y.train, alpha = 1)
+set.seed(02138)
+cv.lasso.nat <- cv.glmnet(x = x.train, y = y.train, alpha = 1)
+lambda.min.lasso <- cv.lasso.nat$lambda.min
+mse.lasso <- mean((predict(lasso.nat, s = lambda.min.lasso, newx = x.train) - y.train)^2)
+
+lasso.coef.model <- glmnet(x = x.train, y = y.train, alpha = 1, lambda = lambda.min.lasso)
+
 ```
 
 Since the election on November 5th, many Democrats across the country have been asking themselves one question: what happened? The presidential election was essentially over by 3:00 a.m. on November 6th, when the Associated Press formally called Pennsylvania for Trump, who now looks posed to win every swing state and the national popular vote. So what did happen? Here is an overview of how my model differed from the actual election results and why that might be. 
 
 ## A Refresher
 
-In case you missed it, or in case you need a refresher, my model predicted a 270-268 Harris victory in the Electoral College and a 49% to 48% Harris victory for the national popular vote. 
+In case you missed it, or in case you need a refresher, my model predicted a 270-268 Harris victory in the Electoral College and a 49% to 48% Harris victory for the national popular vote.
+
+My national popular vote model used LASSO to select from a large number of potential predictive variables and ended up using a series of eight: percent of the country identifying as independent, the change in party identification for either party from the year preceding the election, vote share from the previous election, and five different weeks of polling, including the week just prior to the election.
+
+I made two separate models for predicting the electoral college, one for states with significant polling aggregate data on FiveThirtyEight, and one for those without. Predictive variables for both models included: state-level lagged vote share for the two prior elections, whether the candidate is a member of the incumbent party, national Q2 GDP growth, average state-level unemployment, the change in partisan identification for either party from the last election, and state fixed effects. For states with polling aggregates, the mean polling average and latest polling average are included in my model.
 
 Below is a breakdown of my predictions for each state. 
 
@@ -63,7 +144,7 @@ table("Actual" = preds_and_true$result_class,
 
 ```
 
-I didn't do too bad, but unfortunately the three states that I missed were the key swing states of Michigan, Pennsylvania and Wisconsin, which decided the outcome of the election.
+I correctly predicted 28 states to go to Trump and 19 to go to Harris. I only got three states wrong, which I predicted to go to Harris, but actually went to Trump. Unfortunately those states were the key swing states of Michigan, Pennsylvania and Wisconsin, which decided the outcome of the election.
 
 Here's a further breakdown of every state, and it's prediction, true outcome, and error. Positive errors show an error in favor of Harris, and negative for Trump. 
 
@@ -93,13 +174,42 @@ swing_mae <- mean(abs(swing$true_perc - swing$dem_pred))
 
 ```
 
-My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, by average bias was 0.58 percentage points for Harris. 
+My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, my average bias was 0.58 percentage points for Harris. 
 
 For error, my MSE across all states was 6.34, and my RMSE was 2.52 percentage points. This error was lower among swing states, where the MSE was 1.40 and the RMSE was 1.18. While this is still a pretty large MSE for swing states that can sometimes come down to fractions of percentage points, the fact that the error is less speaks to the value that polling still holds, even though it can be biased (the model for many non-swing states did not include any polling). 
 
-```{r, graph national popular vote prediction line over scatter plot and also include the actual popular vote, message=FALSE, echo=FALSE}
+```{r, visualize errors nat pop vote, message=FALSE, echo=FALSE}
+all_nat <- 
+  nat_data_subset |>
+  ungroup() |> 
+  select(-pv, -pv2p, -year) |>
+  as.matrix()
+nat_preds <- predict(lasso.nat, s = lambda.min.lasso, newx = all_nat)
 
+nat_true <- nat_pop |>
+  filter(year >= 1968) |>
+  select(year, party, pv)
 
+nat_preds <- as.data.frame(nat_preds)
+
+nat_preds_truth <- nat_true |> cbind(nat_preds) |>
+  mutate(pv = case_when(year == 2024 & party == "democrat" ~ 48.3,
+                        year == 2024 & party == "republican" ~ 50.1,
+                        TRUE ~ pv),
+         is_2024 = ifelse(year == 2024, "yes", "no"))
+
+nat_preds_truth |>
+  mutate(party = if_else(party == "democrat", "Democrat", "Republican")) |>
+  ggplot(aes(x = pv, y = s1, color = is_2024, label=year)) +
+  geom_point() +
+  geom_abline(slope=1, intercept=0, label="Perfect Prediction") +
+  scale_x_continuous(limits=c(35, 60)) +
+  scale_y_continuous(limits=c(35, 60)) +
+  scale_color_manual(values = c("darkgray", "red3")) +
+  facet_wrap(~party) + 
+  labs(y = "Predicted Popular Vote (%)", x = "Actual Popular Vote (%)", title = "Visualizing National Popular Vote Errors in My Model") +
+  theme_bw() +
+  theme(legend.position="none")
 ```
 
 ```{r, create a dot chart, echo=FALSE, message=FALSE}
