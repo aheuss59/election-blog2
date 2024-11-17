@@ -11,46 +11,6 @@ slug: "post-election-reflection-what-went-wrong"
 
 
 
-```
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-```
-
-```
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-```
-
-```
-## Warning: Option grouped=FALSE enforced in cv.glmnet, since < 3 observations per
-## fold
-```
-
-```
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-```
-
-```
-## Warning in storage.mode(xd) <- "double": NAs introduced by coercion
-```
 
 Since the election on November 5th, many Democrats across the country have been asking themselves one question: what happened? The presidential election was essentially over by 3:00 a.m. on November 6th, when the Associated Press formally called Pennsylvania for Trump, who now looks posed to win every swing state and the national popular vote. So what did happen? Here is an overview of how my model differed from the actual election results and why that might be. 
 
@@ -64,8 +24,6 @@ I made two separate models for predicting the electoral college, one for states 
 
 Below is a breakdown of my predictions for each state. 
 
-
-Table: (\#tab:print out prediction table)State Level Two-Party Predictions for Kamala Harris (%)
 
 |State          | Lower Bound| Prediction| Upper Bound|
 |:--------------|-----------:|----------:|-----------:|
@@ -123,27 +81,6 @@ Table: (\#tab:print out prediction table)State Level Two-Party Predictions for K
 ## Assessment of Accuracy
 
 
-```
-## New names:
-## Rows: 52 Columns: 42
-## ── Column specification
-## ──────────────────────────────────────────────────────── Delimiter: "," chr
-## (42): FIPS, Geographic Name, Geographic Subtype, Total Vote, Kamala D. H...
-## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
-## Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## • `0` -> `0...31`
-## • `0` -> `0...32`
-## • `0` -> `0...33`
-## • `0` -> `0...34`
-## • `0` -> `0...35`
-## • `0` -> `0...36`
-## • `0` -> `0...37`
-## • `0` -> `0...38`
-## • `0` -> `0...39`
-## • `0` -> `0...40`
-## • `0` -> `0...41`
-## • `0` -> `0...42`
-```
 
 The confusion matrix below shows how my predictions played out. 
 
@@ -217,52 +154,37 @@ Here's a further breakdown of every state, and it's prediction, true outcome, an
 
 My average bias across all my state predictions was 0.74 percentage points for Trump, while among swing states, my average bias was 0.58 percentage points for Harris. 
 
-For error, my MSE across all states was 6.34, and my RMSE was 2.52 percentage points. This error was lower among swing states, where the MSE was 1.40 and the RMSE was 1.18. While this is still a pretty large MSE for swing states that can sometimes come down to fractions of percentage points, the fact that the error is less speaks to the value that polling still holds, even though it can be biased (the model for many non-swing states did not include any polling). 
-
-
-```
-## Warning in cbind2(1, newx) %*% nbeta: NAs introduced by coercion
-```
-
-```
-## Warning in geom_abline(slope = 1, intercept = 0, label = "Perfect Prediction"):
-## Ignoring unknown parameters: `label`
-```
-
-```
-## Warning: Removed 1 row containing missing values or values outside the scale range
-## (`geom_point()`).
-```
+For error, my MSE across all states was 6.34, and my RMSE was 2.52 percentage points. This error was lower among swing states, where the MSE was 1.40 and the RMSE was 1.18. While this is still a pretty large MSE for swing states that can sometimes come down to fractions of percentage points, the fact that the error is less speaks to the value that polling still holds, even though it can be biased. 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/visualize errors nat pop vote-1.png" width="672" />
 
+All things considered, I'm actually really happy with my national popular vote model. My predictions were not all that far off, and visually my prediction was actually closer in 2024 than several of the points the model was trained on, which is a good sign for it's generalizability. One thing to note is that my model seems to predict Democratic vote share more cleanly than Republican vote share on average, even though it was trained on training data from both parties. 
 
+## What went wrong? A few too many theories
 
-[text about which states were the furthest off, did any fall outside their confidence intervals?]
+There are a few things that I think impacted both my national popular vote model and my Electoral College models and a few reasons I think my model may not have been as predictive as it could have been. 
 
-## What went wrong? A few theories
+1. The weighting of polls and their lean toward Harris. While, as I discussed briefly above, I think that polls are still an important part of reducing prediction error in models and increasing accuracy, they are definitely part of the reason my models were off. 
 
-### National Popular Vote Specific
+2. The unpopularity of the Biden administration was not properly accounted for in my models, and I think it impacted the skew of my national popular vote model. If it had been properly accounted for via interaction effects, I think it might've helped to balance out the skew of the polls. We can see how the unpopularity of the Biden administration or Harris herself played out in key swing states like Arizona, Wisconsin, Michigan and Nevada, which all voted Trump for president, but blue for the Senate. 
 
-- For popular vote, Democratic bias in the lagged vote share
-- Maybe because her campaign was so much shorter, she didn’t get as much support in Democratic strongholds because she didn’t have the time to make many visits there. 
+3. Bias in lagged national popular vote. This election is the first time the Republican nominee has won the national popular vote for twenty years. Because this variable is one of only eight predictors that LASSO selected for my popular vote model, there may have been a Democratic skew, especially considering that five of the other variables were polling, which was also skewed towards Harris this election. That said, while I think this may have affected my model early on, as we approached the election and I added more polls, the predicted national popular vote margin for Harris continued to shrink. 
 
-### State-Level Specific
+4. My model, and probably everyone else's too, assumed a normal campaign for Harris and didn't try to account for the effects of Biden's late game dropout. I think the late term drop out from Biden had a lot of effects that may not be quantifiable or may be completely unknown for awhile. My working theory is that it impacted her campaign in a few key ways. First, I think that potentially the shorter campaign and lack of a primary season for Harris limited her ability to use resources to campaign as much in Democratic stronghold states like California and New York. Although she could safely expect to win these states anyway, I think the lack of time to gold campaign events there may have been one of the mechanisms behind her losing the national popular vote. Second, I think her campaign of approximately not much more than three months just wasn't able to compete in name recognition or information about her, which could have had an impact and contributed to some of the margins in swing states. 
 
-- Split ballots
-- Hispanic shifts
+5. Harris is a woman and unfortunately that probably did lose her support. I think I went into the modeling for this class really optimistic. It never would have occurred to me that something like that could sink her campaign. It's very possible that my understanding of the situation is overfitted because, in my memory, there have only been two female candidates for president and they both lost to Trump. That said, looking at some of the demographic swings in the CNN exit polls and Harvard Youth Poll results, it's hard to not see the gender gap. The gender gap in support for the Democratic party candidate among young voters doubled from the spring to fall (Biden to Harris). Harris lost Latino men by 12 percentage points,  a demographic that Biden won by 23 percentage points in 2020. 
 
-### General
+6. Maybe the assassination attempts actually did significantly impact the election, but their impact was masked by the weight of the polls. This would be really hard to prove in any sort of substantial way. 
 
-- Harris is a woman
-- polls under weighted Trump again
-- maybe the assassination attempt actually did matter
+All that said, I think the biggest issue with my models was not accounting properly for the fundamentals, which the section below proposes a few model changes for. 
 
 ## Here's What I Would Change For Next Time
 
-1. I would use ensembling to combine predictions based on fundamentals and predictions based on the polls. I expect that a lot of people in the class are questioning their model's reliance on polls right now, and whether they should even be included. I think my model for Electoral College predictions offers an especially interesting perspective in this area because there were actually several states for which my predictions did not factor in polls at all, and these states were usually the states with the largest prediction errors. Luckily, these states were usually also safe states (which is why they didn't have much polling), so errors in vote margin during the prediction process did not have serious consequences for my overall predictions. However, these larger errors convince me to not give up incorporating polling altogether, just to down weight them more. 
+1. I would use ensembling to combine predictions based on fundamentals and predictions based on the polls. I expect that a lot of people in the class are questioning their model's reliance on polls right now, and whether they should even be included. I think my model for Electoral College predictions offers an especially interesting perspective because there were actually several states for which my predictions did not factor in polls at all, and these states were usually the states with the largest prediction errors. Luckily, these states were usually also safe states (which is why they didn't have much polling), so errors in vote margin during the prediction process did not have serious consequences for my overall predictions. However, these larger errors convince me to not give up incorporating polling altogether, just to down weight them more. 
 
-2. I would include interaction effects in a future model. I suspect that the economic factors would have more predictive power if they were more specifically in relationship with incumbency. I believe the same would be true for approval rating and incumbency/incumbent party. I think including interaction effects like these may have given my model the opportunity to account for the influence of the Biden Administration on Harris' ultimate loss.
+2. I would include interaction effects in a future model. I suspect that the economic factors would have more predictive power if they were specified to have a relationship with incumbency. I believe the same would be true for approval rating and incumbency/incumbent party. I think including interaction effects like these may have given my model the opportunity to account for the influence of the Biden Administration on Harris' ultimate loss.
+
+3. I would regularize the values of my predictive variables before feeding them into my national popular vote model so that variables with larger values wouldn't be more likely to drown out variables with smaller scales. I could then use LASSO for variable selection and feed the variables it selected back into a basic, linear model based on the original data for interpretability. 
 
 
 
