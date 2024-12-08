@@ -6,8 +6,15 @@
     <description>Recent content in Home on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 08 Nov 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 07 Dec 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Minnesota Campaign Narrative</title>
+      <link>https://example.org/post/2024/12/07/minnesota-campaign-narrative/</link>
+      <pubDate>Sat, 07 Dec 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/12/07/minnesota-campaign-narrative/</guid>
+      <description>Overview of the State Minnesota is a state in the Midwest region of the United States. It shares borders with North and South Dakota, Iowa, and Wisconsin.&#xA;Minnesota has voted Democratic in every presidential election since 1976, the longest blue streak in the country except for DC, since most states broke usual trends to vote for Ronald Reagan. That said, a narrow 1.5% margin for Clinton over Trump in 2016 has put the state back on the map somewhat.</description>
+    </item>
     <item>
       <title>Post-Election Reflection: What Went Wrong?</title>
       <link>https://example.org/post/2024/11/08/post-election-reflection-what-went-wrong/</link>
